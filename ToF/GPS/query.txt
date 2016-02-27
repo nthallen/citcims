@@ -1,0 +1,26 @@
+?WATCH={"device":"/dev/gps1","enable":true,"json":true,"pps":true};
+?WATCH={"device":"/dev/gps1","enable":false,"json":true,"pps":true};
+
+{"class":"TPV","device":"/dev/gps1","mode":3,"time":"2015-12-15T14:11:55.000Z","ept":0.005,"lat":34.136288333,"lon":-118.126790000,"alt":223.600,"epx":3.077,"epy":3.251,"epv":11.672,"track":102.7500,"speed":0.005,"climb":0.000,"eps":6.50,"e pc":23.34}
+
+{"class":"SKY","device":"/dev/gps1","xdop":0.82,"ydop":0.87,"vdop":2.02,"tdop":1.44,"hdop":1.19,"gdop":2.77,"pdop":2.35,"satellites":[{"PRN":25,"el":69,"az":248,"ss":33,"used":true},{"PRN":5,"el":57,"az":85,"ss":47,"used":true},{"PRN":138,"el":48,"az":161,"ss":44,"used":false},{"PRN":29,"el":47,"az":320,"ss":34,"used":true},{"PRN":12,"el":47,"az":169,"ss":50,"used":true},{"PRN":20,"el":46,"az":182,"ss":48,"used":true},{"PRN":2,"el":33,"az":50,"ss":50,"used":true},{"PRN":21,"el":17,"az":252,"ss":22,"used":false},{"PRN":31,"el":11,"az":296,"ss":28,"used":true}]}
+
+{"class":"TPV","device":"/dev/gps1","mode":3,"time":"2015-12-15T14:11:56.000Z","ept":0.005,"lat":34.136288333,"lon":-118.126790000,"alt":223.600,"epx":3.077,"epy":3.251,"epv":11.672,"track":102.7500,"speed":0.005,"climb":0.000,"eps":6.50,"epc":23.34}
+
+?DEVICES;
+{ "class":"DEVICES",
+  "devices":[
+    { "class":"DEVICE",
+      "path":"/dev/gps1",
+      "driver":"NMEA0183",
+      "activated":"2015-12-15T15:37:32.593Z",
+      "flags":1,
+      "native":0,
+      "bps":9600,
+      "parity":"N",
+      "stopbits":1,
+      "cycle":1.00},
+    { "class":"DEVICE",
+      "path":"/dev/pps1"}]}
+
+?WATCH={"device":"/dev/pps1","enable":true,"json":true,"pps":true};

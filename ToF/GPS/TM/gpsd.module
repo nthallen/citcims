@@ -1,0 +1,10 @@
+# gpsd.module
+tmcbase = gpsd.tmc
+colbase = gpsd_col.tmc
+cmdbase =
+swsbase =
+% display: gpsd_conv.tmc gpsd.tbl [gpsd]
+DISTRIB = gpsd_client
+% interact: Launch - gpsd_client
+%%
+GENUISRCS += gpsd.genui

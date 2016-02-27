@@ -1,0 +1,13 @@
+<package> ups
+<include> msg
+<follow> msg
+<include> "UPS.h"
+<opts> "p:"
+<sort>
+	-p <serial device>
+<init>
+  ups_init_options(argc, argv);
+
+<package> msghdr_default
+<var>
+  char *msg_hdr_default = "UPS";

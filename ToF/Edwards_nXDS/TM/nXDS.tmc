@@ -1,0 +1,55 @@
+%{
+  #define NXDS_HIDE_INTERNALS 1
+  #include "nXDS.h"
+  #define nXselect(x,y) nXDS.drive[x].y
+%}
+TM "Receive" nXDS 1;
+
+TM typedef signed short nX_Amps { text "%6.1f"; }
+TM typedef signed short nX_Volts { text "%5.1f"; }
+TM typedef signed short nX_Watts { text "%5.1f"; }
+TM typedef unsigned char nX_Hz { text "%3d"; }
+TM typedef unsigned char nX_Celcius { text "%3d"; }
+TM typedef unsigned short nX_Status_t { text "%8d" nX_Status_text(); }
+TM typedef unsigned char nX_stale_t { text "%3u"; }
+TM typedef unsigned char nX_Stat_t { text "%3u"; }
+
+TM 1 Hz nX_stale_t nX_stale;
+TM 1 Hz nX_Volts nX0LinkV;
+TM 1 Hz nx_Amps nX0MtrI;
+TM 1 Hz nX_Watts nX0MtrW;
+TM 1 Hz nX_Status_t nX0Stat;
+TM 1 Hz nX_Celcius nX0CtrlrT;
+TM 1 Hz nX_Hz nX0MtrF;
+TM 1 Hz nX_Stat_t nX0Power;
+
+TM 1 Hz nX_Volts nX1LinkV;
+TM 1 Hz nx_Amps nX1MtrI;
+TM 1 Hz nX_Watts nX1MtrW;
+TM 1 Hz nX_Status_t nX1Stat;
+TM 1 Hz nX_Celcius nX1CtrlrT;
+TM 1 Hz nX_Hz nX1MtrF;
+TM 1 Hz nX_Stat_t nX1Power;
+
+Group nXDS_grp (nX_stale, nX0LinkV, nX0MtrI, nX0MtrW, nX0Stat,
+      nX0CtrlrT, nX0MtrF, nX0Power, nX1LinkV, nX1MtrI, nX1MtrW,
+      nX1Stat, nX1CtrlrT, nX1MtrF, nX1Power) {
+  nX0LinkV = nXselect(0,link_voltage);
+  nX0MtrI = nXselect(0,motor_current);
+  nX0MtrW = nXselect(0,motor_power);
+  nX0Stat = nXselect(0,status);
+  nX0CtrlrT = nXselect(0,controller_temp);
+  nX0MtrF = nXselect(0,motor_freq);
+  nX0Power = nXselect(0,pump_on);
+      
+  nX1LinkV = nXselect(1,link_voltage);
+  nX1MtrI = nXselect(1,motor_current);
+  nX1MtrW = nXselect(1,motor_power);
+  nX1Stat = nXselect(1,status);
+  nX1CtrlrT = nXselect(1,controller_temp);
+  nX1MtrF = nXselect(1,motor_freq);
+  nX1Power = nXselect(1,pump_on);
+      
+  nX_stale = nXDS_obj->stale(255);
+  nXDS_obj->synch();
+}

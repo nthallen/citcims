@@ -1,0 +1,4 @@
+batchfile interact
+display GPStestdisp
+client GPStestclt
+memo

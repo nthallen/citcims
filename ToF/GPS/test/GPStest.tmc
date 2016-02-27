@@ -1,0 +1,3 @@
+TM typedef unsigned short USHRT { text "%5u"; }
+TM 1 Hz USHRT MFCtr, Synch;
+

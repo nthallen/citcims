@@ -1,0 +1,9 @@
+cpu {
+  +-+;
+  CPU: (CPU_Pct,3) "%"
+  { (flttime,9) }
+  MFCtr: (MFCtr,5);
+}
+{ [gpsd];
+  [cpu];
+}

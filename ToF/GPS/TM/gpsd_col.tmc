@@ -1,0 +1,4 @@
+%{
+  #include "gpsd_tm.h"
+  gpsd_tm_t gpsd_tm;
+%}

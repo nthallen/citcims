@@ -1,0 +1,45 @@
+%{
+  #define bit_set_text(x) (x?"*":"-")
+%}
+TM typedef unsigned char bit_set_t { text "%1d" bit_set_text(); }
+bit_set_t gpsd_packet_set; invalidate gpsd_packet_set;
+  { gpsd_packet_set = (gpsd_data_status>>0) & 1; Validate gpsd_packet_set; }
+bit_set_t gpsd_status_set; invalidate gpsd_status_set;
+  { gpsd_status_set = (gpsd_data_status>>1) & 1; Validate gpsd_status_set; }
+bit_set_t gpsd_time_set; invalidate gpsd_time_set;
+  { gpsd_time_set = (gpsd_data_status>>2) & 1; Validate gpsd_time_set; }
+bit_set_t gpsd_latlon_set; invalidate gpsd_latlon_set;
+  { gpsd_latlon_set = (gpsd_data_status>>3) & 1; Validate gpsd_latlon_set; }
+bit_set_t gpsd_alt_set; invalidate gpsd_alt_set;
+  { gpsd_alt_set = (gpsd_data_status>>4) & 1; Validate gpsd_alt_set; }
+bit_set_t gpsd_speed_set; invalidate gpsd_speed_set;
+  { gpsd_speed_set = (gpsd_data_status>>5) & 1; Validate gpsd_speed_set; }
+bit_set_t gpsd_track_set; invalidate gpsd_track_set;
+  { gpsd_track_set = (gpsd_data_status>>6) & 1; Validate gpsd_track_set; }
+bit_set_t gpsd_climb_set; invalidate gpsd_climb_set;
+  { gpsd_climb_set = (gpsd_data_status>>7) & 1; Validate gpsd_climb_set; }
+bit_set_t gpsd_mode_set; invalidate gpsd_mode_set;
+  { gpsd_mode_set = (gpsd_data_status>>8) & 1; Validate gpsd_mode_set; }
+bit_set_t gpsd_dop_set; invalidate gpsd_dop_set;
+  { gpsd_dop_set = (gpsd_data_status>>9) & 1; Validate gpsd_dop_set; }
+bit_set_t gpsd_sats_set; invalidate gpsd_sats_set;
+  { gpsd_sats_set = (gpsd_data_status>>10) & 1; Validate gpsd_sats_set; }
+bit_set_t gpsd_toff_set; invalidate gpsd_toff_set;
+  { gpsd_toff_set = (gpsd_data_status>>11) & 1; Validate gpsd_toff_set; }
+bit_set_t gpsd_pps_set; invalidate gpsd_pps_set;
+  { gpsd_pps_set = (gpsd_data_status>>12) & 1; Validate gpsd_pps_set; }
+
+bit_set_t gpsd_time_err_set; invalidate gpsd_time_err_set;
+  { gpsd_time_err_set = (gpsd_err_status>>0) & 1; Validate gpsd_time_err_set; }
+bit_set_t gpsd_h_err_set; invalidate gpsd_h_err_set;
+  { gpsd_h_err_set = (gpsd_err_status>>1) & 1; Validate gpsd_h_err_set; }
+bit_set_t gpsd_v_err_set; invalidate gpsd_v_err_set;
+  { gpsd_v_err_set = (gpsd_err_status>>2) & 1; Validate gpsd_v_err_set; }
+bit_set_t gpsd_speed_err_set; invalidate gpsd_speed_err_set;
+  { gpsd_speed_err_set = (gpsd_err_status>>3) & 1; Validate gpsd_speed_err_set; }
+bit_set_t gpsd_track_err_set; invalidate gpsd_track_err_set;
+  { gpsd_track_err_set = (gpsd_err_status>>4) & 1; Validate gpsd_track_err_set; }
+bit_set_t gpsd_climb_err_set; invalidate gpsd_climb_err_set;
+  { gpsd_climb_err_set = (gpsd_err_status>>5) & 1; Validate gpsd_climb_err_set; }
+bit_set_t gpsd_error_set; invalidate gpsd_error_set;
+  { gpsd_error_set = (gpsd_err_status>>6) & 1; Validate gpsd_error_set; }

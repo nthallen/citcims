@@ -1,0 +1,3 @@
+gpsd_client
+*.o
+gpsdoui.c

@@ -1,0 +1,4 @@
+%{
+  #include "UPS.h"
+  UPS_TM_t UPS_TM;
+%}

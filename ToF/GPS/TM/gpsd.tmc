@@ -1,0 +1,75 @@
+%{
+  const char *gpsd_time_text(double t) {
+    static char time_text[22] = "mm/dd/yy hh:mm:ss";
+    return (const char *)&time_text[0];
+  }
+%}
+TM "Receive" gpsd_tm 1;
+
+TM typedef unsigned char gpsd_uint8_t { text "%3d"; }
+TM typedef unsigned char gpsd_uint8h_t { text "%02x"; }
+TM typedef unsigned short gpsd_uint16h_t { text "%04x"; }
+TM typedef double gpsd_time_t { text "%21.3lf" gpsd_time_text(); }
+TM typedef double gpsd_ept_t { text "%6.4lf"; }
+TM typedef double gpsd_deg_t { text "%9.4lf"; }
+TM typedef double gpsd_vherr_t { text "%5.1lf"; }
+TM typedef double gpsd_alt_t { text "%7.1lf"; }
+TM typedef double gpsd_speed_t { text "%6.1lf"; }
+TM typedef unsigned long gpsd_timespec { text "%9d"; }
+
+TM 1 Hz gpsd_uint8_t gpsd_mode;
+TM 1 Hz gpsd_time_t gpsd_time;
+TM 1 Hz gpsd_ept_t gpsd_ept;
+TM 1 Hz gpsd_deg_t gpsd_lat;
+TM 1 Hz gpsd_vherr_t gpsd_epy;
+TM 1 Hz gpsd_deg_t gpsd_lon;
+TM 1 Hz gpsd_vherr_t gpsd_epx;
+TM 1 Hz gpsd_alt_t gpsd_alt;
+TM 1 Hz gpsd_vherr_t gpsd_epv;
+TM 1 Hz gpsd_deg_t gpsd_track;
+TM 1 Hz gpsd_deg_t gpsd_epd;
+TM 1 Hz gpsd_speed_t gpsd_speed;
+TM 1 Hz gpsd_speed_t gpsd_eps;
+TM 1 Hz gpsd_speed_t gpsd_climb;
+TM 1 Hz gpsd_speed_t gpsd_epc;
+TM 1 Hz gpsd_uint8_t satellites_visible;
+TM 1 Hz gpsd_uint8_t satellites_used;
+TM 1 Hz gpsd_timespec gpsd_real_sec;
+TM 1 Hz gpsd_timespec gpsd_real_nsec;
+TM 1 Hz gpsd_timespec gpsd_clock_sec;
+TM 1 Hz gpsd_timespec gpsd_clock_nsec;
+TM 1 Hz gpsd_uint16h_t gpsd_data_status;
+TM 1 Hz gpsd_uint8h_t gpsd_err_status;
+TM 1 Hz gpsd_uint8_t gpsd_stale;
+
+Group gpsd (gpsd_mode, gpsd_time, gpsd_ept, gpsd_lat, gpsd_epy,
+    gpsd_lon, gpsd_epx, gpsd_alt, gpsd_epv, gpsd_track, gpsd_epd,
+    gpsd_speed, gpsd_eps, gpsd_climb, gpsd_epc, satellites_visible,
+    satellites_used, gpsd_real_sec, gpsd_real_nsec, gpsd_clock_sec,
+    gpsd_clock_nsec, gpsd_data_status, gpsd_err_status, gpsd_stale) {
+  gpsd_mode = gpsd_tm.mode;
+  gpsd_time = gpsd_tm.time;
+  gpsd_ept = gpsd_tm.ept;
+  gpsd_lat = gpsd_tm.lat;
+  gpsd_epy = gpsd_tm.epy;
+  gpsd_lon = gpsd_tm.lon;
+  gpsd_epx = gpsd_tm.epx;
+  gpsd_alt = gpsd_tm.alt;
+  gpsd_epv = gpsd_tm.epv;
+  gpsd_track = gpsd_tm.track;
+  gpsd_epd = gpsd_tm.epd;
+  gpsd_speed = gpsd_tm.speed;
+  gpsd_eps = gpsd_tm.eps;
+  gpsd_climb = gpsd_tm.climb;
+  gpsd_epc = gpsd_tm.epc;
+  satellites_visible = gpsd_tm.satellites_visible;
+  satellites_used = gpsd_tm.satellites_used;
+  gpsd_real_sec = gpsd_tm.real_sec;
+  gpsd_real_nsec = gpsd_tm.real_nsec;
+  gpsd_clock_sec = gpsd_tm.clock_sec;
+  gpsd_clock_nsec = gpsd_tm.clock_nsec;
+  gpsd_data_status = gpsd_tm.data_status;
+  gpsd_err_status = gpsd_tm.err_status;
+  gpsd_stale = gpsd_tm_obj->stale(255);
+  gpsd_tm_obj->synch();
+}

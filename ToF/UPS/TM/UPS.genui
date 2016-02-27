@@ -1,0 +1,20 @@
+  1 UPS_Mode UPS Mode %.0f
+  1 UPS_V_in UPS V
+  1 UPS_F_in UPS F
+  1 UPS_V_out UPS V
+  1 UPS_F_out UPS F
+  1 UPS_I_out UPS I
+  1 UPS_LoadPct UPS Load
+  1 UPS_VBusP UPS V
+  1 UPS_VBusN UPS V
+  1 UPS_VBatP UPS V
+  1 UPS_VBatN UPS V
+  1 UPS_Tmax UPS T
+  1 UPS_Piece UPSstat Pc
+  1 UPS_Group UPSstat Grp
+  1 UPS_Capacity UPS Load
+  1 UPS_Remain_Time UPS Time
+  1 UPS_Status UPSstat Status
+  1 UPS_Warn UPSstat Warn
+  1 UPS_Response UPSstat Response
+  1 UPS_Stale UPSstat Stale

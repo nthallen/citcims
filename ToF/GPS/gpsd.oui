@@ -1,0 +1,15 @@
+<package> gpsd
+<include> "gpsd_client.h"
+<include> msg
+<follow> msg
+
+<opts> "n:e:"
+<sort>
+	-n <remote node> -- for secondary telemetry reports
+	-e <remote experiment> -- for secondary telemetry reports
+<init>
+  gpsd_init_options(argc, argv);
+
+<package> msghdr_default
+<var>
+  char *msg_hdr_default = "GPSD";
