@@ -1,0 +1,13 @@
+%{
+  // #include "med_filt.h"
+  // med_filter<Herc_ADC_t,5> tpa_filt;
+  // med_filter<Herc_ADC_t,5> tpb_filt;
+%}
+Herc_ADC_t TPA_BT_F5; Invalidate TPA_BT_F5;
+{ TPA_BT_F5 = TPA_BT; /* tpa_filt.filter(TPA_BT); */
+  Validate TPA_BT_F5;
+}
+Herc_ADC_t TPB_BT_F5; Invalidate TPB_BT_F5;
+{ TPB_BT_F5 = TPB_BT; /* tpb_filt.filter(TPB_BT); */
+  Validate TPB_BT_F5;
+}

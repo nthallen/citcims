@@ -1,0 +1,16 @@
+  Launch memo        memo -o $Experiment.log
+  memo=/dev/huarp/$Experiment/memo
+  Launch TM/DCo TMbfr
+  echo "Running script interact" >$memo
+
+  Launch Hercules Hercules
+  Launch DG/cmd triplecol
+  Launch cmd/server triplesrvr
+  Launch - tmdf
+  Launch - lgr -N `mlf_find LOG`
+# stty baud=9600 -lkhflow -ohflow -ihflow -osflow -isflow +raw </dev/ser1
+  Launch - zaber -p /dev/ser3
+  Launch - modbus -d /dev/ser2
+# Launch specq       specq -vyc0 -a 0x1005 -H varian
+  Launch - IWG1
+  Launch - triplealgo -v

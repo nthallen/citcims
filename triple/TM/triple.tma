@@ -1,0 +1,996 @@
+# May, 2012: mods for DC3 JSC
+#
+#
+%{
+  #include "SWStat.h"
+  #include "msg.h"
+%}
+
+# Partition 1   Startup, shutdown
+
+State Init {
+  > Telemetry Start
+  >	1200 Enable A off
+  >	1200 Enable B off
+  +2 validate zaber_close;
+
+  +1 hold until valid (zaber_idle);
+  +1 Validate cal_off;
+  +1 hold until valid (cal_idle);
+#  +2 Validate power_watchdog; #here for testing only 
+##scrubair command here for chamber only
+#  +1 > scrubair valve close	
+   validate polj_idle;
+   validate Init_idle;
+}
+
+
+State Init_continue {
+
+   { msg(0, "I am in init continue"); }
+
+#+10 > CIMS Set ambient zero flow rate 0.100
+
+   +1 { if ( convert(Pressure100T) > 80 ) { Validate Manual_init; } }
+#   +1 > turbo rough pump on
+#   +1 > turbo valve open
+#  +1 > flowtube pump on
+#  +1 > Dewar valve close
+#  +2 Validate dewar_watchdog; 
+#  +2 Validate power_watchdog;
+#  +2 > flowtube valve open
+#  +1 hold until ( convert(Pressure100T) < 5 );
+#		# next line energizes ReagentMFC vent valve
+#  +1 > ionsourceMFC open on
+#  +2 Validate flows_n2_zero;
+#	{ msg(0,"holding for flows idle"); }
+#  +1 hold until valid (flows_idle);
+	{ msg(0, "holding for D1200A == 1"); }
+  +1 hold until ( D1200A | (H_DIO_D*0) );
+    { msg(0, "opening zaber"); }
+  +1 validate zaber_open;
+  +1 hold until valid (zaber_monitor);
+  +1 > 1200 Enable A on
+#  +1 hold until ( (!D1200A) | (H_DIO_D*0) );    
+#  +5 validate dither_three;
+# pol_neg is just for chamber runs
+  +1 validate pol_neg;
+   { msg(0, "I got to the end of initcontinue"); }
+}
+
+State Init_idle {
+ { msg(0, "I am in init idle"); }
+}
+
+State Manual_init {
+	"Flowtube pressure too high, please open vent, and turn pumps on manually.";
+  { msg(0, "I am in Manual Init.  Flow tube P too high."); }
+}
+
+State Shutdown {
+#	> turbo valve close
+	validate dither_shutdown;
+  +1 hold until valid (dither_idle);
+      validate zaber_close;
+  +1 hold until valid (zaber_idle);
+     > scrubair valve close
+     > normal cal bypass bypass
+     > labelled cal bypass bypass
+  +1 > set dilute mfc 0
+  +1 > set reagent mfc 0
+  +1 > set Ionsource MFC 0
+  +1 > set Scrub MFC 0
+  +2 > turbo valve close
+  +2> turbo rough pump off
+	{ msg(0, "Here1"); }
+  +2 > flowtube valve close
+	{ msg(0, "Here2"); }
+	Validate dewar_watchdog_gotosleep;
+  +6	{ msg(0, "Here3"); }
+#  +5 { if (convert(Pressure100T) > 1) { validate Shutdown_failed; } }
+#  +1 > dewar valve open
+  +1 > flowtube pump off
+  +2 > Quit
+}
+
+State Shutdown_failed {
+	{ msg(0, "Apparent Leak - are zabers shut?"); }
+	{ msg(0, "Find leak, then open flowtube valve"); }
+	hold until (convert(Pressure100T) < 0.75);
+   > flowtube valve close
+	{ msg(0, "Here4"); }
+  +6	{ msg(0, "Here5"); }
+  +5 { if (convert(Pressure100T) > 1) { validate Shutdown_failed; } }
+  +1 > dewar valve open
+  +1 > flowtube pump off
+  +2 > Quit
+}
+
+Partition
+# Partition 2: SWStat control
+################################################################
+# SWStat control
+################################################################
+State SW_Stat_Wait {
+  { int reset_it;
+    reset_it = 1;
+    switch (SWStat) {
+      default:
+      case 0: reset_it = 0; break;
+      case SWS_LAB_READ: Validate Lab_read; break;
+      case SWS_SHUTDOWN: Validate Shutdown; break;
+      case SWS_INLET_IDLE: Validate Inlet_Idle; break;
+      case SWS_INLET_PRESSURE: Validate Inlet_PControl; break;
+      case SWS_DITHER_ONE: Validate dither_one; break;
+      case SWS_DITHER_TWO: Validate dither_two; break;
+	  case SWS_DITHER_THREE: Validate dither_three; break;
+      case SWS_TRIP_SUS: Validate dither_standby; break;
+	  case SWS_DITHER_END: Validate dither_end; break;
+      case SWS_SCRUB_READY: Validate scrub_ready; break;
+      case SWS_INIT_CONTINUE: Validate Init_continue; break;
+    }
+    if (reset_it) Validate SW_Stat_Reset;
+  }
+}
+
+State SW_Stat_Reset {
+  > SW Status Set 0
+  Hold until (SWStat == 0) or 10;
+  Validate SW_Stat_Wait;
+}
+
+Partition
+# Partition 3: Lab File Input
+################################################################
+# Lab file input
+################################################################
+State Lab_idle {
+}
+
+State Lab_read "triple.tmas" {
+  Validate Lab_idle;
+}
+
+Partition
+################################################################
+# Partition 4: controls negative and positive issues
+#  this partition controls reagent gas and polarity bit sensed
+#  by 1200.  It does NOT control Source Voltage!  (See partition 25)
+################################################################
+
+State Pol_idle {
+}
+
+State Pol_Negative {
+	> Reagent Valve Close
+# next line makes 1200 go negative 
+#+5	> DiluteMFC open off   #080604 removed to use bit for cal mass call
+    > Set reagent MFC 170
++2  Validate Pol_idle;
+}
+
+State Pol_Positive {
+##	> Reagent Valve Open
+# next line makes 1200 go positive 
+##+5	> DiluteMFC open on
+##    > Set reagent MFC 0
+##+2  Validate Pol_idle;
+}
+
+Partition
+##############################################################
+# Partition 5: Dewar Watchdog
+# turns off all flows if dewar valve opens
+# good for power outages, etc
+##############################################################
+
+State dewar_watchdog_gotosleep {
+}
+
+State dewar_watchdog {
+    {msg(0,"entering dewar watchdog");}
++1 hold until ( (!fan2) || !(H_DIO_D&32) ); #fan2 (dwr vlv)=HDIO byte D bit 5
+    Validate Init_idle;
+	Validate flows_off;
+	{msg(0,"DEWAR WATCHDOG turned off all flows");}
++1	hold until valid (flows_idle);
+	{msg(0,"Close (turn on) Dewar valve before turning on flows");}
++1 Validate dewar_watchdog_gotosleep;
+}
+
+State dewar_standby {
+# this state needs thought...maybe never use...
+   hold until ((fan2) | (H_DIO_D*5));
++2 hold until ((fan2) | (H_DIO_D*5)); 
+   Validate dewar_watchdog;
+}
+
+Partition
+##############################################################
+# Partition 5.2 for BEARPEX (090528): turn off instrument if 
+# power at tower fails 
+##############################################################
+
+State power_watchdog_gotosleep {
+}
+
+State power_watchdog {
+	{msg(0,"entering power_watchdog");}
++1  hold until (!(H_DIO_D*7));
+	 {msg(0,"I am inside powerwatchdog shutdown");}
++1	 > zaber command all drives 1 1
++1	 > turbo valve close
++1   > set dilute mfc 0
++1	 > set reagent mfc 0
++1	 > set ionsource mfc 0
++1	 Validate Shutdown;
+}
+	 
+Partition 
+##############################################################
+# Partition 6: hopper: scan or hop negotiation with 1200
+# Set flows, polarity, then use these states to GO!
+##############################################################
+
+State hop_scan_idle {
+}
+
+State hop_start {
+	hold until (D1200A || (H_DIO_D&1));
+	Validate zaber_open;
++1	hold until valid (zaber_monitor);
++2	> 1200 Enable B off
++1  > 1200 Enable A on
++1	hold until (D1200B || (H_DIO_D&2));  # hold til scan begins
+	Validate hopping;
+}
+
+State hopping {
+}
+
+State hop_finish {
+		# stop hopping
+	> 1200 Enable B on
++1	hold until ( (!D1200B) || !(H_DIO_D&2) );    # confirmation from 1200
+	> 1200 Enable B off
+	> 1200 Enable A off
+#	Validate HV_off;    #commented out for sharing voltage w/ tof
+	Validate hop_scan_idle;
+}
+
+State scan_go {
+	hold until (D1200A || (H_DIO_D&1));
+	Validate zaber_open;
++1	hold until valid (zaber_monitor);
++2	> 1200 Enable B on
++1  > 1200 Enable A on
++1	hold until (D1200B || (H_DIO_D&2));  # hold til scan begins
++2	hold until ( (!D1200B) || !(H_DIO_D&2) );    # Done with Scan
+	> 1200 Enable A off
+	> 1200 Enable B off
+	Validate HV_off;
+	Validate hop_scan_idle;
+}
+
+Partition
+##############################################################
+# Partition 7: various data collection states
+##############################################################
+
+State collect_idle {
+}
+
+State NegDataHop_wMHP {
+	Validate Pol_Negative;
++1	hold until valid (Pol_idle);
++2  Validate flows_measure;
++1  hold until valid (flows_idle);
+	Validate cal_MHP;
++1  hold until valid (cal_idle);
++1  Validate Neg_HV_on;
++1  hold until valid (Neg_HV_monitor);
+	Validate hop_start;
++1 	hold until valid (hopping);
+	{msg(0,"In Neg Data Hop");}
+#	Validate cal_dither;
++1  hold until valid (scrub_ready);
+	Validate hop_finish;
+	Validate cal_off;
++1  hold until valid (cal_idle);
++1  hold until valid (hop_scan_idle);
+	{msg(0,"Leaving Neg Data Hop");}	
+	Validate collect_idle;
+}
+
+State NegDataHop {
+	Validate Pol_Negative;
++1	hold until valid (Pol_idle);
++2  Validate flows_measure;
++1  hold until valid (flows_idle);
+	Validate cal_off;
++1  hold until valid (cal_idle);
++1  Validate Neg_HV_on;
++1  hold until valid (Neg_HV_monitor);
+	Validate hop_start;
++1 	hold until valid (hopping);
+	{msg(0,"In Neg Data Hop");}
+#	Validate cal_dither;
++1   hold until valid (scrub_ready); #uncomment for op with single
+	> DiluteMFC open on
+# above line was +1000 for trip solo op 
+	Validate hop_finish; # remove the + time (200) for op with single
++1  hold until valid (hop_scan_idle);
+	{msg(0,"Leaving Neg Data Hop");}	
+	> DiluteMFC open off
+	> Set dilute MFC 0
+	Validate collect_idle;
+}
+
+State NegDataScan {
+    Validate Pol_Negative;
++1  hold until valid (Pol_idle);
++2	Validate flows_measure;
++1	hold until valid (flows_idle);
++1	Validate Neg_HV_on;
++1	hold until valid (Neg_HV_monitor);
+	Validate scan_go;
+	{msg(0,"In Neg Data Scan");}
++1  hold until valid (hop_scan_idle);
+#+1	hold until (D1200B | (H_DIO_D*1));  # hold til scan begins
+#	> 1200 Enable B off
+#+2	hold until ( (!D1200B) | (!H_DIO_D*1) );    # Done with Scan
+#	> 1200 Enable A off
+#	Validate HV_off;
+	{msg(0,"Ending Neg Data Scan");}
++1	validate collect_idle;
+}
+
+
+State NegDryZeroHop {
+	Validate Pol_Negative;
++1	hold until valid (Pol_idle);
++2  Validate flows_n2_zero;
++1  hold until valid (flows_idle);
++1  Validate Neg_HV_on;
++1  hold until valid (Neg_HV_monitor);
+	Validate hop_start;
++1 	hold until valid (hopping);
+	{msg(0,"In Neg DryZ Hop");}
++150 > DiluteMFC open on
+	Validate hop_finish; # (had +100) change back to 150 after test
++1  hold until valid (hop_scan_idle);
+	{msg(0,"quitting Neg DryZ Hop");}
+	> DiluteMFC open off
+	> Set dilute MFC 0
++1	Validate collect_idle;
+}
+
+State NegDryZeroScan {
+    Validate Pol_Negative;
++1  hold until valid (Pol_idle);
++2	Validate flows_n2_zero;
++1	hold until valid (flows_idle);
++1	Validate Neg_HV_on;
++1	hold until valid (Neg_HV_monitor);
+	Validate scan_go;
+	{msg(0,"In Neg DryZ Scan");}
++1  hold until valid (hop_scan_idle);
+	{msg(0,"done with Neg DryZ Scan");}
++1	validate collect_idle;
+}
+
+State NegCalReturn {
+}
+
+State LongCalComb {
+	Validate Pol_Negative;
++1  hold until valid (Pol_idle);
+	Validate flows_n2_cal;
++1  hold until valid (flows_idle);
+    Validate Cal_on;
++1	hold until valid (cal_idle);
++1 	Validate Neg_HV_on;
++1  hold until valid (Neg_HV_monitor);
+	Validate hop_start;
++1	hold until valid (hopping);
+	{msg(0,"In Neg DryCal Hop");}
++600 > DiluteMFC open on
++200 Validate hop_finish;
++1  hold until valid (hop_scan_idle);
+	> DiluteMFC open off
+	Validate flows_amb_cal;
++1	hold until valid (flows_idle);
+	Validate Neg_HV_on;
++1	hold until valid (Neg_HV_monitor);
+	Validate hop_start;
+	{msg(0,"In Neg AmbCal Hop 1");}
++600 > DiluteMFC open on
++200 Validate hop_finish;
++1  hold until valid (hop_scan_idle);
+	> DiluteMFC open off
+	Validate flows_amb_caltwo;
++1	hold until valid (flows_idle);
+	Validate Neg_HV_on;
++1  hold until valid (Neg_HV_monitor);
+	Validate hop_start;
+	{msg(0,"In Neg AmbCal Hop 2");}
++600 > DiluteMFC open on
++200 Validate hop_finish;
++1  hold until valid (hop_scan_idle);
+	> DiluteMFC open off
+	Validate flows_amb_calthree;
++1	hold until valid (flows_idle);
+	Validate Neg_HV_on;
++1	hold until valid (Neg_HV_monitor);
+	Validate hop_start;
+	{msg(0,"In Neg AmbCal Hop 3");}
++600 > DiluteMFC open on
++200 Validate hop_finish;
++1  hold until valid (hop_scan_idle);
+	> DiluteMFC open off
+	Validate Cal_off;
+	hold until valid (cal_idle);
+	Validate scrub_out_tripsolo;
+	hold until valid (scrub_idle);
+	{msg(0,"I'm done doing the long cal");}
+	Validate collect_idle;
+}
+
+State NegCalHopStart {
+	Validate Pol_Negative;
++1  hold until valid (Pol_idle);
+	Validate flows_n2_cal;
++1  hold until valid (flows_idle);
+    Validate Cal_on;
++1	hold until valid (cal_idle);
++1 	Validate Neg_HV_on;
++1  hold until valid (Neg_HV_monitor);
+	Validate hop_start;
++1	hold until valid (hopping);
+	{msg(0,"In Neg DryCal Hop");}
+	Validate NegCalReturn;
+}
+
+State NegCalHoptime {
++600 > DiluteMFC open on
++200 Validate hop_finish;
++1  hold until valid (hop_scan_idle);
+	Validate NegCalReturn;
+} 
+
+State NegCalHopAmbOne {
+	Validate flows_amb_cal;
++1	hold until valid (flows_idle);
+	Validate Neg_HV_on;
++1	hold until valid (Neg_HV_monitor);
+	Validate hop_start;
+	{msg(0,"In Neg AmbCal Hop 1");}
+	Validate NegCalReturn;
+}
+
+State NegCalHopAmbTwo {
+	Validate flows_amb_caltwo;
++1	hold until valid (flows_idle);
+	Validate Neg_HV_on;
++1  hold until valid (Neg_HV_monitor);
+	Validate hop_start;
+	{msg(0,"In Neg AmbCal Hop 2");}
+	Validate NegCalReturn;
+}
+
+State NegCalHopAmbThree {
+	Validate flows_amb_calthree;
++1	hold until valid (flows_idle);
+	Validate Neg_HV_on;
++1	hold until valid (Neg_HV_monitor);
+	Validate hop_start;
+	{msg(0,"In Neg AmbCal Hop 3");}
+	Validate NegCalReturn;
+}
+
+State NegCalHop {
+	Validate Pol_Negative;
++1	hold until valid (Pol_idle);
+ 	Validate flows_n2_cal;
++1  hold until valid (flows_idle);
+	Validate Cal_on;
++1  hold until valid (cal_idle);
++1  Validate Neg_HV_on;
++1  hold until valid (Neg_HV_monitor);
+	Validate hop_start;
++1 	hold until valid (hopping);
+	{msg(0,"In Neg DryCal Hop");}
++120 > DiluteMFC open on
+# above line was +400calnex and +60arctas
+	Validate hop_finish; #change back to 60 after test
++1  hold until valid (hop_scan_idle);
+	> DiluteMFC open off
+	Validate flows_amb_cal;	
++1  hold until valid (flows_idle);
+	Validate Neg_HV_on;
++1  hold until valid (Neg_HV_monitor);
+	Validate hop_start;
+	{msg(0,"In Neg AmbCal Hop");}
++120 > DiluteMFC open on
+# above line was +200calnex and +60arctas
++1 Validate hop_finish; #change back to 60 after test
++1  hold until valid (hop_scan_idle);
+	> DiluteMFC open off
+	Validate Cal_off;
+	hold until valid (cal_idle);
+	Validate scrub_out;  # change for solo op
+	hold until valid (scrub_ready_wait);
+	> Set dilute MFC 0
+#	hold until valid (scrub_idle); # I think this is for trip_solo
+	{msg(0,"had it with Neg Cal Hop");}
+	Validate collect_idle;
+}
+
+
+State NegDryCalHop {
+	Validate Pol_Negative;
++1	hold until valid (Pol_idle);
+ 	Validate flows_n2_cal;
++1  hold until valid (flows_idle);
+	Validate Cal_on;
++1  hold until valid (cal_idle);
++1  Validate Neg_HV_on;
++1  hold until valid (Neg_HV_monitor);
+	Validate hop_start;
++1 	hold until valid (hopping);
+	{msg(0,"In Neg DryCal Hop");}
++120 > DiluteMFC open on
++60	Validate hop_finish; #change back to 60 after test
++1  hold until valid (hop_scan_idle);
+	> DiluteMFC open off
+	{msg(0,"had it with Neg DryCal Hop");}
+	Validate collect_idle;
+}
+
+State NegCalHopEnd {
+	Validate Cal_off;
+	hold until valid (cal_idle);
+	Validate scrub_out_tripsolo;
+	hold until valid (scrub_idle);
+	{msg(0,"I'm done doing the long cal");}
+	Validate collect_idle;
+}
+
+State LongCal {
+# this state was added to get two things: a stable output of HNO3 
+# over a range of H2O to eval. totalF trends, and to get more complete water curves.
+	Validate NegCalHopStart;
++1	hold until valid (NegCalReturn);
+	Validate NegCalHoptime;
++1	hold until valid (NegCalReturn);
+	Validate NegCalHopAmbOne;
++1	hold until valid (NegCalReturn);
+	Validate NegCalHoptime;
++1	hold until valid (NegCalReturn);
+	Validate NegCalHopAmbTwo;
++1	hold until valid (NegCalReturn);
+	Validate NegCalHoptime;
++1	hold until valid (NegCalReturn);
+	Validate NegCalHopAmbThree;
++1	hold until valid (NegCalReturn);
+	Validate NegCalHoptime;
++1	hold until valid (NegCalReturn);
+	Validate NegCalHopEnd;
+}
+
+
+State NegCalHop_AmbOnly {
+	Validate Pol_Negative;
++1	hold until valid (Pol_idle);
+ 	Validate flows_amb_cal;
++1  hold until valid (flows_idle);
++1  Validate Neg_HV_on;
++1  hold until valid (Neg_HV_monitor);
+	Validate hop_start;
++1 	hold until valid (hopping);
+	{msg(0,"In Neg AmbCaloNLY Hop");}
++30	Validate Cal_on;
++1  hold until valid (cal_idle);
++90 Validate Cal_off;
++1	hold until valid (cal_idle);
++60	Validate hop_finish;
++1  hold until valid (hop_scan_idle);
+	Validate scrub_out;
+	hold until valid (scrub_ready_wait);
+	{msg(0,"had it with Neg Cal Hop Amb Only");}
+	Validate collect_idle;
+}
+
+State NegAmbZeroHop {
+
+	Validate Pol_Negative;
++1	hold until valid (Pol_idle);
++2	Validate flows_amb_zero;
++1	hold until valid (flows_idle);
++1  Validate Neg_HV_on;
++1  hold until valid (Neg_HV_monitor);
+	Validate hop_start;
++1 	hold until valid (hopping);
+	{msg(0,"In Neg AmbZ Hop");}
++100	> DiluteMFC open on
+# above line was +120calnex and +80arctas 
+	Validate hop_finish; #change back to 80 after test
++1  hold until valid (hop_scan_idle);
+	Validate scrub_out; #change back to scrub_out_trip_solo w/o tof
+	hold until valid (scrub_ready_wait); #switch back with single op.
+#	hold until valid (scrub_idle);  #think this is for trip_solo
+	{msg(0,"Leaving Neg AmbZ Hop");}
+	> DiluteMFC open off
+	> Set dilute MFC 0
+	Validate collect_idle;
+}
+
+
+State NegAmbZeroHop_MHPcal {
+
+	Validate Pol_Negative;
++1	hold until valid (Pol_idle);
++2	Validate flows_amb_zero;
++1	hold until valid (flows_idle);
++1  > Normal Cal bypass into system
++1  > Normal Cal scrub bypass
++1  Validate Neg_HV_on;
++1  hold until valid (Neg_HV_monitor);
+	Validate hop_start;
++1 	hold until valid (hopping);
+	{msg(0,"In Neg AmbZ Hop");}
++80 Validate hop_finish;
++1  hold until valid (hop_scan_idle);
+	Validate Cal_off;
++1  hold until valid (cal_idle);
+	Validate scrub_out;
+	hold until valid (scrub_ready_wait);
+	{msg(0,"Leaving Neg AmbZ Hop");}	
+	Validate collect_idle;
+}
+
+
+State NegAmb_Z_HopScan {
+
+	Validate Pol_Negative;
++1	hold until valid (Pol_idle);
++2	Validate flows_amb_zero;
++1	hold until valid (flows_idle);
+#+1  Validate Neg_HV_on;
+#+1  hold until valid (Neg_HV_monitor);
+#	Validate hop_start;
+#+1 	hold until valid (hopping);
+#	{msg(0,"In Neg AmbZ Hop - Scan to follow");}
+#+80 Validate hop_finish;
+#+1  hold until valid (hop_scan_idle);
+#	{msg(0,"finishing Neg AmbZ Hop - scan to follow");}	
+
+
+	Validate Neg_HV_on;
++1  hold until valid (Neg_HV_monitor);
+	Validate scan_go;
+	{msg(0,"In Neg Amb Z Scan");}
++1  hold until valid (hop_scan_idle);
++1	Validate scrub_out_tripsolo; 
+#	hold until valid (scrub_ready_wait); #switch back with single
+	hold until valid (scrub_idle);	
+	{msg(0,"Ending Neg Amb Z Scan");}
+
++1	validate collect_idle;
+}
+
+
+State NegCalScan {
+
+    Validate Pol_Negative;
++1  hold until valid (Pol_idle);
++1	> DiluteMFC open on
++2	Validate flows_n2_cal;
++2	hold until valid (flows_idle);
++2	Validate cal_on;
++5	Validate Neg_HV_on;
++1	hold until valid (Neg_HV_monitor);
++2	> 1200 Enable B on
++1	hold until (D1200B || (H_DIO_D&2));
+	> 1200 Enable B off
++2	hold until ( (!D1200B) || !(H_DIO_D&2) );    # Done with Scan
+	Validate HV_off;
+	> DiluteMFC open on
++1	validate collect_idle;
+}
+
+
+
+State NegAmb_CalScan {
+
+    Validate Pol_Negative;
++1  hold until valid (Pol_idle);
++1  > DiluteMFC open on
++2	Validate flows_amb_cal;
++2	hold until valid (flows_idle);
++2	Validate cal_on;
++5	Validate Neg_HV_on;
++1	hold until valid (Neg_HV_monitor);
++2	> 1200 Enable B on
++1	hold until (D1200B || (H_DIO_D&2));
+	> 1200 Enable B off
++2	hold until ( (!D1200B) || !(H_DIO_D&2) );    # Done with Scan
+	Validate HV_off;
+	> DiluteMFC open off
++1	validate collect_idle;
+}
+
+
+Partition
+##############################################################
+# Partition 8: Main dither cycles
+# controls how data/cal/zeros are collected
+##############################################################
+
+State dither_idle {
+}
+
+State dither_zero {
+	> Telemetry Logging Resume
+	> 1200 Enable A off
+	> 1200 Enable B off
+
+#	Validate NegAmbZeroHop;
+#	{ msg(0,"Entering NewFirst AmbZ hop"); }
+#+1 	hold until valid (collect_idle);
+
+	Validate NegDataHop;
+	{ msg(0,"Entering First Neg Data Hop"); }
++10	{ msg(0,"Still beginning First Neg Data Hop"); }
++1 	hold until valid (collect_idle);
+
+	Validate NegAmbZeroHop;
+	{ msg(0,"Entering First AmbZ hop"); }
++1  hold until valid (collect_idle);	
+
+	Validate NegDryZeroHop;
+	{ msg(0,"Entering DryZ Hop"); }
++1 	hold until valid (collect_idle);
+
+	Validate NegCalHop;
+	{ msg(0,"Entering Cal Hop"); }
++1 	hold until valid (collect_idle);
+
+	Validate NegDataHop;
+	{ msg(0,"Entering Second Neg Data Hop"); }
++10	{ msg(0,"Still beginning Second Neg Data Hop"); }
++1 	hold until valid (collect_idle);
+
+	Validate NegDryZeroHop;
+	{ msg(0,"Entering second DryZ Hop"); }
++1  hold until valid (collect_idle);
+
+	Validate NegAmbZeroHop;
+	{ msg(0,"Entering second Z (amb) Hop"); }
++1 	hold until valid (collect_idle);
+
+	Validate NegDataHop;
+	{ msg(0,"Entering Third Neg Data Hop"); }
++10	{ msg(0,"Still beginning Third Neg Data Hop"); }
++1 	hold until valid (collect_idle);
+
+
+	Validate NegDryZeroHop;
+	{ msg(0,"Entering third DryZ Hop"); }
++1	hold until valid (collect_idle);
+
+#	Validate NegAmb_Z_HopScan;
+#	{ msg(0,"Entering thir"); }
+#+1 	hold until valid (collect_idle);
+
+	Validate dither_zero;
+}
+
+State dither_three {
+	> Telemetry Logging Resume
+	> 1200 Enable A off
+	> 1200 Enable B off
+
+
+	Validate NegDataHop;
+	{ msg(0,"Entering First Neg Data Hop"); }
++10	{ msg(0,"Still beginning First Neg Data Hop"); }
++1 	hold until valid (collect_idle);
+
+	Validate NegDryZeroHop;
+	{ msg(0,"Entering First DryZ Hop"); }
++1 	hold until valid (collect_idle);
+
+	Validate NegCalHop;
+	{ msg(0,"Entering First Cal Hop"); }
++1 	hold until valid (collect_idle);	
+
+	Validate NegDataHop;
+	{ msg(0,"Entering Second Neg Data Hop"); }
++10	{ msg(0,"Still beginning Second Neg Data Hop"); }
++1 	hold until valid (collect_idle);
+
+	Validate NegAmbZeroHop;
+	{ msg(0,"Entering First Z (amb) Hop"); }
++1 	hold until valid (collect_idle);
+
+	Validate NegDataHop;
+	{ msg(0,"Entering Third Neg Data Hop"); }
++10	{ msg(0,"Still beginning Third Neg Data Hop"); }
++1 	hold until valid (collect_idle);
+
+	Validate NegAmbZeroHop;
+	{ msg(0,"Entering second Z (amb) Hop"); }
++1 	hold until valid (collect_idle);
+
+	Validate NegDataHop;
+	{ msg(0,"Entering Fourth Neg Data Hop"); }
++10	{ msg(0,"Still beginning Fourth Neg Data Hop"); }
++1 	hold until valid (collect_idle);
+
+	Validate NegDryZeroHop;
+	{ msg(0,"Entering Second DryZ Hop"); }
++1 	hold until valid (collect_idle);
+
+	Validate NegCalHop;
+	{ msg(0,"Entering Cal Hop"); }
++1 	hold until valid (collect_idle);	
+
+	Validate dither_one;
+}
+
+
+State dither_two {
+	> Telemetry Logging Resume
+	> 1200 Enable A off
+	> 1200 Enable B off
+
+	Validate NegDataScan;	
+	{ msg(0,"Entering 1DMS data scan"); }
++10	{ msg(0,"Still beginning 1DMS data scan"); }
++1 	hold until valid (collect_idle);
+
+#	Validate NegDryZeroScan;
+#	{ msg(0,"Entering 1DMS DryZ scan"); }
+#+10 { msg(0,"Still beginning 1DMS DryZ scan"); }
+#+1  hold until valid (collect_idle);
+
+	Validate NegAmb_Z_HopScan;
+	{ msg(0,"Entering 1DMS AmbZ scan");}
++1  hold until valid (collect_idle);
+
+
+#	Validate NegDataHop;
+#	{ msg(0,"Entering Fourth Neg Data Hop"); }
+#+10	{ msg(0,"Still beginning Fourth Neg Data Hop"); }
+#+1 	hold until valid (collect_idle);
+
+#	Validate NegAmbZeroHop;
+#	{ msg(0,"Entering fourth Z (amb) Hop"); }
+#+1 	hold until valid (collect_idle);
+
+	Validate dither_one;
+}
+
+State dither_one {
+	> Telemetry Logging Resume
+	> 1200 Enable A off
+	> 1200 Enable B off
+	
+	Validate NegDataHop;
+	{ msg(0,"Entering Fifth Neg Data Hop"); }
++10	{ msg(0,"Still beginning Fifth Neg Data Hop"); }
++1 	hold until valid (collect_idle);
+	
+	Validate NegAmbZeroHop;
+	{ msg(0,"Entering Third Z (amb) Hop"); }
++1 	hold until valid (collect_idle);
+
+	Validate NegDataHop;
+	{ msg(0,"Entering Sixth Neg Data Hop"); }
++10	{ msg(0,"Still beginning Sixth Neg Data Hop"); }
++1 	hold until valid (collect_idle);
+
+	Validate NegAmbZeroHop;
+	{ msg(0,"Entering Fourth Z (amb) Hop"); }
++1 	hold until valid (collect_idle);
+
+validate dither_three;
+
+## in case triple is doing a scan...
+##+1  hold until ( (!D1200B) || !(H_DIO_D&2) );
+##    Validate zaber_open;
+##+1  hold until valid (zaber_idle);
+
+##+1	{ msg(0,"Beginning 1st Pos Data Scan"); }
+##	Validate PosDataScan;
+##+1	hold until valid (collect_idle);
+##	{ msg(0,"Beginning 1st Neg Data Scan"); }
+##	Validate NegDataScan;
+##+1	hold until valid (collect_idle);
+
+
+##	Validate dither_amb_cal;
+}
+
+	State dither_dry_cal{
+
+	> Telemetry Logging Resume
+# in case triple is doing a scan...
++1  hold until ( (!D1200B) || !(H_DIO_D&2) );
+	Validate zaber_open;
++1  hold until valid (zaber_idle);
+
+	Validate flows_n2_cal;
++1  hold until valid (flows_idle);
++5	Validate cal_on;
++1  hold until valid (cal_idle);
+
++40	{ msg(0,"Beginning Pos Dry Cal Scan"); }
+#	Validate PosCalScan; #jason 100430
++1	hold until valid (collect_idle);
+	{ msg(0,"Beginning Neg Dry Cal Scan"); }
+	Validate NegCalScan;
++1	hold until valid (collect_idle);
+
+	Validate cal_off;
++1  hold until valid (cal_idle);
++5	Validate flows_measure;
++1  hold until valid (flows_idle);
+
++40	{ msg(0,"Beginning 9th Pos Data Scan"); }
+#	Validate PosDataScan; #jason 100430
++1	hold until valid (collect_idle);
+	{ msg(0,"Beginning 9th Neg Data Scan"); }
+	Validate NegDataScan;
++1	hold until valid (collect_idle);
+
+	{ msg(0,"Beginning 10th Pos Data Scan"); }
+#	Validate PosDataScan; #jason 100430
++1	hold until valid (collect_idle);
+	{ msg(0,"Beginning 10th Neg Data Scan"); }
+	Validate NegDataScan;
++1	hold until valid (collect_idle);
+
+	{ msg(0,"Repeating the Whole Enchilada"); }
++1	validate dither_one;
+
+}
+
+
+
+State dither_standby {
+
+	{ msg(0,"Ending Dither - putting triple into standby"); }	
+#	Validate HV_off;  #commented out for sharing voltage w/ tof
++2	Validate flows_stdby;
++1  hold until valid (flows_idle);
+	Validate zaber_close;
++5	> Telemetry Logging Suspend
+	Validate dither_end;
+}	
+
+State dither_end {
+	
+	{ msg(0,"Ending Dither"); }	
+	Validate Init_idle;
+	> 1200 enable A off
+	Validate flows_idle;
+	Validate cal_idle;
++1	Validate collect_idle;
+#	Validate HV_off;  #commented out for sharing voltage w/ tof
+	{ msg(0,"going to dither idle"); }
++2	Validate dither_idle;
+}
+
+State dither_shutdown {
+	
+	{ msg(0,"Shutting Dither"); }	
+	> 1200 enable A off
+	Validate flows_idle;
+	Validate cal_idle;
++1	Validate collect_idle;
+	Validate HV_off;
+	{ msg(0,"going to dither idle"); }
++2	Validate dither_idle;
+}

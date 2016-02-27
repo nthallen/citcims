@@ -1,0 +1,230 @@
+# ToF.tma
+%{
+  #include "msg.h"
+%}
+
+State Initialize {
+      > Telemetry Start
+      > Set oct amp 0 volts
+      > Set oct bias 0 volts
+      > Set fly valve set point 0 volts
+      > Set spare analog out 0 volts
+}
+
+State Quick_Shutdown {
+      Hold until valid (Inlet_Closed, Iris_Closed) or 1:00;
+   +3 > Quit
+}
+
+State Shutdown {
+      Validate Flows_OFF;
+   +1 Hold until valid (Inlet_Closed, Iris_Closed, GD_Wait) or 1:00;
+   +3 > Quit
+}
+
+Partition
+
+State ToF_idle { }
+
+State ToF_start {
+#	Validate pumps_on;
+#	+10 Hold until valid ( pumps_idle );
+        > sw status Turbo pumps on
+        +3 Hold until ( convert(TPB_SPD) > 9.5 );
+        > Set oct bias 0.5 volts
+        > Set oct amp 0.80 volts
+        { if (convert(InL_P) < 45) {
+		ci_sendfcmd(0,"zaber move iris absolute 140000\n");
+	}}
+	+1 Validate Flows_ON_Z_N2;
+	+1 hold until valid (GD_Wait);
+	+1 Validate ToF_idle;
+}
+
+State ToF_stop {
+	   Validate Flows_OFF;
+	+1 hold until valid (GD_Wait);
+        +2 > zaber move iris absolute 0
+	+1 > set oct amp 0 volts
+	   > set oct bias 0 volts
+#	   > set ion source flow 300 sccm
+#	   > set dilution flow 300 sccm 
+#           "Turn of ToF N2 and ambient zero valve!";
+#	   hold until ( convert(InL_P) < 0 );
+#	+2  Validate pumps_off;
+	+1 > set dilution flow 50 sccm
+	+1 > set ion source flow 50 sccm
+#	+2  Hold until valid ( pumps_idle );
+}
+
+Partition
+
+State pumps_idle { }
+
+State pumps_on {
+
+        > turbo scroll pump on
+     +5 > Turbo scroll pump valve on
+        "Make certain turbo pump manual valve is open!!";
+     +2 > Flow tube scroll pump on
+	"Turn on ToF N2!!";
+     +1 > Flow tube dewar valve on
+     +2 { if ( convert(InL_P) < 3 ) {
+           ci_sendfcmd ( 0, "Set ion source flow 100 sccm\n");
+	}
+	}
+     +5 > Flow tube scroll pump valve on
+     +1 Validate pumps_idle;
+}
+
+State pumps_off { 
+	> zaber move iris absolute 0
+	+4 > sw status turbo pumps off
+	+2 > Turbo scroll pump valve off
+	+1 > Turbo scroll pump off
+	"Turn off ToF N2 and ambient zero valve!!";
+	+5 { if ( convert(InL_P) < 1 ) {
+		ci_sendfcmd ( 0, "Flow tube scroll pump valve off\n");
+	}
+	}
+	+2 { if ( convert(InL_P) < 1 ) {
+		ci_sendfcmd ( 0, "Flow tube dewar valve off\n");
+	}
+	}
+	+2 { if ( convert(InL_P) < 1 ) {
+		ci_sendfcmd ( 0, "Flow tube scroll pump off\n");
+	}
+	}
+	+1 Validate pumps_idle; 
+}
+
+Partition
+
+
+State data_idle2 { }
+
+State data_idle {
+
+	Validate zero_N2;
+	+1 Validate data_idle2;
+ }
+
+State data_loop {
+
+		Validate zero_N2;
+		+2 hold until valid ( Collect_idle );
+		Validate cal;
+		+2 hold until valid ( Collect_Idle );
+		Validate zero_AM;
+		+2 hold until valid ( Collect_Idle );
+		Validate data_AM;
+		+2 hold until valid ( Collect_Idle );
+		Validate zero_AM;
+		+2 hold until valid ( Collect_Idle );
+		Validate data_AM;
+		+2 hold until valid ( Collect_Idle );
+		Validate zero_AM;
+		+2 hold until valid ( Collect_Idle );
+		Validate data_AM;
+		+2 hold until valid ( Collect_Idle );
+		Validate zero_AM;
+		+2 hold until valid ( Collect_Idle );
+		Validate data_AM;
+                +2 hold until valid ( Collect_Idle );
+                Validate zero_AM;
+                +2 hold until valid ( Collect_Idle );
+                Validate data_AM;
+                +2 hold until valid ( Collect_Idle );
+		Validate data_loop;
+
+}
+
+state data_loop_nc {
+
+		Validate zero_AM;
+		+2 hold until valid ( Collect_Idle );
+		Validate data_AM;
+		+2 hold until valid ( Collect_Idle );
+		Validate data_loop_nc;
+
+}
+
+state cal_quick {
+		
+		Validate quick_cal;
+		+2 hold until valid ( Collect_Idle );
+		Validate data_loop_nc;
+
+}
+
+# Collect modes
+Partition
+
+State Collect_Idle { }
+
+State zero_N2 {
+
+	> set oct amp 0 volts
+	Validate Flows_ON_Z_N2;
+	+1 hold until valid ( GD_Wait );
+	> Set oct amp 0.80 volts
+	+120 Validate Collect_Idle;
+	
+}
+
+State zero_AM {
+	
+	> Set oct amp 0 volts
+	Validate Flows_ON_Z_AM;
+	+1 hold until valid ( GD_Wait );
+	> Set oct amp 0.80 volts
+	+120 > Set oct amp 0 volts
+        Validate Flows_ON_Z_N2;
+	+1 hold until valid ( GD_Wait );
+	> Set oct amp 0.80 volts
+	+30 Validate Collect_Idle;
+
+}
+
+State cal {
+
+	> Set oct amp 0 volts
+        Validate Flows_ON_CAL_N2;
+	Validate Calib_IN;
+	+1 hold until valid ( Calib_Wait );
+	> Set oct amp 0.80 volts
+	+20 Validate Calib_ON;
+	+1 hold until valid ( Calib_Wait );
+	+180 Validate Flows_ON_CAL_AM_Z;
+	+1 hold until valid ( GD_Wait );
+	+180 Validate Calib_OFF;
+	+90 Validate Calib_OUT;
+	+1 hold until valid ( Calib_Wait );
+	Validate Collect_Idle; 
+	
+}
+
+State quick_cal {
+
+	> Set oct amp 0 volts
+	Validate Flows_ON_CAL_AM_Z;
+	Validate Calib_IN;
+	+1 hold until valid ( Calib_Wait );
+	> Set oct amp 0.80 volts
+	+10 Validate Calib_ON;
+	+1 hold until valid ( Calib_Wait );
+	+150 Validate Calib_OFF;
+	+30 Validate Calib_OUT;
+	+1 hold until valid ( Calib_Wait );
+	Validate Collect_Idle;
+}
+
+State data_AM {
+
+	> set oct amp 0 volts
+	Validate Flows_ON_ME;
+	+1 hold until valid ( GD_Wait );
+	> Set oct amp 0.80 volts
+	+1500 Validate Collect_idle;
+
+}

@@ -1,0 +1,16 @@
+<package> twistorr
+<include> "Agilent.h"
+<include> msg
+<follow> msg
+
+<opts> "d:"
+<sort>
+	-d <serial device>
+<switch>
+  case 'd':
+    agilent_path = optarg;
+    break;
+
+<package> msghdr_default
+<var>
+  char *msg_hdr_default = "TwisTorr";

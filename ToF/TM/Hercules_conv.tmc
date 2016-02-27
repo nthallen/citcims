@@ -1,0 +1,70 @@
+On_Off_t Bypass_cal; Invalidate Bypass_cal;
+  { Bypass_cal = (Herc_DS_A>>0) & 1; Validate Bypass_cal; }
+On_Off_t Scrub_cal; Invalidate Scrub_cal;
+  { Scrub_cal = (Herc_DS_A>>1) & 1; Validate Scrub_cal; }
+On_Off_t H2O2_cal; Invalidate H2O2_cal;
+  { H2O2_cal = (Herc_DS_A>>2) & 1; Validate H2O2_cal; }
+On_Off_t Oacid_cal; Invalidate Oacid_cal;
+  { Oacid_cal = (Herc_DS_A>>3) & 1; Validate Oacid_cal; }
+On_Off_t MHP_cal; Invalidate MHP_cal;
+  { MHP_cal = (Herc_DS_A>>4) & 1; Validate MHP_cal; }
+On_Off_t Spare1_cal; Invalidate Spare1_cal;
+  { Spare1_cal = (Herc_DS_A>>5) & 1; Validate Spare1_cal; }
+On_Off_t Spare2_cal; Invalidate Spare2_cal;
+  { Spare2_cal = (Herc_DS_A>>6) & 1; Validate Spare2_cal; }
+On_Off_t Amb_zero; Invalidate Amb_zero;
+  { Amb_zero = (Herc_DS_A>>7) & 1; Validate Amb_zero; }
+
+On_Off_t TPB_Enb; Invalidate TPB_Enb;
+  { TPB_Enb = (Herc_DS_C>>4) & 1; Validate TPB_Enb; }
+On_Off_t TPA_Enb; Invalidate TPA_Enb;
+  { TPA_Enb = (Herc_DS_C>>5) & 1; Validate TPA_Enb; }
+On_Off_t HV_Pwr_S; Invalidate HV_Pwr_S;
+  { HV_Pwr_S = (Herc_DS_D>>6) & 1; Validate HV_Pwr_S; }
+On_Off_t Oct_Pwr_S; Invalidate Oct_Pwr_S;
+  { Oct_Pwr_S = (Herc_DS_D>>7) & 1; Validate Oct_Pwr_S; }
+On_Off_t TPSP_RB; Invalidate TPSP_RB;
+  { TPSP_RB = (Herc_DS_E>>0) & 1; Validate TPSP_RB; }
+On_Off_t Relay_28_RB; Invalidate Relay_28_RB;
+  { Relay_28_RB = (Herc_DS_E>>1) & 1; Validate Relay_28_RB; }
+On_Off_t Fly_Op_RB; Invalidate Fly_Op_RB;
+  { Fly_Op_RB = (Herc_DS_E>>2) & 1; Validate Fly_Op_RB; }
+On_Off_t FTSP_RB; Invalidate FTSP_RB;
+  { FTSP_RB = (Herc_DS_E>>3) & 1; Validate FTSP_RB; }
+On_Off_t Fly_Cl_RB; Invalidate Fly_Cl_RB;
+  { Fly_Cl_RB = (Herc_DS_E>>4) & 1; Validate Fly_Cl_RB; }
+On_Off_t Fly_Rdy_RB; Invalidate Fly_Rdy_RB;
+  { Fly_Rdy_RB = (Herc_DS_E>>5) & 1; Validate Fly_Rdy_RB; }
+On_Off_t Fly_Alrm_RB; Invalidate Fly_Alrm_RB;
+  { Fly_Alrm_RB = (Herc_DS_E>>7) & 1; Validate Fly_Alrm_RB; }
+
+
+Start_t TPA_Start; Invalidate TPA_Start;
+  { TPA_Start = (Herc_DS_C>>6) & 1; Validate TPA_Start; }
+Low_High_t TPA_Low; Invalidate TPA_Low;
+  { TPA_Low = (Herc_DS_C>>7) & 1; Validate TPA_Low; }
+Start_t TPB_Start; Invalidate TPB_Start;
+  { TPB_Start = (Herc_DS_D>>0) & 1; Validate TPB_Start; }
+Low_High_t TPB_Low; Invalidate TPB_Low;
+  { TPB_Low = (Herc_DS_D>>1) & 1; Validate TPB_Low; }
+Bfly_Mode_t Bfly_Mode; Invalidate Bfly_Mode;
+  { Bfly_Mode = (Herc_DS_D>>4) & 1; Validate Bfly_Mode; }
+
+Bfly_Ctrl_t Bfly_Ctrl; Invalidate Bfly_Ctrl;
+  { Bfly_Ctrl = (Herc_DS_D&0xC)>>2 | (Herc_DS_D&0x20)>>3; Validate Bfly_Ctrl; }
+
+%{
+  const char *bfly_ctrl_text(Bfly_Ctrl_t v) {
+    switch (v) {
+      case 0: return "Control";
+      case 1: return "Hold   ";
+      case 2: return "Close  ";
+      case 3: return "**011**";
+      case 4: return "Open   ";
+      case 5: return "**101**";
+      case 6: return "**110**";
+      case 7: return "**111**";
+      default: return "*******";
+    }
+  }
+%}

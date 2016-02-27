@@ -1,0 +1,5 @@
+%{
+  #include "dsdaq.h"
+  dsdaq Herc("Hercules", "tofherc");
+%}
+TM INITFUNC Herc.init();

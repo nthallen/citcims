@@ -1,0 +1,7 @@
+TM "Receive" SWData 0;
+
+TM 1 Hz UCHAR SWStat; collect SWStat = SWData.SWStat;
+TM 1 Hz UCHAR SWFlow; collect SWFlow = SWData.SWFlow;
+TM 1 Hz SWStatf InP_Pgain; collect InP_Pgain = SWData.InP_Pgain;
+TM 1 Hz SWStatf InP_igain; collect InP_igain = SWData.InP_igain;
+TM 1 Hz V100torr_t InPset; collect InPset = SWData.InPset;

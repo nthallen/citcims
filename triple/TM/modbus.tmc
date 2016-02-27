@@ -1,0 +1,46 @@
+%{
+  #include "modbus.h"
+  extern Modbus_t Modbus;
+  const char *F4_status_text(signed short in) {
+    switch (in) {
+      case 0: return "Termina";
+      case 1: return "Pre-run";
+      case 2: return "Running";
+      case 3: return "Holding";
+      default: return "*******";
+    }
+  }
+%}
+TM "Receive" Modbus 1;
+
+TM typedef float Watlow_T { text "%5.1f"; }
+TM typedef signed short Watlow_F4_IV { text "%5.1f"; }
+TM typedef signed short Watlow_F4_Op_t { text "%7d" F4_status_text(); }
+
+TM 1 Hz Watlow_T PM6C_T1;
+TM 1 Hz Watlow_T PM6C_SP1;
+TM 1 Hz Watlow_T PM6C_T2;
+TM 1 Hz Watlow_T PM6C_SP2;
+TM 1 Hz UCHAR MBstale;
+TM 1 Hz Watlow_F4_IV F4_IV1;
+TM 1 Hz Watlow_F4_IV F4_IV2;
+TM 1 Hz Watlow_F4_IV F4_IV3;
+TM 1 Hz Watlow_F4_IV F4_SP1;
+TM 1 Hz Watlow_F4_IV F4_SP2;
+TM 1 Hz Watlow_F4_Op_t F4_Op;
+
+Group Watlow (PM6C_T1, PM6C_SP1, PM6C_T2, PM6C_SP2, MBstale,
+      F4_IV1, F4_IV2, F4_IV3, F4_SP1, F4_SP2, F4_Op) {
+  PM6C_T1 = Modbus.PM6C_T1;
+  PM6C_SP1 = Modbus.PM6C_SP1;
+  PM6C_T2 = Modbus.PM6C_T2;
+  PM6C_SP2 = Modbus.PM6C_SP2;
+  F4_IV1 = Modbus.F4_IV1;
+  F4_IV2 = Modbus.F4_IV2;
+  F4_IV3 = Modbus.F4_IV3;
+  F4_SP1 = Modbus.F4_SP1;
+  F4_SP2 = Modbus.F4_SP2;
+  F4_Op = Modbus.F4_Op;
+  MBstale = Modbus_obj->stale(255);
+  Modbus_obj->synch();
+}

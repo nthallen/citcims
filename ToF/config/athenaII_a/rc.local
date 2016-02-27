@@ -1,0 +1,22 @@
+slay io-pkt-v4-hc
+echo "==> Checking File System"
+/sbin/chkfsys -qru /
+
+echo "==> Starting Network"
+io-pkt-v4-hc -v -ptcpip -pqnet -dns83815 verbose,speed=100,vid=0x100bh,did=0x20h,pci=0x0h
+sleep 2
+netmanager
+
+setconf LIBPATH $(getconf LIBPATH):/usr/pkg/lib
+
+echo "==> Restarting Serial Drivers"
+slay devc-ser8250
+devc-ser8250 -b38400 -u 3 -F 3e8,9 &
+devc-ser8250 -b38400 -u 4 -F 2e8,15 &
+# sleep 2
+# stty baud=38400 bits=7 stopb=1 par=odd < /dev/ser3
+# stty baud=38400 bits=8 stopb=1 par=none < /dev/ser4
+
+echo "==> Starting Network Daemons"
+/usr/sbin/sshd
+/usr/sbin/ntpd

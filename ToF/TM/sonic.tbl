@@ -1,0 +1,15 @@
+# Sonic.tbl
+Sonic {
+  HBox { Title: +-; "Sonic"; -+ };
+  U: (Sonic_U,6) "m/s";
+  V: (Sonic_V,6) "m/s";
+  W: (Sonic_W,6) "m/s";
+  C: (Sonic_C,6) "m/s";
+  N: (Sonic_N,3);
+  S: (Sonic_S,3);
+}
+
+{ HBox { |+; [Sonic]; |+ };
+  -;
+  { (flttime,9) MFCtr: (MFCtr,5) }
+}

@@ -1,0 +1,8 @@
+<package> IWG1
+<include> msg
+<follow> msg
+<include> <stdlib.h>
+
+<package> msghdr_init
+<init>
+  msg_hdr_default = "IWG1";

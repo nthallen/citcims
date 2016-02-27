@@ -1,0 +1,4 @@
+# Startup script for athenaII_a
+  memo=AthenaII.log
+  echo "Running script runfile.AII" >>$memo
+  Launch AthenaII AthenaII -o $memo

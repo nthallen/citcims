@@ -1,0 +1,21 @@
+slay io-pkt-v4-hc
+sleep 2
+
+echo "==> Checking file system"
+/sbin/chkfsys -Pqru /
+
+echo "==> Starting Network"
+
+io-pkt-v4-hc -ptcpip -pqnet -dns83815 speed=100,vid=0x100bh,did=0x20h,pci=0x0h
+sleep 2
+
+# hostname herc_a
+# dhcp.client
+netmanager
+
+sleep 2
+
+echo "==> Starting Daemons"
+/usr/sbin/sshd
+/usr/sbin/ntpd
+

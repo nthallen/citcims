@@ -1,0 +1,15 @@
+<package> zaber
+<include> msg
+<follow> msg
+<include> <stdlib.h>
+<include> "zaber.h"
+<opts> "p:k"
+<sort>
+	-p <serial device>
+
+<init>
+  zaber_init_options(argc, argv);
+
+<package> msghdr_init
+<init>
+  msg_hdr_default = "Zaber";

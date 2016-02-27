@@ -1,0 +1,120 @@
+HEADER Triple Instrument
+MNEMONIC triple
+HOMEDIR Triple_Data_Dir
+ROWS 18
+  1 MainFlowTherm PT Temps
+  8 ChemIonTherm PT Temps
+  1 TurboPumpT PT Temps
+  1 TempIC PT Temps
+
+  1 Pressure1000T PT Pres
+  8 Pressure100T PT Pres
+
+  1 ScrubMFC Flows Flows
+  1 ScrubMFCset Flows SetPts
+  8 DiluteMFC Flows Flows
+  1 DiluteMFCset Flows SetPts
+  8 IonSourceMFC Flows Flows
+  1 IonSourceMFCset Flows SetPts
+  8 ReagentMFC Flows Flows
+  1 ReagentMFCset Flows SetPts
+  8 cidMFC Flows Flows
+  8 MainFlowMeter Flows Flows
+
+  1 E1200A:H_DIO_A:7 Commands Status
+  1 E1200B:H_DIO_B:7 Commands Status
+  4 D1200A:H_DIO_D:0 Commands Status
+  4 D1200B:H_DIO_D:1 Commands Status
+  1 LensHV:H_DIO_C:7 Commands Status
+  4 fan1:H_DIO_D:4 Commands Status
+  4 fan2:H_DIO_D:5 Commands Status
+  4 fan3:H_DIO_D:6 Commands Status
+  4 DigIn7:H_DIO_D:7 Commands Status
+
+  1 VBeta1:H_DIO_B:1 Greek Status
+  1 VBeta6:H_DIO_B:6 Greek Status
+  1 VGamma5:H_DIO_C:5 Greek Status
+  1 VGamma6:H_DIO_C:6 Greek Status
+
+  4 Flowtube_pumping:H_DIO_D:2 Commands Status
+  4 turbo_pumping:H_DIO_D:3 Commands Status
+
+  1 Reagent_Valve_S:H_DIO_B:0 Flows Status
+  1 ScrubAir_Valve:H_DIO_C:0 Flows Status
+  1 Labelled_cal_scrub:H_DIO_C:1 Flows Status
+  1 Labelled_cal_bypass:H_DIO_C:2 Flows Status
+  1 Normal_cal_scrub:H_DIO_C:3 Flows Status
+  1 Normal_cal_bypass:H_DIO_C:4 Flows Status
+
+
+  1 ScrubMFC_Open:H_DIO_E:0 MFC Status
+  1 ScrubMFC_Close:H_DIO_E:1 MFC Status
+  1 DiluteMFC_Open:H_DIO_E:2 MFC Status
+  1 DiluteMFC_Close:H_DIO_E:3 MFC Status
+  1 IonSourceMFC_Open:H_DIO_E:4 MFC Status
+  1 IonSourceMFC_Close:H_DIO_E:5 MFC Status
+  1 ReagentMFC_Open:H_DIO_E:6 MFC Status
+  1 ReagentMFC_Close:H_DIO_E:7 MFC Status
+
+  1 VarSeq Varian Seq
+  1 VarStat Varian Status
+
+  1 Z1V Zaber Volts
+  1 Z1pos Zaber Pos
+  1 Z1stale Zaber Stale
+  1 Z2V Zaber Volts
+  1 Z2pos Zaber Pos
+  1 Z2stale Zaber Stale
+
+  1 CPU_Pct Status CPU
+  1 Disk Status Disk
+  1 SWStat Status SWStat
+  1 SysTDrift Status TDrift
+  
+  1 Lat IWG1 Lat
+  1 Lon IWG1 Lon
+  1 Ambient_Temp IWG1 Temp
+  1 Total_Temp IWG1 Temp
+  1 Dew_Point IWG1 Temp
+  1 Dynamic_Press IWG1 Pres
+  1 Static_Press IWG1 Pres
+  1 Grnd_Spd IWG1 Speed
+  1 Indicated_Airspeed IWG1 Speed
+  1 True_Airspeed IWG1 Speed
+  1 Mach_Number IWG1 Mach
+  1 GPS_MSL_Alt IWG1 Alt
+  1 Press_Alt IWG1 Alt
+  1 Radar_Alt IWG1 Alt
+  1 WGS_84_Alt IWG1 Alt
+  1 Angle_of_Attack Attitude Attack
+  1 Pitch Attitude Pitch
+  1 Roll Attitude Roll
+  1 Side_slip Attitude Side_Slip
+  1 Drift Attitude Drift
+  1 Solar_Zenith Attitude SZ
+  1 Sun_Elev_AC Attitude SZ
+  1 Sun_Az_AC Attitude AZ
+  1 Sun_Az_Grd Attitude Az
+  1 Track Attitude Track
+  1 True_Hdg Attitude Track
+  1 Vert_Velocity Wind VertVel
+  1 Vert_Wind_Spd Wind VertSpeed
+  1 Wind_Dir Wind Dir
+  1 Wind_Speed Wind Speed
+  1 Cabin_Press IWG1_Stat CabinPress
+  1 TDDrift IWG1_Stat TDrift
+  1 TDrift IWG1_Stat TDrift
+  1 IWG1_Stale IWG1_Stat Stale
+
+  1 Sp_10V Spare V
+  1 Sp_5V Spare V
+  8 TSpare1 Spare T
+  1 TSpare2 Spare T
+  
+# 8 Synch
+# 8 MFCtr
+# 1 H_DIO_A
+# 1 H_DIO_B
+# 1 H_DIO_C
+# 4 H_DIO_D
+# 1 H_DIO_E

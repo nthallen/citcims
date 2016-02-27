@@ -1,0 +1,23 @@
+TM 1 Hz V500sccm_sp_t MFC_S2_sp; Address MFC_S2_sp 0x2000;
+TM 1 Hz V5slm_sp_t MFC_S1_sp; Address MFC_S1_sp 0x2001;
+TM 1 Hz V5slm_sp_t Tot_F_sp; Address Tot_F_sp 0x2002;
+TM 1 Hz V1000sccm_sp_t ZF2_F_sp; Address ZF2_F_sp 0x2003;
+TM 1 Hz AII_DS_t AII_DS0; Address AII_DS0 0x3000;
+TM 1 Hz AII_S_t  AII_Stat;
+
+TM 1 Hz T134_t T4; Address T4 0x1000; /* Tcal1 */
+TM 1 Hz T134_t T3; Address T3 0x1008; /* Tcal1 */
+TM 1 Hz V500sccm_t MFC_S2; Address MFC_S2 0x1001;
+TM 1 Hz V1000sccm_t ZF2_F; Address ZF2_F 0x1009;
+TM 1 Hz V5slm_t MFC_S1; Address MFC_S1 0x1002;
+TM 1 Hz V5slm_t Tot_F; Address Tot_F 0x100A;
+TM 1 Hz V50psi_t INTP; Address INTP 0x1003;
+TM 1 Hz V50psi_t CALP; Address CALP 0x100B;
+TM 1 Hz T134_t T1; Address T1 0x1004; /* Tcal1 */
+TM 1 Hz Tcal2 CalT; Address CalT 0x100C;
+TM 1 Hz V100torr_t InL_P; Address InL_P 0x1005;
+TM 1 Hz V1000torr_t InH_P; Address InH_P 0x100D;
+TM 1 Hz A2_ADC_t AI_SP1; Address AI_SP1 0x1006;
+TM 1 Hz V100torrdp_t PT_P; Address PT_P 0x100E;
+TM 1 Hz V2500psi_t GBH_P; Address GBH_P 0x1007;
+TM 1 Hz V100psi_t GBL_P; Address GBL_P 0x100F;

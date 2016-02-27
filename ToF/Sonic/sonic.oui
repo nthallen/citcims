@@ -1,0 +1,13 @@
+<package> sonic
+<include> msg
+<follow> msg
+<include> "sonic.h"
+<opts> "p:"
+<sort>
+	-p <serial device>
+<init>
+  sonic_init_options(argc, argv);
+
+<package> msghdr_default
+<var>
+  char *msg_hdr_default = "Sonic";

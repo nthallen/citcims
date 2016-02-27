@@ -1,0 +1,36 @@
+SW_Variable: SWStat SW Status
+  SWS_FLOWSTATE_OFF    1 Flow State Off:         Validate Flows_OFF; break;
+  SWS_TURBOS_ON       90 Turbo Pumps On:
+    Validate TPA_On;
+    Validate TPB_On;
+    break;
+  SWS_TURBOS_OFF      91 Turbo Pumps Off:
+    Validate TPA_Off;
+    Validate TPB_Off;
+    break;
+  SWS_PUMPS_ON	    96  Pumps On: Validate pumps_on; break;
+  SWS_PUMPS_OFF     97  Pumps Off: Validate pumps_off; break;
+  SWS_INLET_PCTRL    100 Inlet Pressure Control: Validate Inlet_PControl; break;
+  SWS_INLET_IDLE     101 Inlet Close:            Validate Inlet_Close; break;
+  SWS_INLET_LAB      102 Inlet Lab:              Validate Inlet_Lab;  break;
+  SWS_TOF_START      110 ToF Start:		 Validate ToF_start; break;
+  SWS_TOF_STOP	     111 ToF Stop:		 Validate ToF_stop; break;
+  SWS_DATA_LOOP      115 Data loop start:        Validate data_loop; break;
+  SWS_DATA_STOP      116 Data loop stop:	 Validate data_idle; break;
+  SWS_DATA_LP_NC     117 Data loop no cal:	 Validate data_loop_nc; break;
+  SWS_DATA_QC	     118 Quick cal:		 Validate cal_quick; break;
+  SWS_QUICK_SHUTDOWN 254 Shutdown Quick:         Validate Quick_Shutdown; break;
+  SWS_SHUTDOWN       255 Shutdown Full:          Validate Shutdown; break;
+
+SW_Variable: SWFlow SW Flow State
+  : Transitioning { $0 = 0; }
+  : Off { $0 = SWS_FLOWSTATE_OFF; }
+
+SW_Variable: <float,SWStatf> InP_Pgain Inlet Pgain
+  : %f (Enter Proportional Gain) { $0 = $1; }
+
+SW_Variable: <float,SWStatf> InP_igain Inlet Igain
+  : %f (Enter Integral Gain) { $0 = $1; }
+
+SW_Variable: <signed short,V100torr_t> InPset Inlet Pressure Setpoint
+  : %f (Enter Inlet Pressure Setpoint in mbar) { $0 = $1*32768/133.33; }

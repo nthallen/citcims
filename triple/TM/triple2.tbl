@@ -1,0 +1,57 @@
+Flows {
+  MFCs         Set                  Flow;
+  Scrub        (ScrubMFCset,4)     (ScrubMFC,6) sccm;
+  Dilute       (DiluteMFCset,4)    (DiluteMFC,6) sccm;
+  "Ion Source" (IonSourceMFCset,4) (IonSourceMFC,6) sccm;
+  Reagent      (ReagentMFCset,4)   (ReagentMFC,6) sccm;
+  cid          ""                  (cidMFC,6) sccm;
+  Main         ""                  (MainFlowMeter,5) sccm;
+}
+
+Pressures {
+  >Pressures<;
+  "100T"  (Pressure100T,6) Torr;
+  "1000T" (Pressure1000T,6) Torr;
+}
+
+Therms {
+  >Thermistors<;
+  MainFlow (MainFlowTherm,5) V;
+  ChemIon (ChemIonTherm,5) C;
+  TSpare1 (TSpare1,5) V;
+  TSpare2 (TSpare2,5) V;
+  TurboPump (TurboPumpT,5) V;
+  TempIC (TempIC,5) V;
+}
+
+Volts {
+  >Volts<;
+  Sp_5V  (Sp_5V,6) V;
+  Sp_10V (Sp_10V,6) V;
+}
+
+Watlow {
+  >Watlow<;
+  T1:    (PM6C_T1,5)  C;
+  SP1:   (PM6C_SP1,5) C;
+  T2:    (PM6C_T2,5)  C;
+  SP2:   (PM6C_SP2,5) C;
+  stale: (MBstale,3);
+}
+
+F4 {
+  >F4<;
+  T1:  (F4_IV1,5) C;
+  T2:  (F4_IV2,5) C;
+  T3:  (F4_IV3,5) C;
+  SP1:  (F4_SP1,5) C;
+  SP2:  (F4_SP2,5) C;
+  Op:  (F4_Op,7);
+}
+
+{ -;
+  HBox { +|+; [Flows]; +|+; [Therms]; +|+; [Watlow]; +|+; [F4]; +|+ };
+  -;
+  HBox { +|+; [Pressures]; +|+; [Volts]; +|+ };
+  -;
+}

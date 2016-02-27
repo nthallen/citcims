@@ -1,0 +1,49 @@
+%{
+  #include "Zeno.h"
+%}
+TM typedef unsigned long ULONG { text "%8u"; }
+TM typedef unsigned short ST_angle_t { text "%6.2lf"; }
+TM typedef signed short ST_drift_t { text "%6d"; }
+TM typedef unsigned short USHRT { text "%5u"; }
+TM typedef UCHAR UDIGIT { text "%1u"; }
+
+TM "Receive" ZENO_TM 0;
+
+TM typedef signed short FIX1 { text "%6.1lf"; }
+TM typedef ULONG ULHEX { text "%08.0x"; }
+
+TM 1 Hz ST_drift_t Zeno_Tdrift;
+TM 1 Hz FIX1 Zeno_WindSpeed;
+TM 1 Hz ST_angle_t Zeno_WindDir;
+/* TM 1 Hz FIX1 Zeno_WindGust; */
+/* TM 1 Hz FIX1 Zeno_WindSD; */
+TM 1 Hz FIX1 Zeno_Temp;
+TM 1 Hz USHRT Zeno_RH;
+TM 1 Hz FIX1 Zeno_SolarRadiance;
+TM 1 Hz FIX1 Zeno_Press;
+TM 1 Hz UDIGIT Zeno_Rain;
+TM 1 Hz UCHAR Zeno_Lightning;
+TM 1 Hz FIX1 Zeno_VBatt;
+TM 1 Hz ULHEX Zeno_BIT;
+TM 1 Hz UCHAR  ZENO_stale;
+
+Group Zeno_grp ( Zeno_Tdrift, Zeno_WindSpeed, Zeno_WindDir,
+      Zeno_Temp, Zeno_RH, Zeno_SolarRadiance, Zeno_Press,
+      Zeno_Rain, Zeno_Lightning, Zeno_VBatt, Zeno_BIT,
+      ZENO_stale ) {
+  Zeno_Tdrift = calc_drift(ZENO_TM.Time);
+  Zeno_WindSpeed = ZENO_TM.WindSpeed;
+  Zeno_WindDir = ZENO_TM.WindDir * 100;
+  /* Zeno_WindGust = ZENO_TM.WindGust; */
+  /* Zeno_WindSD = ZENO_TM.WindSD; */
+  Zeno_Temp = ZENO_TM.Temp;
+  Zeno_RH = ZENO_TM.RH;
+  Zeno_SolarRadiance = ZENO_TM.SolarRadiance;
+  Zeno_Press = ZENO_TM.Press;
+  Zeno_Rain = ZENO_TM.Rain;
+  Zeno_Lightning = ZENO_TM.Lightning;
+  Zeno_VBatt = ZENO_TM.VBatt;
+  Zeno_BIT = ZENO_TM.BIT;
+  ZENO_stale = ZENO_TM_obj->stale(255);
+}
+

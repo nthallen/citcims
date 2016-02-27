@@ -1,0 +1,76 @@
+/* dstat.tmc */
+
+%{
+  #define on_off_text(x) (x?" on":"off")
+  #define open_close_text(x) (x?"X":"O")
+%}
+TM typedef DSTAT on_off_t { text "%3d" on_off_text(); }
+TM typedef DSTAT open_close_t { text "%1d" open_close_text(); }
+
+/* Valve8S */
+/* Pump1S */
+/* Valve9S */
+/* Pump2S */
+/* Valve10S */
+/* Valve8S */
+
+
+on_off_t E1200A; invalidate E1200A;
+{ E1200A = (H_DIO_A>>7)&1; Validate E1200A; }
+
+open_close_t Reagent_Valve_S; invalidate Reagent_Valve_S;
+{ Reagent_Valve_S = (H_DIO_B>>0)&1; Validate Reagent_Valve_S; }
+on_off_t VBeta1; invalidate VBeta1;
+{ VBeta1 = (H_DIO_B>>1)&1; Validate VBeta1; }
+on_off_t VBeta6; invalidate VBeta6;
+{ VBeta6 = (H_DIO_B>>6)&1; Validate VBeta6; }
+on_off_t E1200B; invalidate E1200B;
+{ E1200B = (H_DIO_B>>7)&1; Validate E1200B; }
+open_close_t ScrubAir_Valve; invalidate ScrubAir_Valve;
+{ ScrubAir_Valve = (H_DIO_C>>0)&1; Validate ScrubAir_Valve; }
+on_off_t Labelled_cal_scrub; invalidate Labelled_cal_scrub;
+{ Labelled_cal_scrub = (H_DIO_C>>1)&1; Validate Labelled_cal_scrub; }
+on_off_t Labelled_cal_bypass; invalidate Labelled_cal_bypass;
+{ Labelled_cal_bypass = (H_DIO_C>>2)&1; Validate Labelled_cal_bypass; }
+on_off_t Normal_cal_scrub; invalidate Normal_cal_scrub;
+{ Normal_cal_scrub = (H_DIO_C>>3)&1; Validate Normal_cal_scrub; }
+on_off_t Normal_cal_bypass; invalidate Normal_cal_bypass;
+{ Normal_cal_bypass = (H_DIO_C>>4)&1; Validate Normal_cal_bypass; }
+on_off_t VGamma5; invalidate VGamma5;
+{ VGamma5 = (H_DIO_C>>5)&1; Validate VGamma5; }
+on_off_t VGamma6; invalidate VGamma6;
+{ VGamma6 = (H_DIO_C>>6)&1; Validate VGamma6; }
+on_off_t LensHV; invalidate LensHV;
+{ LensHV = (H_DIO_C>>7)&1; Validate LensHV; }
+on_off_t D1200A; invalidate D1200A;
+{ D1200A = (H_DIO_D>>0)&1; Validate D1200A; }
+on_off_t D1200B; invalidate D1200B;
+{ D1200B = (H_DIO_D>>1)&1; Validate D1200B; }
+on_off_t Flowtube_pumping; invalidate Flowtube_pumping;
+{ Flowtube_pumping = (H_DIO_D>>2)&1; Validate Flowtube_pumping; }
+on_off_t turbo_pumping; invalidate turbo_pumping;
+{ turbo_pumping = (H_DIO_D>>3)&1; Validate turbo_pumping; }
+on_off_t fan1; invalidate fan1;
+{ fan1 = (H_DIO_D>>4)&1; Validate fan1; }
+on_off_t fan2; invalidate fan2;
+{ fan2 = (H_DIO_D>>5)&1; Validate fan2; }
+on_off_t fan3; invalidate fan3;
+{ fan3 = (H_DIO_D>>6)&1; Validate fan3; }
+on_off_t DigIn7; invalidate DigIn7;
+{ DigIn7 = (H_DIO_D>>7)&1; Validate DigIn7; }
+on_off_t ScrubMFC_Open; invalidate ScrubMFC_Open;
+{ ScrubMFC_Open = (H_DIO_E>>0)&1; Validate ScrubMFC_Open; }
+on_off_t ScrubMFC_Close; invalidate ScrubMFC_Close;
+{ ScrubMFC_Close = (H_DIO_E>>1)&1; Validate ScrubMFC_Close; }
+on_off_t DiluteMFC_Open; invalidate DiluteMFC_Open;
+{ DiluteMFC_Open = (H_DIO_E>>2)&1; Validate DiluteMFC_Open; }
+on_off_t DiluteMFC_Close; invalidate DiluteMFC_Close;
+{ DiluteMFC_Close = (H_DIO_E>>3)&1; Validate DiluteMFC_Close; }
+on_off_t IonSourceMFC_Open; invalidate IonSourceMFC_Open;
+{ IonSourceMFC_Open = (H_DIO_E>>4)&1; Validate IonSourceMFC_Open; }
+on_off_t IonSourceMFC_Close; invalidate IonSourceMFC_Close;
+{ IonSourceMFC_Close = (H_DIO_E>>5)&1; Validate IonSourceMFC_Close; }
+on_off_t ReagentMFC_Open; invalidate ReagentMFC_Open;
+{ ReagentMFC_Open = (H_DIO_E>>6)&1; Validate ReagentMFC_Open; }
+on_off_t ReagentMFC_Close; invalidate ReagentMFC_Close;
+{ ReagentMFC_Close = (H_DIO_E>>7)&1; Validate ReagentMFC_Close; }

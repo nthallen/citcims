@@ -1,0 +1,133 @@
+%{
+  #define T5C 4.55
+  #define T15C 4.35
+  #define T50C 2.8
+  #define T60C 2.6
+  #define MAX_SK_SP .002
+%}
+
+Partition
+# Turbo_pump A control
+# Monitor the turbo pump temperatures to avoid meltdown or under temp
+# 
+
+State TPA_Wait { }
+
+State TPA_On {
+  depending on (Shutdown) { Validate TPA_Off; }
+  +1 > Turbopump A Power On
+  +8 "Waiting for Turbo Pump A to reach valid temp";
+     hold until (
+        convert(TPA_BT_F5) < T5C &&
+        convert(TPA_BT_F5) > T50C );
+     Validate TPA_Startup;
+}
+
+State TPA_Startup {
+  depending on (Shutdown) { Validate TPA_Off; }
+  { if ( convert(TPA_BT_F5) < T60C ) Validate TPA_Hot; }
+  { if ( convert(TPA_BT_F5) > T5C ) Validate TPA_Cold; }
+
+  +1 > Turbopump A Start
+     Validate TPA_Monitor;
+}
+
+State TPA_Monitor {
+  depending on (Shutdown) { Validate TPA_Off; }
+  { if ( convert(TPA_BT_F5) < T60C ) Validate TPA_Hot; }
+  { if ( convert(TPA_BT_F5) > T5C ) Validate TPA_Cold; }
+
+  "Monitoring Pump Temperature";
+}
+
+State TPA_Hot {
+  { msg( 2, "TPA Over Temp" );
+    Validate TPA_RESET;
+  }
+}
+
+State TPA_Cold {
+  { msg( 2, "TPA Under Temp" );
+    Validate TPA_RESET;
+  }
+}
+
+State TPA_NOK {
+  { msg( 2, "TPA Tripped" );
+    Validate TPA_RESET; 
+  }
+}
+
+State TPA_RESET {
+   +3 > Turbopump A Stop
+   +1 > Turbopump A Power Off
+   +2 Validate TPA_On;
+}
+
+State TPA_Off {
+   +1 > Turbopump A Stop
+   +1 > Turbopump A Power Off
+}
+
+Partition
+# Partition 7: Turbo_pump B control
+# Monitor the turbo pump temperatures to avoid meltdown or under temp
+# 
+
+State TPB_Wait { }
+
+State TPB_On {
+   depending on (Shutdown) { Validate TPB_Off; }
+   +1 > Turbopump B Power On
+   +8 "Waiting for Turbo Pump B to reach valid temp";
+      hold until (
+        convert(TPB_BT_F5) < T5C &&
+        convert(TPB_BT_F5) > T50C );
+      Validate TPB_Startup;
+}
+
+State TPB_Startup {
+  depending on (Shutdown) { Validate TPB_Off; }
+  { if ( convert(TPB_BT_F5) < T60C ) Validate TPB_Hot; }
+  { if ( convert(TPB_BT_F5) > T5C ) Validate TPB_Cold; }
+
+  +1 > Turbopump B Start
+     Validate TPB_Monitor;
+}
+
+State TPB_Monitor {
+  depending on (Shutdown) { Validate TPB_Off; }
+  { if ( convert(TPB_BT_F5) < T60C ) Validate TPB_Hot; }
+  { if ( convert(TPB_BT_F5) > T5C ) Validate TPB_Cold; }
+
+  "Monitoring Pump Temperature";
+}
+
+State TPB_Hot {
+  { msg( 2, "TPB Over Temp" );
+    Validate TPB_RESET;
+  }
+}
+
+State TPB_Cold {
+  { msg( 2, "TPB Under Temp" );
+    Validate TPB_RESET;
+  }
+}
+
+State TPB_NOK {
+  { msg( 2, "TPB Tripped" );
+    Validate TPB_RESET;
+  }
+}
+
+State TPB_RESET {
+   +3 > Turbopump B Stop
+   +1 > Turbopump B Power Off
+   +2 Validate TPB_On;
+}
+
+State TPB_Off {
+   +1 >	Turbopump B Stop
+   +1 > Turbopump B Power Off
+}

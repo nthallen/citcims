@@ -1,0 +1,17 @@
+%{
+  #include <math.h>
+  #include "Zeno.h"
+  ZENO_TM_t ZENO_TM;
+
+  signed short calc_drift(double Time) {
+    double now;
+    double dt;
+    double dti, dtf;
+    signed short dts;
+    now = dtime();
+    dtf = modf((now - Time)/(12*3600) + .5, &dti);
+    dt = (dtf - .5) * 12 * 3600;
+    dts = (signed short) floor(dt+.5);
+    return dts;
+  }
+%}

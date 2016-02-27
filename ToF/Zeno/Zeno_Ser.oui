@@ -1,0 +1,17 @@
+<package> Zeno_Ser
+<include> msg
+<follow> msg
+<include> <stdlib.h>
+<include> "Zeno_Ser.h"
+
+<opts> "d:"
+<sort>
+	-d <serial device>
+<switch>
+  case 'd':
+    zeno_path = optarg;
+    break;
+
+<package> msghdr_init
+<init>
+  msg_hdr_default = "Zeno";

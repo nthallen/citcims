@@ -1,0 +1,25 @@
+Zaber revisited
+Based on QNX4 driver for Wennberg Triple experiment.
+
+Zaber introduces complexities because responses to commands may come out of sequence.
+Each command may have a different timeout. We want to report if any command times out.
+Timeouts were measured in seconds, and were checked when the same command was sent
+to the same drive. Obviously we could improve on that.
+
+This driver has an error reporting mechanism similar to report_err(), but the counts
+are kept separately for each drive and each command. That allows problems with a
+specific command to be made clear.
+
+Each command type 
+
+QNX6 Version
+
+SerSelector, etc.
+
+Should maintain a list of which drive/command queries are outstanding.
+This could be sorted in timeout order, so the earliest timeout is first.
+On timeout, report those errors.
+
+Of course I could just handle it this way, only reporting timeouts when a
+new command is requested.
+

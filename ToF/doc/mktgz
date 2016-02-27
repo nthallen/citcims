@@ -1,0 +1,11 @@
+#! /bin/bash
+rm -rf ToF ToF.tar.gz
+tomorrow=`date --date=tomorrow '+%D'`
+cvs -d :ext:forge.abcd.harvard.edu:/cvsroot/arp-w-cims export -D 5/1/2012 ToF
+if [ -d ToF ]; then
+  tar -czf ToF.tar.gz ToF
+fi
+echo
+dircompare ToF ../src | grep -v identical | grep -v "CVS does not exist"
+
+echo tomorrow is $tomorrow

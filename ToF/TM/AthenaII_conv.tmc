@@ -1,0 +1,16 @@
+On_Off_t AmbZeroS; invalidate AmbZeroS;
+  { AmbZeroS = (AII_DS0>>0) & 1; Validate AmbZeroS; }
+On_Off_t SpVlv1S; invalidate SpVlv1S;
+  { SpVlv1S = (AII_DS0>>1) & 1; Validate SpVlv1S; }
+On_Off_t SpVlv2S; invalidate SpVlv2S;
+  { SpVlv2S = (AII_DS0>>2) & 1; Validate SpVlv2S; }
+On_Off_t SpVlv3S; invalidate SpVlv3S;
+  { SpVlv3S = (AII_DS0>>3) & 1; Validate SpVlv3S; }
+On_Off_t SpVlv4S; invalidate SpVlv4S;
+  { SpVlv4S = (AII_DS0>>4) & 1; Validate SpVlv4S; }
+On_Off_t SpVlv5S; invalidate SpVlv5S;
+  { SpVlv5S = (AII_DS0>>5) & 1; Validate SpVlv5S; }
+On_Off_t SpVlv6S; invalidate SpVlv6S;
+  { SpVlv6S = (AII_DS0>>6) & 1; Validate SpVlv6S; }
+On_Off_t SpVlv7S; invalidate SpVlv7S;
+  { SpVlv7S = (AII_DS0>>7) & 1; Validate SpVlv7S; }

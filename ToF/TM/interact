@@ -1,0 +1,33 @@
+# Startup script for ToF
+# This script is to be run on herc_a. It expects the
+# AthenaII driver to be running on athenaII_a.
+# If you comment out the Hercules invocation, you
+# can run this directly on athenaII_a as well.
+
+  Launch memo memo -o $Experiment.log
+  memo=/dev/huarp/$Experiment/memo
+  Launch TM/DCo TMbfr
+  echo "Running script interact" >$memo
+
+# Launch AthenaII AthenaII
+  if [ -f /net/tofathena/dev/huarp/ToF/AthenaII ]; then
+    echo "AthenaII is already running" >$memo
+  else
+    echo "Signaling Parent on tofathena" >$memo
+    /usr/pkg/bin/sudo /usr/local/sbin/signal_parent tofathena
+    waitfor /net/tofathena/dev/huarp/ToF/AthenaII 10 2>$memo
+  fi
+  Launch Hercules Hercules
+  Launch DG/cmd ToFcol
+  Launch cmd/server ToFsrvr
+  Launch - tmdf
+  Launch - lgr -N `mlf_find LOG`
+  Launch - omsdrv -i7
+  Launch - IonGauge -d /net/tofathena/dev/ser4
+  Launch - horiba -d /net/tofathena/dev/ser3
+  Launch - sonic -p /net/tofherc/dev/ser1
+  Launch - zaber -p /dev/ser3
+  Launch - IWG1
+  Launch - UserPkts
+# Launch - Zeno_Ser -d /dev/ser4
+  Launch - ToFalgo -v

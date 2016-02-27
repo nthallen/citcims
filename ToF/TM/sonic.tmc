@@ -1,0 +1,29 @@
+%{
+  /* sonic.tmc */
+  #include "sonic.h"
+  SonicData_t SonicData;
+  pid_t SonicProxy;
+%}
+
+TM "Receive" SonicData 1;
+
+TM typedef float WindSpd { text "%6.3lf"; }
+TM typedef float SoundSpd { text "%6.2lf"; }
+
+TM 8 Hz WindSpd Sonic_U;
+TM 8 Hz WindSpd Sonic_V;
+TM 8 Hz WindSpd Sonic_W;
+TM 8 Hz SoundSpd Sonic_C;
+TM 8 Hz UCHAR Sonic_N;
+TM 8 Hz UCHAR Sonic_S;
+
+Group Sonic (Sonic_U, Sonic_V, Sonic_W, Sonic_C, Sonic_N, Sonic_S) {
+  Sonic_U = SonicData.U;
+  Sonic_V = SonicData.V;
+  Sonic_W = SonicData.W;
+  Sonic_C = SonicData.C;
+  Sonic_N = SonicData.N;
+  Sonic_S = SonicData.Status;
+  SonicData.N = 255;
+  SonicData_obj->synch();
+}

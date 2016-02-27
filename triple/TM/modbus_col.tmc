@@ -1,0 +1,4 @@
+%{
+  #include "modbus.h";
+  Modbus_t Modbus;
+%}

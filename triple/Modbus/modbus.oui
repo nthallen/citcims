@@ -1,0 +1,16 @@
+<package> modbus
+<include> "modbus.h"
+<include> msg
+<follow> msg
+
+<opts> "d:"
+<sort>
+	-d <serial device>
+<switch>
+  case 'd':
+    modbus_path = optarg;
+    break;
+
+<package> msghdr_default
+<var>
+  char *msg_hdr_default = "modbus";

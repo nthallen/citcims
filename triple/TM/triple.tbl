@@ -1,0 +1,72 @@
+zaber {
+  HBox { +-; Zaber; -+ };
+  Position: (Z1pos,7) (Z2pos,7);
+  Voltage:  (Z1V,4) (Z2V,4) V;
+ #Status: (Z1S,9) (Z2S,9);
+  Stale:  (Z1stale,3) (Z2stale,3);
+}
+alphabetagamma {
+  E1200A: (E1200A,3);
+  E1200B:  (E1200B,3);
+  D1200A: (D1200A,3);
+  D1200B: (D1200B,3);
+  Reagent: (Reagent_Valve_S,5);
+  #VBeta1: (VBeta1,3);
+  #VBeta6: (VBeta6,3);
+  ScrubAir: (ScrubAir_Valve,5);
+  #VGamma5: (VGamma5,3);
+  #VGamma6: (VGamma6,3);
+  LensHV: (LensHV,3);
+}
+delta {
+  >Pumping<;
+  Flowtube: (Flowtube_pumping,3);
+  Turbo: (turbo_pumping,3);
+  -;
+  fan1: (fan1,3);
+  fan2: (fan2,3);
+  fan3: (fan3,3);
+  DigIn7: (DigIn7,3);
+}
+scrub {
+  ""             Scrub      Bypass;
+  Labelled_cal: (Labelled_cal_scrub,3) (Labelled_cal_bypass,3);
+  Normal_cal: (Normal_cal_scrub,3) (Normal_cal_bypass,3);
+}
+epsilon {
+  MFCs          Open   Close;
+  Scrub: (ScrubMFC_Open,3) (ScrubMFC_Close,3);
+  Dilute: (DiluteMFC_Open,3) (DiluteMFC_Close,3);
+  IonSource: (IonSourceMFC_Open,3) (IonSourceMFC_Close,3);
+  Reagent: (ReagentMFC_Open,3) (ReagentMFC_Close,3);
+}
+
+TDrift {
+  HBox{ +-; Title: "System TDrift"; -+ };
+  SysTDrift: (SysTDrift,7) secs;
+}
+
+DSTAT {
+  -;
+  HBox { +|+; { [alphabetagamma]; [TDrift]}; +|+;
+         [delta]; +|+; { [scrub]; -; [epsilon] }; +|+ }
+}
+Varian {
+  HBox { +-; Varian; -+ };
+  Status: (VarStat,5);
+  Seq:    (VarSeq,5);
+}
+
+MFCtr {
+  HBox { +-; Status; -+ };
+  SWStat: (SWStat,3);
+  MFCtr: (MFCtr,5);
+  Time: (flttime,9);
+}
+
+{
+  [DSTAT];
+  HBox { +|+; [zaber]; |+; [Varian]; |+; [MFCtr]; +|+ };
+  -;
+}
+

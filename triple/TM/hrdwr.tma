@@ -1,0 +1,636 @@
+Partition
+#######################################################
+# Partition 20 zaber open/close 
+# Mainly for zaber 2, pinhole into mass spectrometer
+#
+#
+# Aug 29, 2007: archived as hrdwr2.tma by Alan to allow for use of 
+# chamber_hrdwr.tma in experiments
+#######################################################
+ 
+State zaber_init {
+#	+5 Validate zaber_close;
+}	
+
+State zaber_idle {
+}
+
+State zaber_close {
+# Closes BOTH zabers!!!
+     > zaber command drive 2 1 0
+  +3 Validate Inlet_Idle;
+  +1 hold until valid (Inlet_hold); 
+  +3 Validate zaber_idle;
+}
+
+State zaber_open {
+      > zaber move drive 2 absolute 57250
+  +1  Validate zaber_monitor;
+}
+
+State zaber_monitor {
+    { if (convert(Pressure100T) > 50) { validate zaber2_close; } }
+    # +1 Validate zaber_monitor;
+}
+
+State zaber2_close {
+    > zaber command drive 2 1 0
+    Validate zaber_idle;
+}
+
+Partition
+	
+#######################################################
+# Partition 21: zaber 1 pressure control
+#######################################################
+	
+%{  /* Inlet_PControl implements a simple PI controller */
+  #include "nortlib.h"
+  #include "omsdrv.h"
+  #include "math.h"
+
+  int Inlet_Dir = 1;
+%}
+
+State Inlet_Init {
+  +1 Validate Inlet_Idle;
+}
+
+State Inlet_Close {
+     > zaber command drive 1 1 0 
+     { Inlet_Dir = 1; }
+  +6 Validate Inlet_hold;    
+}
+
+State Inlet_Idle {
+  # Wait here until pressure control state is validated
+  Validate Inlet_Close;
+}
+
+State Inlet_hold {
+}
+ 
+{ double Psum, Isum, FT_P, FT_SP;
+  long In_St1; 
+  long In_St2;
+  long In_St3;
+  long In_St4;
+  long histor_1;
+}
+
+State Inlet_PControl {
+     > zaber move drive 1 absolute 56000
+     ## this value was 47200, assuming want near open but not. 
+  +3 { Inlet_Dir = 0; }
+     { msg(0, "Validate Inlet_PControl_real"); }
+  +2 Validate Inlet_PControl_real;
+}
+
+State Inlet_PControl_real {
+  depending on ( 2 Hz ) {
+    double Insl_Step1, FT_P, FT_SP; 
+    Insl_Step1 = Z1pos;
+    histor_1 = 700;
+    In_St1 = 1000;
+    In_St2 = 200;
+    In_St3 = 50;
+    In_St4 = 25;
+    FT_P=convert(Pressure100T);
+    FT_SP=26.3;
+
+    if ( FT_P < 0.988*FT_SP ) { 
+      if (FT_P < FT_SP*0.97 && Inlet_Dir == 1 && Insl_Step1 < 62000 ) {
+        ci_sendfcmd (0, "zaber move drive 1 relative %ld\n",histor_1);	
+        Insl_Step1+=histor_1;
+        Inlet_Dir=0;
+      } else if ( FT_P < FT_SP*0.71 && Inlet_Dir == 0 && Insl_Step1 < 62000 ) {
+        ci_sendfcmd (0, "zaber move drive 1 relative %ld\n", In_St1);
+        Insl_Step1+=In_St1;
+      } else if ( FT_P >= FT_SP*0.71 && FT_P < 0.98*FT_SP &&
+                  Inlet_Dir == 0 && Insl_Step1 < 62000 ) {
+        ci_sendfcmd (0, "zaber move drive 1 relative %ld\n",In_St2);
+        Insl_Step1+=In_St2;
+      } else if ( FT_P >= FT_SP*0.98 && FT_P < 0.988*FT_SP &&
+                  Inlet_Dir == 0 && Insl_Step1 < 62000 ) {
+        ci_sendfcmd (0, "zaber move drive 1 relative %ld\n", In_St3);
+        Insl_Step1+=In_St3;
+      } else if ( FT_P >= FT_SP*0.988 && FT_P < 0.996*FT_SP &&
+                  Inlet_Dir == 0 && Insl_Step1 < 62000 ) {
+        ci_sendfcmd (0, "zaber move drive 1 relative %ld\n", In_St4);
+            Insl_Step1+=In_St4;
+      }
+    } else if (FT_P > 1.012*FT_SP) {
+      if ( FT_P > FT_SP*1.03 && Inlet_Dir == 0 && Insl_Step1 > 0) {
+        ci_sendfcmd (0, "zaber move drive 1 relative %ld\n", -histor_1);
+        Insl_Step1-=histor_1;
+        Inlet_Dir=1;
+      } else if ( FT_P > 1.29*FT_SP && Inlet_Dir == 1 && Insl_Step1 > 0) {
+        ci_sendfcmd (0, "zaber move drive 1 relative %ld\n", -In_St1);
+        Insl_Step1-=In_St1;
+      } else if ( FT_P > 1.02*FT_SP && FT_P <= 1.29*FT_SP &&
+                  Inlet_Dir == 1 && Insl_Step1 > 0) {
+        ci_sendfcmd (0, "zaber move drive 1 relative %ld\n", -In_St2);
+        Insl_Step1-=In_St2;
+      } else if ( FT_P > 1.012*FT_SP && FT_P <= 1.02*FT_SP &&
+                  Inlet_Dir == 1 && Insl_Step1 > 0) {
+        ci_sendfcmd (0, "zaber move drive 1 relative %ld\n", -In_St3);
+        Insl_Step1-=In_St3;
+      } else if ( FT_P > 1.004*FT_SP && FT_P <= 1.012*FT_SP &&
+                  Inlet_Dir == 1 && Insl_Step1 > 0) {
+        ci_sendfcmd (0, "zaber move drive 1 relative %ld\n", -In_St4);
+        Insl_Step1-=In_St4;
+      }
+    }
+  }
+  # +2 Validate Inlet_PControl_Real;
+}
+
+Partition
+#######################################################
+# Partition 22: Flow control partition
+#######################################################
+
+State flows_idle {
+  +1 { msg(0,"Im in flows idle");}
+}
+
+State flows_off {
+ #    Validate HV_off;  #commented out for sharing voltage w/ tof
+     > Set Dilute MFC 0
+     > Set Reagent MFC 0
+     > Set Ionsource MFC 50
+     depending on (Inlet_PControl_real) { Validate Inlet_Idle; }
+  +1 hold until valid (Inlet_hold);
+     > zaber command drive 1 1 0
+     > ScrubAir Valve close
+  +1 Validate cal_out;
+  +1 hold until valid (cal_idle);
+     > Set Ionsource MFC 0
+     > Set Scrub MFC 0
+  +1 Validate flows_idle;
+}
+
+State flows_stdby {
+#     Validate HV_off;  #commented out for sharing voltage w/ tof
+  +1 Validate cal_out;
+  +1 hold until valid (cal_idle);
+     > zaber command drive 1 1 0
+     > Reagent Valve close
+     Validate scrub_out;
+  +1 hold until valid (scrub_ready_wait);   
+  +1 > ReagentMFC open on
+     ### (N2 thru dryz frit)
+  +1 > ionsourceMFC open off
+     > Set scrub MFC 0
+     > Set Dilute MFC 0
+     > Set Ionsource MFC 100
+     > Set Reagent MFC 0
+  +1 Validate flows_idle;
+}
+
+State flows_n2_zero {
+     Validate cal_out;
+  +1 hold until valid (cal_idle);
+     depending on (Inlet_PControl_real) { Validate Inlet_Idle; }
+  +1 hold until valid (Inlet_hold);
+     > zaber command drive 1 1 0 
+  +1 > ScrubAir Valve Close
+     > Set dilute MFC 690
+     > Set Ionsource MFC 1625
+     { msg(0,"validating flows_idle");}
+  +1 Validate flows_idle;
+}
+
+State flows_amb_zero {
+     Validate cal_out;
+  +1 hold until valid (cal_idle);
+     depending on (Inlet_PControl_real) { Validate Inlet_Idle; }
+  +1 hold until valid (Inlet_hold);
+     > zaber command drive 1 1 0
+     > Set dilute MFC 500
+     ### adj down b/c of inflowing amb z
+     > Set Ionsource MFC 1625
+     Validate scrub_in; #change back to scrub_in w/ single
+  +1 hold until valid (scrub_idle);
+     { msg(0,"validating flows_idle");}
+  +1 Validate flows_idle;
+}
+
+State flows_n2_cal {
+ #   depending on ( scrub_idle ) { Validate scrub_out; }
+ #+1 hold until valid (scrub_ready);
+     depending on (Inlet_PControl_real) { Validate Inlet_Idle; }
+ +1  hold until valid (Inlet_hold);
+     > zaber command drive 1 1 0
+  +1 > ScrubAir Valve Close
+     ### (no amb z air please)
+     > Set dilute MFC 610
+     > Set Ionsource MFC 1625
+     Validate cal_in;
+  +1 hold until valid (cal_idle);
+  +1 Validate flows_idle;
+}
+
+State flows_amb_cal {
+ #+1 hold until valid (scrub_idle);
+     depending on (Inlet_PControl_real) { Validate Inlet_Idle; }
+  +1 hold until valid (Inlet_hold);
+     > zaber command drive 1 1 0 
+     > Set dilute MFC 420
+     > Set ionsource MFC 1625
+     Validate cal_in;
+  +1 hold until valid (cal_idle);
+     Validate scrub_in;  #change back for op w/ single
+  +1 hold until valid (scrub_idle);
+  +1 Validate flows_idle;
+}
+
+State flows_amb_caltwo {
+     depending on (Inlet_PControl_real) { Validate Inlet_Idle; }
+  +1 hold until valid (Inlet_hold);
+     > zaber command drive 1 1 0
+     > Set dilute MFC 600
+  #  > Set dilute MFC 638 
+     > Set ionsource MFC 1625
+     Validate cal_in;
+  +1 hold until valid (cal_idle);
+     Validate scrub_in_tripsolo; 
+  +1 hold until valid (scrub_idle);
+  +1 > Set Scrub MFC 117
+  #  > Set Scrub MFC 45
+  +1 Validate flows_idle;
+}
+
+State flows_amb_calthree {
+     depending on (Inlet_PControl_real) { Validate Inlet_Idle; }
+  +1 hold until valid (Inlet_hold);
+     > zaber command drive 1 1 0
+     > Set dilute MFC 475
+  #  > Set dilute MFC 618 
+     > Set ionsource MFC 1625
+     Validate cal_in;
+  +1 hold until valid (cal_idle);
+     Validate scrub_in_tripsolo;
+  +1 hold until valid (scrub_idle);
+  +1 > Set Scrub MFC 325
+  #  > Set Scrub MFC 85
+  +1 Validate flows_idle;
+} 
+
+State flows_measure {
+ #   depending on ( scrub_idle ) { Validate scrub_out; }
+ #+1 hold until valid (scrub_ready_wait);
+     Validate cal_out;
+  +1 hold until valid (cal_idle);
+  +1 > ScrubAir Valve Close
+       ### (no amb z air please)
+     > Set dilute MFC 500
+     > Set Ionsource MFC 1625
+     Validate Inlet_PControl;
+     hold until ( convert(Pressure100T) > 24 );
+  +1 Validate flows_idle;
+}
+
+Partition
+#######################################################
+# Partition 23: control calibration gas
+#######################################################
+
+State cal_idle { 
+  { msg(0,"I'm in cal idle"); } 
+}
+
+State cal_on {
+     > Labelled Cal scrub bypass
+     > Normal Cal scrub bypass
+ #+1 > DiluteMFC open on
+     Validate cal_idle;
+}
+
+State cal_off {
+     > Labelled Cal scrub on
+     > Normal Cal scrub on
+  +1 > DiluteMFC open off
+     Validate cal_idle;
+}
+
+State cal_in {
+     > Labelled Cal bypass into system
+     > Normal Cal bypass into system
+  +1 Validate cal_idle;
+}
+
+State cal_out {
+     > Labelled Cal bypass bypass
+     > Normal Cal bypass bypass
+  +1 Validate cal_idle;
+}
+
+State cal_dither {
+       > Labelled Cal bypass bypass
+       > Labelled Cal scrub on
+       > Normal Cal scrub on
+    +1 > Normal Cal bypass into system
+  +200 > Normal Cal Scrub bypass
+   +30 > Normal Cal scrub on
+    +1 Validate cal_dither;
+}
+
+State cal_MHP {
+     > Labelled Cal bypass bypass
+     > Labelled Cal scrub on
+  +1 > Normal Cal bypass into system
+  +2 > Normal Cal Scrub bypass
+  +1 Validate cal_idle;	
+}
+
+Partition
+#######################################################
+# Partition 24: Scrub ready
+#	This waits for the single to energize Sp_5V, which
+#	indicates that the single is zeroing or whatnot,
+#	then de-energize Sp_5V, indicating that it is finished
+#	and back to taking data.
+#  Used by partition 6: TMA will stay in 'data' states until
+#  scrub_ready is validated.  
+#######################################################
+%{
+	double ready_ctr;
+%}
+
+#everything in this state should be uncommented for op w/ single
+State scrub_ready_wait {
+     { msg(0,"Im in scrub ready wait"); }
+     { ready_ctr = 0; }
+  +1 hold until ( convert(Sp_5V) > 1.5 ) or 20:00;
+  +1 hold until ( convert(Sp_5V) < 1.0 );
+ +10 hold until ( convert(Sp_5V) < 1.0 );
+  +1 Validate scrub_ready;
+}
+
+State scrub_idle {
+     { if (convert(Sp_5V) > 1.5) { Validate scrub_out; } }
+     #change back for op w/ single
+
+# +10 validate scrub_idle; 
+}
+
+State scrub_for_chamber {
+     +1 > scrubair valve open
+   +600 > scrubair valve close
+  +1800 Validate scrub_for_chamber;
+}
+
+State scrub_ready {
+  depending on ( 1 Hz ) { ready_ctr += 1; }
+  depending on ( 1 Hz ) {
+    if ( ready_ctr > 500 ) { Validate scrub_ready_wait; } 
+  }
+  # +1 validate scrub_ready; 
+}
+
+State scrub_in {
+  +1 > scrubair valve open
+  +1 > ToF ambient flow on
+ #+1 > ToF Set ambient zero flow rate 0.400   
+ # won't complile on some nodes
+  +1 Validate scrub_idle;
+}
+
+State scrub_in_tripsolo {
+  +1 > scrubair valve open
+  +1 > set Scrub MFC 241
+  +1 Validate scrub_idle;
+} 
+
+State scrub_out {
+     { msg(0,"Scrub_outing"); }
+  +1 > ToF ambient flow off
+ #+1 > ToF Set ambient zero flow rate 0.100    
+   # won't complile some nodes
+  +2 > scrubair valve close
+ #+1 > set Scrub MFC 150
+  +1 Validate scrub_ready_wait;
+}
+
+State scrub_out_tripsolo {
+     { msg(0,"Scrub_outing"); }
+  +1 > set Scrub MFC 0
+  +2 > scrubair valve close
+  +1 Validate scrub_idle;
+}
+
+Partition 
+########################################################
+# Partition 25: Source HV on/off and monitor
+# Controls polarity of source lenses
+# Note that this watchdog ONLY turns off HV  
+# Does not close Zaber into 1200
+########################################################
+
+#### added below for chamber runs
+State polj_idle {
+}
+
+
+State pol_neg {
+     > set reagent mfc 170
+  +1 hold until ( (!D1200A) || !(H_DIO_D&1) );
+  +1 Validate pol_pos;
+} 
+
+State pol_pos {
+     > set reagent mfc 0
+  +1 hold until ( (D1200A) || (H_DIO_D&1) );
+  +1 Validate pol_neg;
+}
+
+####
+
+State HV_off {
+	> 1200 enable A off
+	> LensHV Enable off
+}
+
+State Pos_HV_on {
+ #+1 > 1200 enable A on
+     > ScrubMFC open on
+  +1 > LensHV Enable on
+  +1 Validate Pos_HV_monitor;
+}
+
+State Neg_HV_on {
+ #+1 > 1200 enable A on
+     > ScrubMFC open off
+  +1 > LensHV Enable on
+  +1 Validate Neg_HV_monitor;
+}
+
+
+State Neg_HV_monitor {
+	{ if (convert(Pressure100T) > 40) { validate Neg_HV_reset; } }
+#	{ if (convert(Pressure100T) < 20) { validate Neg_HV_reset; } }   #commented out for sharing voltage w/ tof
+  # +1  validate Neg_HV_monitor;
+}
+
+State Neg_HV_reset {
+     > 1200 enable A off
+     > LensHV Enable Off
+  #  > zaber command all drives 1 0
+  +1 hold until (convert(Pressure100T) < 40 && convert(Pressure100T) > 20);
+  +2 hold until (convert(Pressure100T) < 40 && convert(Pressure100T) > 20);
+  #  Validate zaber_open;
+     > ScrubMFC open off
+  +1 > LensHV Enable on
+  +1 > 1200 enable A on
+     Validate Neg_HV_monitor;
+}
+
+
+State Pos_HV_monitor {
+    { if (convert(Pressure100T) > 40) { validate Pos_HV_reset; } }
+    { if (convert(Pressure100T) < 20) { validate Pos_HV_reset; } }
+  +1 Validate Pos_HV_monitor;
+}
+
+State Pos_HV_reset {
+     > 1200 enable A off
+     > LensHV Enable Off
+  #  > zaber command all drives 1 0
+  +1 hold until (convert(Pressure100T) < 40 && convert(Pressure100T) > 20);
+  +2 hold until (convert(Pressure100T) < 40 && convert(Pressure100T) > 20);
+  #  Validate zaber_open;
+     > ScrubMFC open on
+  +1 > LensHV Enable on
+  +1 > 1200 enable A on
+     Validate Pos_HV_monitor;
+}
+
+Partition 
+########################################################
+# Partition 26: Water calibration
+# uses 500 sccm MFC connected to scrub air MFC port.
+# 14 pts
+########################################################
+
+State water_idle {
+}
+
+State water_addition_0 {
+     > Set Scrub MFC 901 
+  +5 Validate water_idle;
+}
+
+State water_addition_1 { 
+     > Set Scrub MFC 799
+  +5 Validate water_idle;
+}
+
+State water_addition_2 { 
+     > Set Scrub MFC 778
+  +5 Validate water_idle;
+}
+
+State water_addition_3 { 
+     > Set Scrub MFC 758
+  +5 Validate water_idle;
+}
+
+State water_addition_4 { 
+     > Set Scrub MFC 717
+  +5 Validate water_idle;
+}
+
+State water_addition_5 { 
+     > Set Scrub MFC 677
+  +5 Validate water_idle;
+}
+
+State water_addition_6 { 
+     > Set Scrub MFC 635
+  +5 Validate water_idle;
+}
+
+State water_addition_7 { 
+     > Set Scrub MFC 594
+  +5 Validate water_idle;
+}
+
+State water_addition_8 { 
+     > Set Scrub MFC 512
+  +5 Validate water_idle;
+}
+
+State water_addition_9 { 
+     > Set Scrub MFC 430
+  +5 Validate water_idle;
+}
+
+State water_addition_10 { 
+     > Set Scrub MFC 307
+  +5 Validate water_idle;
+}
+
+State water_addition_11	 { 
+     > Set Scrub MFC 184
+  +5 Validate water_idle;
+}
+
+State water_addition_12 { 
+     > Set Scrub MFC 0
+  +5 Validate water_idle;
+}
+
+Partition
+# Step the water using scrub MFC
+
+State water_step_idle { }
+
+State water_step {
+  +1 Validate water_addition_0;
+  +1 hold until ( (D1200A) || (H_DIO_D&1) );
+  +1 hold until ( (!D1200A) || !(H_DIO_D&1) );
+  +1 Validate water_addition_0;
+  +1 hold until ( (D1200A) || (H_DIO_D&1) );
+  +1 hold until ( (!D1200A) || !(H_DIO_D&1) );
+  +1 Validate water_addition_12;
+  +1 hold until ( (D1200A) || (H_DIO_D&1) );
+  +1 hold until ( (!D1200A) || !(H_DIO_D&1) );
+  +1 Validate water_addition_1;
+  +1 hold until ( (D1200A) || (H_DIO_D&1) );
+  +1 hold until ( (!D1200A) || !(H_DIO_D&1) );
+  +1 Validate water_addition_2;
+  +1 hold until ( (D1200A) || (H_DIO_D&1) );
+  +1 hold until ( (!D1200A) || !(H_DIO_D&1) );
+  +1 Validate water_addition_3;
+  +1 hold until ( (D1200A) || (H_DIO_D&1) );
+  +1 hold until ( (!D1200A) || !(H_DIO_D&1) );
+  +1 Validate water_addition_4;
+  +1 hold until ( (D1200A) || (H_DIO_D&1) );
+  +1 hold until ( (!D1200A) || !(H_DIO_D&1) );
+  +1 Validate water_addition_5;
+  +1 hold until ( (D1200A) || (H_DIO_D&1) );
+  +1 hold until ( (!D1200A) || !(H_DIO_D&1) );
+  +1 Validate water_addition_6;
+  +1 hold until ( (D1200A) || (H_DIO_D&1) );
+  +1 hold until ( (!D1200A) || !(H_DIO_D&1) );
+  +1 Validate water_addition_7;
+  +1 hold until ( (D1200A) || (H_DIO_D&1) );
+  +1 hold until ( (!D1200A) || !(H_DIO_D&1) );
+  +1 Validate water_addition_8;
+  +1 hold until ( (D1200A) || (H_DIO_D&1) );
+  +1 hold until ( (!D1200A) || !(H_DIO_D&1) );
+  +1 Validate water_addition_9;
+  +1 hold until ( (D1200A) || (H_DIO_D&1) );
+  +1 hold until ( (!D1200A) || !(H_DIO_D&1) );
+  +1 Validate water_addition_10;
+  +1 hold until ( (D1200A) || (H_DIO_D&1) );
+  +1 hold until ( (!D1200A) || !(H_DIO_D&1) );
+  +1 Validate water_addition_11;
+  +1 hold until ( (D1200A) || (H_DIO_D&1) );
+  +1 hold until ( (!D1200A) || !(H_DIO_D&1) );
+  +1 Validate water_addition_12;
+  +1 hold until ( (D1200A) || (H_DIO_D&1) );
+  +1 hold until ( (!D1200A) || !(H_DIO_D&1) );
+  +1 Validate water_step;
+}

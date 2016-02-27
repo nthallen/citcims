@@ -1,0 +1,366 @@
+#Partitions to control gas deck
+
+Partition
+# Partition: Ion Source Flow Control
+
+State GD_Wait { }
+
+State Flows_OFF {
+     > SW Flow State Transitioning
+     depending on (Inlet_PControl_real) { Validate Inlet_Close; }
+  +1 hold until valid (Inlet_Closed);
+     > ambient zero valve off
+     > ambient zero off
+     > Set fluorine flow 0 sccm
+     > Set dilution flow 0 sccm
+     > Set ambient zero flow 0 sccm
+     > Set ion source flow 0 sccm
+     > SW Flow State Off
+  +1 Validate GD_Wait;
+}
+
+
+State Flows_ON_Z_N2 {
+     > SW Flow State Transitioning
+     depending on (Inlet_PControl_real) { Validate Inlet_Close; }
+  +1 hold until valid (Inlet_Closed);
+     > Set ambient zero flow 100 sccm
+     > ambient zero valve off 
+     > ambient zero on
+     > Set ion source flow 380 sccm
+     > Set dilution flow 1630 sccm
+     > Set fluorine flow 0.3 sccm
+  +1 > Set ambient zero flow 85 sccm
+  +1 Validate GD_Wait;
+}
+
+State Flows_ON_Z_AM {
+      > SW Flow State Transitioning
+      depending on (Inlet_PControl_real) { Validate Inlet_Close; }
+   +1 hold until valid (Inlet_Closed);
+      > Set ion source flow 380 sccm
+      > Set dilution flow 1450 sccm
+      > Set fluorine flow 0.3 sccm
+      > ambient zero on
+   +1 > ambient zero valve on
+   +1 > Set ambient zero flow 240 sccm
+   +1 Validate GD_Wait;
+}
+
+State Flows_ON_Z_AM_HOT {
+      > SW Flow State Transitioning
+      #> 500V power off
+      depending on (Inlet_PControl_real) { Validate Inlet_Close; }
+   +1 hold until valid (Inlet_Closed);
+      > Set ion source flow 380 sccm
+      > Set dilution flow 1300 sccm
+      > Set fluorine flow 0.30 sccm
+      > ambient zero on
+   +1 > Set ambient zero flow 85 sccm
+   +1 Validate GD_Wait;
+}
+
+State Flows_ON_CAL_N2 {
+      > SW Flow State Transitioning
+      Depending on (Inlet_PControl_real) { Validate Inlet_Close; }
+   +1 hold until valid (Inlet_Closed);
+      > Set ambient zero flow 85 sccm
+      > ambient zero valve off
+      > ambient zero on
+      > Set ion source flow 380 sccm
+      > Set dilution flow 1550 sccm
+      > Set fluorine flow 0.3 sccm
+   +1 Validate GD_Wait;
+}
+
+State Flows_ON_CAL_AM_Z {
+      > SW Flow State Transitioning
+      #> 500V power off
+      depending on (Inlet_PControl_real) { Validate Inlet_Close; }
+   +1 hold until valid (Inlet_Closed);
+      > Set ion source flow 380 sccm
+      > Set dilution flow 1370 sccm
+      > Set fluorine flow 0.3 sccm
+      > ambient zero on
+      > ambient zero valve on
+   +1 > Set ambient zero flow 240 sccm
+   +1 Validate GD_Wait;
+}
+
+State Flows_ON_CAL_AM_Z_BPI_50 {
+      > SW Flow State Transitioning
+      #> 500V power off
+      depending on (Inlet_PControl_real) { Validate Inlet_Close; }
+   +1 hold until valid (Inlet_Closed);
+      > Set ion source flow 400 sccm
+      > Set dilution flow 1.65 sccm
+      > Set fluorine flow 0.80 sccm
+      > ambient zero on
+      #> spare switched 28V on
+   +1 > Set ambient zero flow 0.05 sccm
+  #+2 > 500V power on
+   +1 Validate GD_Wait;
+}
+
+State Flows_ON_CAL_AM_Z_BPI_100 {
+      > SW Flow State Transitioning
+      #> 500V power off
+      depending on (Inlet_PControl_real) { Validate Inlet_Close; }
+   +1 hold until valid (Inlet_Closed);
+      > Set ion source flow 400 sccm
+      > Set dilution flow 1.60 sccm
+      > Set fluorine flow 0.80 sccm
+      > ambient zero on
+      #> spare switched 28V on
+   +1 > Set ambient zero flow 0.10 sccm
+  #+2 > 500V power on
+   +1 Validate GD_Wait;
+}
+
+State Flows_ON_CAL_AM_Z_BPI_150 {
+      > SW Flow State Transitioning
+      #> 500V power off
+      depending on (Inlet_PControl_real) { Validate Inlet_Close; }
+   +1 hold until valid (Inlet_Closed);
+      > Set ion source flow 400 sccm
+      > Set dilution flow 1.55 sccm
+      > Set fluorine flow 0.80 sccm
+      > ambient zero on
+      #> spare switched 28V on
+   +1 > Set ambient zero flow 0.15 sccm
+  #+2 > 500V power on
+   +1 Validate GD_Wait;
+}
+
+State Flows_ON_CAL_AM_Z_BPI_200 {
+      > SW Flow State Transitioning
+      #> 500V power off
+      depending on (Inlet_PControl_real) { Validate Inlet_Close; }
+   +1 hold until valid (Inlet_Closed);
+      > Set ion source flow 400 sccm
+      > Set dilution flow 1.50 sccm
+      > Set fluorine flow 0.80 sccm
+      > ambient zero on
+      #> spare switched 28V on
+   +1 > Set ambient zero flow 0.20 sccm
+  #+2 > 500V power on
+   +1 Validate GD_Wait;
+}
+
+State Flows_ON_CAL_AM_Z_BPI_250 {
+      > SW Flow State Transitioning
+      #> 500V power off
+      depending on (Inlet_PControl_real) { Validate Inlet_Close; }
+   +1 hold until valid (Inlet_Closed);
+      > Set ion source flow 400 sccm
+      > Set dilution flow 1.45 sccm
+      > Set fluorine flow 0.80 sccm
+      > ambient zero on
+      #> spare switched 28V on
+   +1 > Set ambient zero flow 0.25 sccm
+  #+2 > 500V power on
+   +1 Validate GD_Wait;
+}
+
+State Flows_ON_CAL_AM_Z_BPI_300 {
+     > SW Flow State Transitioning
+     #> 500V power off
+     depending on (Inlet_PControl_real) { Validate Inlet_Close; }
+  +1 hold until valid (Inlet_Closed);
+     > Set ion source flow 400 sccm
+     > Set dilution flow 1.40 sccm
+     > Set fluorine flow 0.80 sccm
+     > ambient zero on
+     #> spare switched 28V on
+  +1 > Set ambient zero flow 0.30 sccm
+ #+2 > 500V power on
+  +1 Validate GD_Wait;
+}
+
+State Flows_ON_CAL_AM_Z_BPI_350 {
+     > SW Flow State Transitioning
+     #> 500V power off
+     depending on (Inlet_PControl_real) { Validate Inlet_Close; }
+  +1 hold until valid (Inlet_Closed);
+     > Set ion source flow 400 sccm
+     > Set dilution flow 1.35 sccm
+     > Set fluorine flow 0.80 sccm
+     > ambient zero on
+     #> spare switched 28V on
+  +1 > Set ambient zero flow 0.35 sccm
+ #+2 > 500V power on
+  +1 Validate GD_Wait;
+}
+
+State Flows_ON_CAL_AM_Z_BPI_400 {
+     > SW Flow State Transitioning
+     #> 500V power off
+     depending on (Inlet_PControl_real) { Validate Inlet_Close; }
+  +1 hold until valid (Inlet_Closed);
+     > Set ion source flow 400 sccm
+     > Set dilution flow 1.30 sccm
+     > Set fluorine flow 0.80 sccm
+     > ambient zero on
+     #> spare switched 28V on
+  +1 > Set ambient zero flow 0.40 sccm
+ #+2 > 500V power on
+  +1 Validate GD_Wait;
+}
+
+State Flows_ON_CAL_AM_Z_BPI_450 {
+     > SW Flow State Transitioning
+     #> 500V power off
+     depending on (Inlet_PControl_real) { Validate Inlet_Close; }
+  +1 hold until valid (Inlet_Closed);
+     > Set ion source flow 400 sccm
+     > Set dilution flow 1.25 sccm
+     > Set fluorine flow 0.80 sccm
+     > ambient zero on
+     #> spare switched 28V on
+  +1 > Set ambient zero flow 0.45 sccm
+ #+2 > 500V power on
+  +1 Validate GD_Wait;
+}
+
+State Flows_ON_CAL_AM_Z_BPI_500 {
+     > SW Flow State Transitioning
+     #> 500V power off
+     depending on (Inlet_PControl_real) { Validate Inlet_Close; }
+  +1 hold until valid (Inlet_Closed);
+     > Set ion source flow 400 sccm
+     > Set dilution flow 1.20 sccm
+     > Set fluorine flow 0.80 sccm
+     > ambient zero on
+     #> spare switched 28V on
+  +1 > Set ambient zero flow 0.50 sccm
+ #+2 > 500V power on
+  +1 Validate GD_Wait;
+}
+
+State Flows_ON_CAL_AM_Z_BPI_550 {
+     > SW Flow State Transitioning
+     #> 500V power off
+     depending on (Inlet_PControl_real) { Validate Inlet_Close; }
+  +1 hold until valid (Inlet_Closed);
+     > Set ion source flow 400 sccm
+     > Set dilution flow 1.15 sccm
+     > Set fluorine flow 0.80 sccm
+     > ambient zero on
+     #> spare switched 28V on
+  +1 > Set ambient zero flow 0.55 sccm
+ #+2 > 500V power on
+  +1 Validate GD_Wait;
+}
+
+State Flows_ON_CAL_AM_Z_BPI_600 {
+     > SW Flow State Transitioning
+     #> 500V power off
+     depending on (Inlet_PControl_real) { Validate Inlet_Close; }
+  +1 hold until valid (Inlet_Closed);
+     > Set ion source flow 400 sccm
+     > Set dilution flow 1.10 sccm
+     > Set fluorine flow 0.80 sccm
+     > ambient zero on
+     #> spare switched 28V on
+  +1 > Set ambient zero flow 0.60 sccm
+ #+2 > 500V power on
+  +1 Validate GD_Wait;
+}
+
+
+State Flows_ON_ME {
+     > SW Flow State Transitioning
+     > Set ambient zero flow 85 sccm
+     > ambient zero valve off
+     > ambient zero off
+     > Set ion source flow 380 sccm
+     > Set dilution flow 1450 sccm
+     > Set fluorine flow 0.3 sccm
+  +2 > SW status inlet pressure control
+  +1 hold until ( convert(InL_P) > 0.97*convert(InPset) );
+  +1 Validate GD_Wait;
+}
+
+State Flows_ON_ME_CAL {
+     > SW Flow State Transitioning
+     > Set ambient zero flow 85 sccm
+     > ambient zero valve off
+     > ambient zero off
+     > Set ion source flow 380 sccm
+     > Set dilution flow 1370 sccm
+     > Set fluorine flow 0.30 sccm
+  +2 > SW status inlet pressure control
+  +1 hold until ( convert(InL_P) > 0.97*convert(InPset) );
+  +1 Validate GD_Wait;
+} 
+
+Partition
+# Partition for iris control
+
+State Iris_Close {
+  +1 > Zaber Home Iris
+  +5 Validate Iris_Closed; 
+}
+
+State Iris_Closed { }
+
+State Iris_Open {
+  +1 > Zaber Move Iris Absolute 140000
+  +5 Validate Iris_Monitor_Open;
+}
+
+State Iris_Monitor_Open {
+  depending on (Quick_Shutdown) { Validate Iris_Close; }
+  depending on (Shutdown) { Validate Iris_Close; }
+  +1 hold until (convert(InL_P)>70);
+  +1 validate Iris_Close;
+}
+
+Partition
+# Cal control
+
+State Calib_Wait {
+}
+
+State Cal_init {
+     > Cal H2O2 off
+  +1 > Cal Oacid off
+  +1 > Cal MHP off
+  +1 Validate Calib_OFF;
+}
+
+State Calib_IN {
+     > Cal Bypass on
+  +1 Validate Calib_Wait;
+}
+
+State Calib_OUT {
+     > Cal Bypass off
+  +1 Validate Calib_Wait;
+}
+
+State Calib_ON {
+     > cal scrub off 
+  +2 Validate Calib_Wait;
+}
+
+State Calib_OFF {
+     > cal scrub on
+  +2 Validate Calib_Wait;
+}
+
+Partition
+# Fly valve control
+
+State fly_close {
+     > Set fly valve set point 0 Volts
+  +1 validate fly_idle; 
+}
+
+State fly_idle { }
+
+State fly_open {
+  > Set fly valve set point 5 Volts
+  #+3 hold until (convert(C130_TASX) < 25);
+  #+2 validate fly_close;
+}

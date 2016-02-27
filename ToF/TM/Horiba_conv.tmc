@@ -1,0 +1,35 @@
+%{
+  #include "horiba.h"
+%}
+BitStar DilFlowSP_Stat; invalidate DilFlowSP_Stat;
+  { DilFlowSP_Stat = (HoribaS & DILFLOWSP_S) ? 1 : 0;
+    Validate DilFlowSP_Stat; }
+BitStar DilFlow_Stat; invalidate DilFlow_Stat;
+  { DilFlow_Stat = (HoribaS & DILFLOW_S) ? 1 : 0;
+    Validate DilFlow_Stat; }
+BitStar IonSrcFlowSP_Stat; invalidate IonSrcFlowSP_Stat;
+  { IonSrcFlowSP_Stat = (HoribaS & IONSRCFLOWSP_S) ? 1 : 0;
+    Validate IonSrcFlowSP_Stat; }
+BitStar IonSrcFlow_Stat; invalidate IonSrcFlow_Stat;
+  { IonSrcFlow_Stat = (HoribaS & IONSRCFLOW_S) ? 1 : 0;
+    Validate IonSrcFlow_Stat; }
+BitStar FFlowSP_Stat; invalidate FFlowSP_Stat;
+  { FFlowSP_Stat = (HoribaS & FFLOWSP_S) ? 1 : 0;
+    Validate FFlowSP_Stat; }
+BitStar FFlow_Stat; invalidate FFlow_Stat;
+  { FFlow_Stat = (HoribaS & FFLOW_S) ? 1 : 0;
+    Validate FFlow_Stat; }
+BitStar HoribaPSP_Stat; invalidate HoribaPSP_Stat;
+  { HoribaPSP_Stat = (HoribaS & HORIBAPSP_S) ? 1 : 0;
+    Validate HoribaPSP_Stat; }
+BitStar HoribaP_Stat; invalidate HoribaP_Stat;
+  { HoribaP_Stat = (HoribaS & HORIBAP_S) ? 1 : 0;
+    Validate HoribaP_Stat; }
+%{
+  #define HCmd_text(x) ((x)?"OK":"--")
+%}
+TM typedef unsigned char HCmd_S_t { text "%2d" HCmd_text(); }
+HCmd_S_t HCmd_Stat; invalidate HCmd_Stat;
+  { HCmd_Stat = (HoribaS & HORIBA_CMD_S) ? 1 : 0;
+    Validate HCmd_Stat; }
+

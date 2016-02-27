@@ -1,0 +1,17 @@
+Network assignments on the DC-8 as of 04-25-2012
+
+CIT CIMS
+  IP-1 10.1.1.248
+  IP-2 10.1.1.249
+  IP-3 10.1.1.250 triple
+  IP-4 10.1.1.251 athenaII_a
+  IP-5 10.1.1.252 herc_a
+
+Netmask 255.255.255.0
+GW 10.1.1.1
+DNS 10.1.1.1
+
+IWG1 Port 5101
+Instrument Data Port 5100
+
+NTP 10.1.1.4/10.1.1.5

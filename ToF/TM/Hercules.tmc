@@ -1,0 +1,30 @@
+/* D/A */
+TM 1 Hz Herc_DAC_t Oct_Amp_sp; Address Oct_Amp_sp 0x2000;
+TM 1 Hz Herc_DAC_t Oct_Bias_sp; Address Oct_Bias_sp 0x2001;
+TM 1 Hz Herc_DAC_t FlySt; Address FlySt 0x2002;
+TM 1 Hz Herc_DAC_t SpAO1_sp; Address SpAO1_sp 0x2003;
+
+/* DIO */
+TM 1 Hz Herc_DS_t Herc_DS_A; Address Herc_DS_A 0x3000;
+TM 1 Hz Herc_DS_t Herc_DS_C; Address Herc_DS_C 0x3002;
+TM 1 Hz Herc_DS_t Herc_DS_D; Address Herc_DS_D 0x3003;
+TM 1 Hz Herc_DS_t Herc_DS_E; Address Herc_DS_E 0x3004;
+
+/* A/D */
+TM 1 Hz Herc_ADC_t Oct_Amp_RB; Address Oct_Amp_RB 23;
+TM 1 Hz Herc_ADC_t Oct_Bias_RB; Address Oct_Bias_RB 8;
+TM 1 Hz Herc_ADC_t Oct_Drive_RB; Address Oct_Drive_RB 24;
+TM 1 Hz Herc_ADC_t Fly_Pos_RB; Address Fly_Pos_RB 9;
+TM 1 Hz Herc_ADC_t SpAI1; Address SpAI1 25;
+TM 1 Hz Herc_ADC_t TPB_Spd; Address TPB_Spd 10;
+TM 1 Hz Herc_ADC_t Fly_Press_RB; Address Fly_Press_RB 26;
+TM 1 Hz Herc_ADC_t TPA_BT; Address TPA_BT 11;
+TM 1 Hz Herc_ADC_t TPA_Spd; Address TPA_Spd 27;
+TM 1 Hz AD16_TPAMPS TPA_Cmon; Address TPA_Cmon 12;
+TM 1 Hz Herc_ADC_t TPA_OK; Address TPA_OK 28;
+TM 1 Hz Herc_ADC_t TPB_BT; Address TPB_BT 13;
+TM 1 Hz Herc_ADC_t TPB_OK; Address TPB_OK 29;
+TM 1 Hz AD16_TPAMPS TPB_Cmon; Address TPB_Cmon 14;
+TM 1 Hz Herc_ADC_t TPA_TV; Address TPA_TV 30;
+TM 1 Hz Herc_ADC_t TPBx_TV; Address TPBx_TV 15;
+TM 1 Hz Herc_ADC_t TPB_TV; Address TPB_TV 31;

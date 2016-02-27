@@ -1,0 +1,4 @@
+display ToFdisp
+client ToFclt
+memo
+batchfile interact

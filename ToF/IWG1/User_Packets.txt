@@ -1,0 +1,34 @@
+Packets collected on 20120518 flight:
+  AVOCET 1 Hz
+  DACOM 1 Hz
+  DLH 1 Hz
+  IWG1 1 Hz
+  LARGE 1 Hz
+  MMS 1 Hz
+  NOAA_HSP2 1 Hz
+  NOAA_SP2 1 Hz
+  NOyO3 1 Hz
+
+Packet Definitions:
+
+https://docs.google.com/a/nserc.und.edu/spreadsheet/ccc?key=0Al0JPU10uW4RdDFNZzFsXzJnMnlDdTlmMTgtdWtCZHc#gid=0
+
+  HRAMS is documented, but apparently not transmitting. Documentation raises many questions.
+
+Strategy:
+  For each instrument, provide separate TM Receive interface in order to track staleness and enhance flexibility. Note that each instrument transmits time, so it probably makes sense to report drift value as well.
+
+  Data packets include whitespace, 'NaN'. Apparently no missing values (e.g. ',,') as with IWG1.
+
+  Struct named after instrument as above:
+    typedef struct __attribute__((__packed__)) {
+      double Time;
+    } AVOCET_t;
+    extern AVOCET_t AVOCET;
+    TM "Receive" AVOCET 0;
+    
+    Group AVOCET ( AVOCET_Tdrift, AVOCET_b, AVOCET_stale ) {
+      AVOCET_Tdrift = calc_drift(AVOCET.Time);
+      ...
+      AVOCET_stale = AVOCET_obj->stale(255);
+    }

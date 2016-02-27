@@ -1,0 +1,7 @@
+<package> AthenaII
+<include> msg
+<follow> msghdr
+
+<package> msghdr_default
+<var>
+  const char *msg_hdr_default = "AthII";

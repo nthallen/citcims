@@ -1,0 +1,8 @@
+<package> UserPkts
+<include> msg
+<follow> msg
+<include> <stdlib.h>
+
+<package> msghdr_init
+<init>
+  msg_hdr_default = "UserP";

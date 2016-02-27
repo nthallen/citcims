@@ -1,0 +1,159 @@
+IG {
+  HBox{ +-; Title: "Ion Gauges"; -+ };
+  Hex_P: (Hex_P,9) mbar;
+  ToF_P: (ToF_P,9) mbar;
+  Stat:  (IG_stat,3);
+  Stale: (IG_stale,3);
+}
+
+Flows {
+  HBox{ +-; Title: "Flows"; -+ };
+  ""       Set     Flow;
+  MFC_S1: (MFC_S1_sp,6) (MFC_S1,6) slm;
+  MFC_S2: (MFC_S2_sp,6) (MFC_S2,6) sccm;
+  ZF2_F:  (ZF2_F_sp,6)  (ZF2_F,6) sccm;
+  Tot_F:  (Tot_F_sp,6)  (Tot_F,6) slm;
+}
+Horiba {
+  HBox{ +-; Title: "Horiba"; -+ };
+  ""       Set     Flow;
+  Dilution: >HBox{(DilFlowSP,5); (DilFlowSP_Stat,1)}
+            >HBox{(DilFlow,5); (DilFlow_Stat,1)} sccm;
+  IonSrc:   >HBox{(IonSrcFlowSP,5); (IonSrcFlowSP_Stat,1)}
+            >HBox{(IonSrcFlow,5); (IonSrcFlow_Stat,1)} sccm;
+  Fluorine: >HBox{(FFlowSP,5); (FFlowSP_Stat,1)}
+            >HBox{(FFlow,5); (FFlow_Stat,1)} sccm;
+  Pressure: >HBox{(HoribaPSP,6); (HoribaPSP_Stat,1)}
+            >HBox{(HoribaP,6); (HoribaP_Stat,1)} mbar;
+  { Cmd: (HCmd_Stat,2) HGlue 0+1 Stale: (Horiba_Stale,3) }
+}
+
+GasV {
+  HBox{ +-; Title: "Gas Deck"; -+ };
+  T1: (T1,7) V;
+  T3: (T3,7) V;
+  T4: (T4,7) V;
+  INTP: (INTP,6) mbar;
+  CALP: (CALP,6) mbar;
+  CalT: (CalT,6) C;
+  InL_P: (InL_P,6) mbar;
+  InH_P: (InH_P,6) mbar;
+  PT_P: (PT_P,6) mbar;
+  GBH_P: (GBH_P,6) psi;
+  GBL_P: (GBL_P,6) psi;
+  AI_SP1: (AI_SP1,6) V;
+}
+
+GasCmds {
+  HBox{ +-; Title: "Valves"; -+ };
+  AmbZV:   (AmbZeroS,3);
+  AmbZero: (Amb_zero,3);
+  Bypass:  (Bypass_cal,3);
+  H2O2:    (H2O2_cal,3);
+  MHP:     (MHP_cal,3);
+  Oacid:   (Oacid_cal,3);
+  Scrub:   (Scrub_cal,3);
+  SpVlv1:  (SpVlv1S,3);
+  SpVlv2:  (SpVlv2S,3);
+  SpVlv3:  (SpVlv3S,3);
+  SpVlv4:  (SpVlv4S,3);
+  SpVlv5:  (SpVlv5S,3);
+  SpVlv6:  (SpVlv6S,3);
+  SpVlv7:  (SpVlv7S,3);
+  SpCal1:  (Spare1_cal,3);
+  SpCal2:  (Spare2_cal,3);
+}
+
+Status {
+  HBox{ +-; Title: "Status"; -+ };
+  AII: (AII_Stat,9);
+  CPU: (CPU_Pct,3) %;
+  Disk: (Disk,5) %;
+  SWStat: (SWStat,3);
+  MFCtr: (MFCtr,5);
+  >(flttime,9)<;
+}
+
+Turbo {
+  HBox{ +-; Title: "Turbo Pumps"; -+ };
+  ""     >A<           >B<;
+  Pwr:   (TPA_Enb,3)   (TPB_Enb,3) V;
+  ""     (TPA_Low,4)   (TPB_Low,4) V;
+  ""     (TPA_Start,5) (TPB_Start,5) V;
+  BT:    (TPA_BT,6)    (TPB_BT,6) V;
+  Cmon:  (TPA_Cmon,6)  (TPB_Cmon,6) A;
+  OK:    (TPA_OK,6)    (TPB_OK,6) V;
+  Spd:   (TPA_Spd,6)   (TPB_Spd,6) V;
+  TV:    (TPA_TV,6)    (TPB_TV,6) V;
+  xTV:   ""            (TPBx_TV,6) V;
+}
+
+Scroll {
+  HBox{ +-; Title: "Scroll Pumps"; -+ };
+  "Flow Tube:" (FTSP_RB,3);
+  Turbo:       (TPSP_RB,3);
+}
+
+OMS {
+  HBox{ +-; Title: "Inlet Slit"; -+ };
+  Step: (Insl_Step,9);
+  Stat: (Insl_Stat,4);
+  Stale: (OMS_Stale,3);
+}
+
+Fly {
+  HBox{ +-; Title: "Fly Valve"; -+ };
+  (Bfly_Ctrl,7)  (Bfly_Mode,8);
+  Set:   (FlySt,6)        V;
+  P:     (Fly_Press_RB,6) V;
+  Rdy:   (Fly_Rdy_RB,3);
+  Cl:    (Fly_Cl_RB,3);
+  Op:    (Fly_Op_RB,3);
+  Alarm: (Fly_Alrm_RB,3);
+  Pos:   (Fly_Pos_RB,6)   V;
+}
+
+Oct {
+  HBox{ +-; Title: "Octopole"; -+ };
+  HV_Pwr:   (HV_Pwr_S,3);
+  Oct:      (Oct_Pwr_S,3);
+  Amp_sp:   (Oct_Amp_sp,6) V;
+  Amp_RB:   (Oct_Amp_RB,6) V;
+  Bias_sp:  (Oct_Bias_sp,6) V;
+  Bias_RB:  (Oct_Bias_RB,6) V;
+  Drive_RB: (Oct_Drive_RB,6) V;
+}
+
+zaber {
+  HBox { +-; Zaber; -+ };
+  Position: (Z1pos,7);
+  Voltage:  (Z1V,4) V;
+  Stale:  (Z1stale,3) (Zstale,3);
+}
+
+Misc {
+  HBox{ +-; Title: "Misc"; -+ };
+  Relay28: (Relay_28_RB,3);
+  SpAI1:   (SpAI1,6) V;
+  SpAO1:   (SpAO1_sp,6) V;
+}
+
+IWG1 {
+  HBox{ +-; Title: "IWG1"; -+ };
+  TDrift: (TDrift,6) Sec;
+  DDrift: (TDDrift,9) Sec;
+  Stale: (IWG1_Stale,3);
+}
+
+TDrift {
+  HBox{ +-; Title: "System TDrift"; -+ };
+  SysTDrift: (SysTDrift,7) secs;
+}
+
+{ HBox{
+    { [Flows]; [Horiba]; [Fly]; [zaber] }; |+;
+    { [Turbo]; [GasV]; VGlue 0+1; [TDrift] }; |+;
+    { [GasCmds]; [Scroll]; [OMS] }; |+;
+    { [IG]; [Oct]; [Misc]; [IWG1]; VGlue 0+1; [Status] }
+  }
+}

@@ -1,0 +1,85 @@
+/* herc.tmc */
+TM typedef unsigned char DSTAT {
+  collect x = Herc.read(x.address);
+  text "%3u";
+}
+ 
+TM 1 Hz DSTAT H_DIO_A; Address H_DIO_A 0x3000;
+TM 1 Hz DSTAT H_DIO_B; Address H_DIO_B 0x3001;
+TM 1 Hz DSTAT H_DIO_C; Address H_DIO_C 0x3002;
+TM 4 Hz DSTAT H_DIO_D; Address H_DIO_D 0x3003;
+TM 1 Hz DSTAT H_DIO_E; Address H_DIO_E 0x3004;
+
+TM typedef double SCCM;
+TM typedef double TORR;
+TM typedef double TEMP_C;
+
+/* TM typedef double VOLTS; */ /* Define in zaber.tmc */
+
+/* 0-10V Unipolar, Differential */
+TM typedef signed short HERC_AD {
+  convert VOLTS;
+  collect x = Herc.read(0x1180 + x.address);
+  text "%6.4lf";
+}
+Calibration ( HERC_AD, VOLTS ) { -32768, 0, 32768, 10 }
+
+/* 0-5V Unipolar, Differential */
+TM typedef signed short HERC_ADx2 {
+  convert VOLTS;
+  collect x = Herc.read(0x11A0 + x.address);
+  text "%6.4lf";
+}
+Calibration ( HERC_ADx2, VOLTS ) { -32768, 0, 32768, 5 }
+
+TM typedef HERC_AD AD10V { convert VOLTS; text "%6.3lf"; }
+Calibration ( AD10V, VOLTS ) { -32768, 0, 32768, 10 }
+TM typedef HERC_ADx2 MF10000 { convert SCCM; text "%5.0lf"; }
+Calibration ( MF10000, SCCM ) { -32768, 0, 32768, 10000 }
+TM typedef HERC_ADx2 MF5000 { convert SCCM; text "%6.1lf"; }
+Calibration ( MF5000, SCCM ) { -32768, 0, 32768, 5000 }
+TM typedef HERC_ADx2 MF3000 { convert SCCM; text "%6.1lf"; }
+Calibration ( MF3000, SCCM ) { -32768, 0, 32768, 3000 }
+TM typedef HERC_ADx2 MF500 { convert SCCM; text "%6.2lf"; }
+Calibration ( MF500, SCCM ) { -32768, 0, 32768, 500 }
+TM typedef HERC_ADx2 MF5 { convert SCCM; text "%6.4lf"; }
+Calibration ( MF5, SCCM ) { -32768, 0, 32768, 5 }
+TM typedef HERC_ADx2 MF10 { convert SCCM; text "%6.4lf"; }
+Calibration ( MF10, SCCM ) { -32768, 0, 32768, 10 }
+TM typedef HERC_ADx2 MF20 { convert SCCM; text "%6.4lf"; }
+Calibration ( MF20, SCCM ) { -32768, 0, 32768, 20 }
+TM typedef HERC_AD P100T { convert TORR; text "%6.2lf"; }
+Calibration ( P100T, TORR ) { -32768, 0, 32768, 100 }
+TM typedef HERC_AD P1000T { convert TORR; text "%6.2lf"; }
+Calibration ( P1000T, TORR ) { -32768, 0, 32768, 1000 }
+TM typedef HERC_ADx2 Therm_t { convert VOLTS; text "%5.2lf"; }
+Calibration ( Therm_t, VOLTS ) { -32768, 0, 32768, 5 }
+TM typedef HERC_ADx2 ft_therm { convert TEMP_C; text "%5.2lf"; }
+Calibration ( ft_therm, TEMP_C ) { -16640, 45, -14360, 40, -11460, 35, -7940, 30, -3800, 25, 960, 20, 6340, 15, 12340, 10, 18960, 5, 26200, 0, 34060, -5 }
+
+TM 1 Hz MF3000 ScrubMFC; Address ScrubMFC 0;
+TM 8 Hz MF5000 DiluteMFC; Address DiluteMFC 1;
+TM 8 Hz MF500 IonSourceMFC; Address IonSourceMFC 2;
+TM 8 Hz MF5 ReagentMFC; Address ReagentMFC 3;
+TM 8 Hz P100T Pressure100T; Address Pressure100T 4;
+TM 1 Hz P1000T Pressure1000T; Address Pressure1000T 5;
+TM 8 Hz MF5 cidMFC; Address cidMFC 6;
+TM 1 Hz Therm_t MainFlowTherm; Address MainFlowTherm 7;
+TM 8 Hz ft_therm ChemIonTherm; Address ChemIonTherm 8;
+TM 8 Hz Therm_t TSpare1; Address TSpare1 9;
+TM 1 Hz Therm_t TSpare2; Address TSpare2 10;
+TM 1 Hz Therm_t TurboPumpT; Address TurboPumpT 11;
+TM 1 Hz Therm_t TempIC; Address TempIC 12;
+TM 1 Hz HERC_ADx2 Sp_5V; Address Sp_5V 13;
+TM 1 Hz AD10V Sp_10V; Address Sp_10V 14;
+TM 8 Hz MF10000 MainFlowMeter; Address MainFlowMeter 15;
+
+TM typedef unsigned short HERC_DA {
+  text "%4d";
+  collect x = Herc.read(x.address);
+}
+
+TM 1 Hz HERC_DA ScrubMFCset; Address ScrubMFCset 0x2000;
+TM 1 Hz HERC_DA DiluteMFCset; Address DiluteMFCset 0x2001;
+TM 1 Hz HERC_DA IonSourceMFCset; Address IonSourceMFCset 0x2002;
+TM 1 Hz HERC_DA ReagentMFCset; Address ReagentMFCset 0x2003;

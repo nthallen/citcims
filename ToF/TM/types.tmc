@@ -1,0 +1,173 @@
+TM typedef unsigned short UINT { text "%5u"; }
+TM typedef unsigned char UCHAR { text "%3u"; }
+
+TM typedef double VOLTS { text "%6.2lf"; }
+TM typedef double SCCM { text "%6.1lf"; }
+TM typedef double SLM { text "%6.3lf"; }
+TM typedef double CELCIUS { text "%5.1lf"; }
+TM typedef double MBAR { text "%6.1lf"; }
+TM typedef double PSI { text "%4.0lf"; }
+TM typedef double AMPS { text "%5.3lf"; }
+
+TM typedef signed short A2_ADC_t {
+    convert VOLTS;
+    text "%6.2lf";
+    collect x = AII.read(x.address);
+  }
+  calibration (A2_ADC_t, VOLTS) { -32768, -10, 32768, 10 }
+TM typedef A2_ADC_t A2_ADCx2_t {
+    collect x = AII.read(x.address + 0x100);
+  }
+  calibration (A2_ADCx2_t, VOLTS) { -32768, -5, 32768, 5 }
+
+TM typedef A2_ADCx2_t Tcal1 { convert CELCIUS; text "%6.1lf"; }
+TM typedef A2_ADCx2_t Tcal2 { convert CELCIUS; }
+  calibration (Tcal2, CELCIUS) { 1638, -50, 31130, 150.0 }
+TM typedef A2_ADCx2_t V500sccm_t { convert SCCM; }
+  calibration (V500sccm_t, SCCM) { -32768, -500, 32768, 500 }
+TM typedef A2_ADCx2_t V1000sccm_t { convert SCCM; }
+  calibration (V1000sccm_t, SCCM) { -32768, -1000, 32768, 1000 }
+TM typedef A2_ADCx2_t V5slm_t { convert SLM; }
+  calibration (V5slm_t, SLM) { -32768, -5, 32768, 5 }
+TM typedef A2_ADC_T V1000torr_t { convert MBAR; }
+  calibration (V1000torr_t, MBAR) { 0, 0, 32768, 1333.3 }
+TM typedef A2_ADC_T V50psi_t { text "%6.1lf"; convert MBAR; }
+  calibration (V50psi_t, MBAR) { 0, 0, 32768, 3445 }
+TM typedef A2_ADC_t V100torr_t { convert MBAR; }
+  calibration (V100torr_t, MBAR) { 0, 0, 32768, 133.33 }
+TM typedef A2_ADCx2_t V100torrdp_t { convert MBAR; }
+  calibration (V100torrdp_t, MBAR) { 0, 0, 32768, 133.33 }
+TM typedef A2_ADCx2_t V2500psi_t { convert PSI; text "%6.1lf"; }
+  calibration (V2500psi_t, PSI) { 0, -625, 32768, 2500 }
+TM typedef A2_ADCx2_t V100psi_t { convert PSI; }
+  calibration (V100psi_t, PSI) { 0, -25, 32768, 100 }
+TM typedef A2_ADCx2_t T134_t { text "%7.3lf"; }
+
+TM typedef unsigned short A2_DAC_t {
+    convert VOLTS;
+    text "%6.2lf";
+    collect x = AII.read(x.address);
+  }
+  calibration (A2_DAC_t, VOLTS) { 0, -10, 4096, 10 }
+TM typedef A2_DAC_t V500sccm_sp_t { convert SCCM; }
+  calibration (V500sccm_sp_t, SCCM) { 2048, 0, 4096, 1000 }
+TM typedef A2_DAC_t V5slm_sp_t { convert SLM; }
+  calibration (V5slm_sp_t, SLM) { 2048, 0, 4096, 10 }
+TM typedef A2_DAC_t V1000sccm_sp_t { convert SCCM; }
+  calibration (V1000sccm_sp_t, SCCM) { 2048, 0, 4096, 2000 }
+
+TM typedef unsigned char AII_DS_t {
+  text "%3u";
+  collect x = AII.read(x.address);
+}
+%{
+  const char *AII_S_text(unsigned char sv) {
+    switch (sv) {
+      case 0: return "gone     ";
+      case 1: return "init     ";
+      case 2: return "connected";
+      default: return "?????????";
+    }
+  }
+%}
+TM typedef unsigned char AII_S_t {
+  text "%3u" AII_S_text();
+  collect x = AII.status();
+}
+%{
+  #define on_off_text(x) ((x)?" On":"Off")
+  #define start_stop_text(x) ((x)?"Start":" Stop")
+  #define low_high_text(x) ((x)?" Low":"High")
+  #define bfly_mode_text(x) ((x)?"Pressure":"Position")
+%}
+TM typedef unsigned char On_Off_t { text "%3d" on_off_text(); }
+TM typedef unsigned char Start_t { text "%5d" start_stop_text(); }
+TM typedef unsigned char Low_High_t { text "%5d" low_high_text(); }
+TM typedef unsigned char Bfly_Mode_t { text "%8d" bfly_mode_text(); }
+TM typedef unsigned char Bfly_Ctrl_t { text "%7d" bfly_ctrl_text(); }
+
+TM 8 Hz UINT Synch, MFCtr;
+
+calibration (Tcal1, CELCIUS) {
+  65072.66048, -80,
+  64884.57216, -75,
+  64631.6032, -70,
+  64294.0928, -65,
+  63853.69088, -60,
+  63287.45984, -55,
+  62574.42816, -50,
+  61695.5904, -45,
+  60638.49472, -40,
+  59393.96608, -35,
+  57968.55808, -30,
+  56385.86368, -25,
+  54672.09728, -20,
+  52871.168, -15,
+  51030.91712, -10,
+  49200.49664, -5,
+  47426.43712, 0,
+  45742.81728, 5,
+  44179.12832, 10,
+  42753.72032, 15,
+  41473.80224, 20,
+  40329.54368, 25,
+  39328.1536, 30,
+  38451.28192, 35,
+  37689.7536, 40,
+  37032.42752, 45,
+  36466.19648, 50,
+  35980.57472, 55,
+  35562.45504, 60,
+  35203.97312, 65,
+  34896.60928, 70,
+  34632.4992, 75,
+  34405.08928, 80,
+  34208.48128, 85,
+  34040.05376, 90,
+  33892.59776, 95,
+  33766.76864, 100,
+  33656.0128, 105,
+  33559.67488, 110,
+  33475.7888, 115,
+  33402.38848, 120,
+  33338.1632, 125,
+  33281.80224, 130,
+  33231.33952, 135,
+  33187.4304, 140,
+  33148.1088, 145,
+  33114.03008, 150,
+  33082.5728, 155,
+  33055.04768, 160,
+  32768, 999,
+  0, 999
+}
+
+TM typedef unsigned short Herc_DAC_t {
+    convert VOLTS;
+    text "%6.2lf";
+    collect x = Herc.read(x.address);
+  }
+  calibration (Herc_DAC_t, VOLTS) { 0, -10, 4096, 10 }
+
+TM typedef unsigned char Herc_DS_t {
+  text "%3u";
+  collect x = Herc.read(x.address);
+}
+
+TM typedef signed short Herc_ADC_t {
+    convert VOLTS;
+    text "%6.2lf";
+    collect x = Herc.read(0x1000 + x.address);
+  }
+  calibration (Herc_ADC_t, VOLTS) { -32768, -10, 32768, 10 }
+
+/* TPA_Cmon, TPB_Cmon: 0-10 V = 0-4.545 A */
+TM typedef Herc_ADC_t AD16_TPAMPS { text "%5.3lf"; convert AMPS; }
+  calibration (AD16_TPAMPS, AMPS) { 0, 0, 32768, 4.545 }
+
+%{
+  #define BitStar_text(x) ((x)?" ":"*")
+%}
+TM typedef unsigned char BitStar { text "%1d" BitStar_text(); }
+
+TM typedef float SWStatf { text "%7.4f"; }

@@ -1,0 +1,6 @@
+# non-Startup script for athenaII_a
+# We won't do a thing except to define FlightNode, which will
+# cause flight.sh to run parent without the -q option, suspending
+# operations.
+  FlightNode=tofherc
+  echo "Running script runfile.AIIa to suspend logging"
