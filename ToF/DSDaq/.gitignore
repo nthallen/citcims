@@ -7,3 +7,4 @@ AthenaIIoui.c
 Hercules
 Herculesoui.c
 .gdbinit
+*.o

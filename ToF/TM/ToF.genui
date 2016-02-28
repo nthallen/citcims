@@ -104,41 +104,6 @@ ROWS 18
   1 Oct_Bias_sp Octopole Bias
   1 Oct_Drive_RB Octopole Drive
   
-  1 Lat IWG1 Lat
-  1 Lon IWG1 Lon
-  1 Ambient_Temp IWG1 Temp
-  1 Total_Temp IWG1 Temp
-  1 Dew_Point IWG1 Temp
-  1 Dynamic_Press IWG1 Pres
-  1 Static_Press IWG1 Pres
-  1 Grnd_Spd IWG1 Speed
-  1 Indicated_Airspeed IWG1 Speed
-  1 True_Airspeed IWG1 Speed
-  1 Mach_Number IWG1 Mach
-  1 GPS_MSL_Alt IWG1 Alt
-  1 Press_Alt IWG1 Alt
-  1 Radar_Alt IWG1 Alt
-  1 WGS_84_Alt IWG1 Alt
-  1 Angle_of_Attack Attitude Attack
-  1 Pitch Attitude Pitch
-  1 Roll Attitude Roll
-  1 Side_slip Attitude Side_Slip
-  1 Drift Attitude Drift
-  1 Solar_Zenith Attitude SZ
-  1 Sun_Elev_AC Attitude SZ
-  1 Sun_Az_AC Attitude AZ
-  1 Sun_Az_Grd Attitude Az
-  1 Track Attitude Track
-  1 True_Hdg Attitude Track
-  1 Vert_Velocity Wind VertVel
-  1 Vert_Wind_Spd Wind VertSpeed
-  1 Wind_Dir Wind Dir
-  1 Wind_Speed Wind Speed
-  1 Cabin_Press IWG1_Stat CabinPress
-  1 TDDrift IWG1_Stat TDrift
-  1 TDrift IWG1_Stat TDrift
-  1 IWG1_Stale IWG1_Stat Stale
-  
   1 Z1V Iris V
   1 Z1pos Iris Step
   1 Z1stale Iris Stale Drive
@@ -163,13 +128,6 @@ ROWS 18
   1 FTSP_RB:Herc_DS_E:3 Misc Status
   1 SpAI1 Inlet TV 
 
-  8 Sonic_U Sonic U
-  8 Sonic_V Sonic V
-  8 Sonic_W Sonic W
-  8 Sonic_C Sonic C
-  8 Sonic_S Sonic S
-  8 Sonic_N Sonic N
-  
   1 AII_Stat SWStatus AII %.0lf
   1 SWFlow SWStatus SWFlow
   1 InP_Pgain SWStatus InP Pgain
@@ -179,31 +137,6 @@ ROWS 18
   1 CPU_Pct System CPU
   1 Disk System Disk
   1 SysTDrift System TDrift
-
-# Zeno Group
-  1 Zeno_Press Zeno Press %-
-  1 Zeno_RH Zeno RH %-
-  1 Zeno_SolarRadiance Zeno Radiance %- [0 1 -1.1 1.1 ] Radiance
-# 1 model_intensity Zeno Radiance %- Model
-  1 Zeno_Temp Zeno Temp %-
-# 1 Zeno_T Zeno Temp %-
-# 1 Zeno_WindDir Zeno WindDir %-
-  1 Zeno_WindSpeed Zeno WindSpeed %- [.25 .95 0 1]
-# 1 wslimit_fast Zeno WindSpeed %-
-# 1 wslimit_slow Zeno WindSpeed %-
-# 1 ws_high:ws_high:0 Zeno WindStat %-
-# 1 ws_low:ws_low:0 Zeno WindStat %-
-# 1 ok_to_open:ok_to_open:0 Zeno WindStat %-
-
-  1 Zeno_WindDir Wind Polar %- :wind
-  1 Zeno_WindSpeed Wind Polar %-
-  
-  1 Zeno_VBatt ZenoHK VBatt %-
-  1 Zeno_Rain ZenoHK Rain %-
-  1 Zeno_Lightning ZenoHK LeafWet %- LeafWet
-  1 Zeno_BIT ZenoHK BIT %-
-  1 Zeno_Tdrift ZenoHK TDrift %-
-  1 ZENO_stale ZenoHK Stale %-
 
   # 1 SpAO1_sp
   # 1 Herc_DS_A

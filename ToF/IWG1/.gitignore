@@ -2,3 +2,4 @@ IWG1
 IWG1oui.c
 UserPkts
 UserPktsoui.c
+*.o

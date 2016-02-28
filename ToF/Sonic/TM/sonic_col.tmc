@@ -1,0 +1,5 @@
+%{
+  /* sonic_col.tmc */
+  #include "sonic.h"
+  SonicData_t SonicData;
+%}

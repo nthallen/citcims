@@ -1,8 +1,5 @@
 %{
   /* sonic.tmc */
-  #include "sonic.h"
-  SonicData_t SonicData;
-  pid_t SonicProxy;
 %}
 
 TM "Receive" SonicData 1;

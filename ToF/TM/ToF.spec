@@ -5,7 +5,6 @@ tmcbase = Hercules.tmc
 tmcbase = oms.tmc
 tmcbase = Horiba.tmc
 tmcbase = zaber.tmc
-tmcbase = sonic.tmc
 tmcbase = tdrift.tmc
 tmcbase = /usr/local/share/huarp/cpu_usage.tmc
 tmcbase = /usr/local/share/huarp/tmdf.tmc
@@ -30,47 +29,61 @@ colbase = /usr/local/share/huarp/tmdf_col.tmc
 colbase = ../DSDaq/dsdaq.cc
 
 swsbase = ToF.sws
+genuibase = ToF.genui
 
 tmcbase = IWG1.tmc
 colbase = IWG1_col.tmc
 tmcbase = UserPkts.tmc
 colbase = UserPkts_col.tmc
+genuibase = IWG1.genui
+DISTRIB = ../IWG1/IWG1 ../IWG1/UserPkts
+CPPFLAGS = -I ../IWG1
+UserPktsdisp : UserPkts.tbl
+UserPktsext : UserPkts.cdf
+
+#tmcbase = ../Sonic/TM/sonic.tmc
+#colbase = ../Sonic/TM/sonic_col.tmc
+#genuibase = ../Sonic/TM/sonic.genui
+#DISTRIB = ../Sonic/sonic
+#CPPFLAGS = -I ../Sonic
 
 #tmcbase = Zeno.tmc
 #colbase = Zeno_col.tmc
 #cmdbase = Zeno.cmd
+#genuibase = ../Zeno/Zeno.genui
+#CPPFLAGS = -I ../Zeno
+#DISTRIB = ../Zeno/Zeno_Ser
 
 SCRIPT = interact runfile.AII runfile.AIIa
 DISTRIB = ../IonGauge/IonGauge ../DSDaq/AthenaII
 DISTRIB = ../DSDaq/Hercules ../Horiba/horiba
-DISTRIB = ../Zaber/zaber ../IWG1/IWG1 ../IWG1/UserPkts
-DISTRIB = ../Sonic/sonic ../Zeno/Zeno_Ser
+DISTRIB = ../Zaber/zaber
 TGTDIR = $(TGTNODE)/home/tof
 
 OBJ = address.h
 
 ToFdisp : AthenaII_conv.tmc Hercules_conv.tmc Horiba_conv.tmc ToF.tbl \
-  IWG1.tbl sonic.tbl
+  IWG1.tbl
+#ToFdisp : AthenaII_conv.tmc Hercules_conv.tmc Horiba_conv.tmc ToF.tbl \
+#  IWG1.tbl ../Sonic/TM/sonic.tbl
 #ToFdisp : AthenaII_conv.tmc Hercules_conv.tmc Horiba_conv.tmc ToFz.tbl \
-#    sonic.tbl
+#    ../Sonic/TM/sonic.tbl
+
 ToFext : ToF.cdf
-ToFengext : ToFeng.cdf
+
+#ToFengext : ToFeng.cdf
 #ToFjsonext : ToFjson.cdf
-ToFjsonext : ToFzjson.cdf
-#UserPktsdisp : UserPkts.tbl
-#UserPktsext : UserPkts.cdf
+ToFjsonext : ToFajson.cdf
+#ToFjsonext : ToFzjson.cdf
+
 ToFalgo : tpfilt.tmc ToF.tma ToF.sws Inlet.tma turbo.tma gasdeck.tma
 # Inlet.tma
-#doit : ToF.doit
-doit : ToFz.doit
+doit : ToF.doit
+#doit : ToFz.doit
 %%
 COLFLAGS=-Haddress.h
-CPPFLAGS += -I ../IonGauge -I ../DSDaq -I ../Horiba -I ../Zaber -I ../Sonic
-CPPFLAGS += -I ../IWG1
-CPPFLAGS += -I ../Zeno
+CPPFLAGS += -I ../IonGauge -I ../DSDaq -I ../Horiba -I ../Zaber
 CXXFLAGS = -Wall -g
-ToFeng.cdf : genui.txt
-	genui -d ../eng -c genui.txt
 address.h : ToFcol.cc
 ../Zaber/zaber :
 	cd ../Zaber && make
@@ -84,6 +97,8 @@ address.h : ToFcol.cc
 	cd ../IWG1 && make IWG1
 ../IWG1/UserPkts :
 	cd ../IWG1 && make UserPkts
+../Sonic/sonic :
+	cd ../Sonic && make
 ../Zeno/Zeno_Ser :
 	cd ../Zeno && make Zeno_Ser
 .PHONY : all-clean
@@ -92,3 +107,6 @@ all-clean : clean
 	cd ../IonGauge && make clean
 	cd ../DSDaq && make clean
 	cd ../Horiba && make clean
+	cd ../IWG1 && make clean
+	cd ../Sonic && make clean
+	cd ../Zeno && make clean
