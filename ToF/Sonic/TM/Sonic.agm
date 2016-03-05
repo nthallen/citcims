@@ -1,0 +1,24 @@
+ModuleDef Sonic [ Hz=8 ] {
+  Sonic Module supports RS-232 communication with
+  Campbell Scientific CSAT3 sonic anemometer
+}
+
+mode (default) {
+  tmcbase = sonic.tmc:sonic.tmc.in
+  colbase = sonic_col.tmc
+  genuibase = sonic.genui:sonic.genui.in
+  DISTRIB = @MODDIR@/../sonic
+  CPPFLAGS = -I @MODDIR@/..
+  %%
+@MODDIR@/../sonic :
+	cd @MODDIR@/.. && make
+}
+
+mode (disable) {
+}
+
+%%
+.PHONY : clean-sonic
+clean-dist : clean-sonic
+clean-sonic :
+	cd @MODDIR@/.. && make clean
