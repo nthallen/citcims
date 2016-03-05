@@ -1,0 +1,27 @@
+ModuleDef nXDS {
+  The Edwards nXDS is a scroll pump.
+  This module definition does not account for the following:
+    -The nXDS.tbl currently needs to be manually included in screen def
+    -There is no support for
+      =remote experiment data reception
+      =disable substitution in genui
+}
+mode (default) {
+  tmcbase = nXDS.tmc
+  colbase = nXDS_col.tmc
+  cmdbase = nXDS.cmd
+  genuibase = nXDS.genui
+  extbase = nXDS_conv.tmc
+  DISTRIB = @MODDIR@/../nXDS
+  CPPFLAGS = -I @MODDIR@/..
+  %%
+@MODDIR@/../nXDS :
+	cd @MODDIR@/.. && make
+}
+
+%%
+.PHONY : clean-nXDS
+clean-dist : clean-nXDS
+clean-nXDS :
+	cd @MODDIR@/.. && make clean
+

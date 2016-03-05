@@ -14,6 +14,6 @@ sonicoui.c : sonic.oui
 	oui -o sonicoui.c sonic.oui
 
 clean :
-	rm $(OBJECT) $(TARGET)
+	rm -f $(OBJECT) $(TARGET)
 
 include /usr/local/share/huarp/appgen.mk

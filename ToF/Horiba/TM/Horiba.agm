@@ -1,0 +1,24 @@
+ModuleDef UPS {
+  Horiba Module supports RS-485 communication with
+  the SEC/SEF-Z512MG Digital Mass Flow Controller/Meter
+  from HORIBA STEC, Inc.
+}
+
+mode (default) {
+  tmcbase = Horiba.tmc
+  colbase = Horiba_col.tmc
+  cmdbase = Horiba.cmd
+  extbase = Horiba_conv.tmc
+  genuibase = Horiba.genui
+  DISTRIB = @MODDIR@/../horiba
+  CPPFLAGS = -I @MODDIR@/..
+  %%
+@MODDIR@/../horiba :
+	cd @MODDIR@/.. && make
+}
+
+%%
+.PHONY : clean-Horiba
+clean-dist : clean-Horiba
+clean-Horiba :
+	cd @MODDIR@/.. && make clean

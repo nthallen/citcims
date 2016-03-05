@@ -35,5 +35,5 @@ gpsd2 {
 
 gpsd {
   HBox { +-; Title: "GPSD"; -+ };
-  HBox { +|+; [gpsd1]; +|+; [gpsd2]; +|+ };
+  HBox { [gpsd1]; +|+; [gpsd2] };
 }

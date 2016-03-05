@@ -1,0 +1,50 @@
+  1 nX0LinkV nXDS V
+  1 nX0MtrI nXDS I
+  1 nX0MtrW nXDS W
+  1 nX0CtrlrT nXDS T
+  1 nX0MtrF nXDS Freq
+  1 nX_stale nXDS Stale
+  
+  1 nX0_Power:nX0Power:0 nXDS0 Stat %.0lf
+  1 nX0_V802:nX0Power:1 nXDS0 Stat %.0lf
+  1 nX0_Resp:nX0Stat:0 nXDS0 Stat %.0lf
+  1 nX0_Dec:nX0Stat:1 nXDS0 Stat %.0lf
+  1 nX0_Acc:nX0Stat:2 nXDS0 Stat %.0lf
+  1 nX0_Stdby:nX0Stat:3 nXDS0 Stat %.0lf
+  1 nX0_Full:nX0Stat:4 nXDS0 Stat %.0lf
+  1 nX0_AbvRamp:nX0Stat:5 nXDS0 Stat %.0lf
+  1 nX0_AbvOvLd:nX0Stat:6 nXDS0 Stat %.0lf
+  1 nX0_Warn:nX0Stat:7 nXDS0 Stat %.0lf
+  1 nX0_Fault:nX0Stat:8 nXDS0 Stat %.0lf
+  1 nX0_OV:nX0Stat:9 nXDS0 Stat %.0lf
+  1 nX0_OI:nX0Stat:10 nXDS0 Stat %.0lf
+  1 nX0_OT:nX0Stat:11 nXDS0 Stat %.0lf
+  1 nX0_UT:nX0Stat:12 nXDS0 Stat %.0lf
+  1 nX0_PwrStgFlt:nX0Stat:13 nXDS0 Stat %.0lf
+  1 nX0_OLTO:nX0Stat:14 nXDS0 Stat %.0lf
+  1 nX0_AccTO:nX0Stat:15 nXDS0 Stat %.0lf
+
+  1 nX1LinkV nXDS V
+  1 nX1MtrI nXDS I
+  1 nX1MtrW nXDS W
+  1 nX1CtrlrT nXDS T
+  1 nX1MtrF nXDS Freq
+
+  1 nX1_Power:nX1Power:0 nXDS1 Stat %.0lf
+  1 nX1_V802:nX0Power:1 nXDS1 Stat %.0lf
+  1 nX1_Resp:nX1Stat:0 nXDS1 Stat %.0lf
+  1 nX1_Dec:nX1Stat:1 nXDS1 Stat %.0lf
+  1 nX1_Acc:nX1Stat:2 nXDS1 Stat %.0lf
+  1 nX1_Stdby:nX1Stat:3 nXDS1 Stat %.0lf
+  1 nX1_Full:nX1Stat:4 nXDS1 Stat %.0lf
+  1 nX1_AbvRamp:nX1Stat:5 nXDS1 Stat %.0lf
+  1 nX1_AbvOvLd:nX1Stat:6 nXDS1 Stat %.0lf
+  1 nX1_Warn:nX1Stat:7 nXDS1 Stat %.0lf
+  1 nX1_Fault:nX1Stat:8 nXDS1 Stat %.0lf
+  1 nX1_OV:nX1Stat:9 nXDS1 Stat %.0lf
+  1 nX1_OI:nX1Stat:10 nXDS1 Stat %.0lf
+  1 nX1_OT:nX1Stat:11 nXDS1 Stat %.0lf
+  1 nX1_UT:nX1Stat:12 nXDS1 Stat %.0lf
+  1 nX1_PwrStgFlt:nX1Stat:13 nXDS1 Stat %.0lf
+  1 nX1_OLTO:nX1Stat:14 nXDS1 Stat %.0lf
+  1 nX1_AccTO:nX1Stat:15 nXDS1 Stat %.0lf
