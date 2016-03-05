@@ -1,0 +1,24 @@
+# Zeno Group
+  1 Zeno_Press Zeno Press @FMTSUFFIX@
+  1 Zeno_RH Zeno RH @FMTSUFFIX@
+  1 Zeno_SolarRadiance Zeno Radiance @FMTSUFFIX@ [0 1 -1.1 1.1 ] Radiance
+# 1 model_intensity Zeno Radiance @FMTSUFFIX@ Model
+  1 Zeno_Temp Zeno Temp @FMTSUFFIX@
+# 1 Zeno_T Zeno Temp @FMTSUFFIX@
+# 1 Zeno_WindDir Zeno WindDir @FMTSUFFIX@
+  1 Zeno_WindSpeed Zeno WindSpeed @FMTSUFFIX@ [.25 .95 0 1]
+# 1 wslimit_fast Zeno WindSpeed @FMTSUFFIX@
+# 1 wslimit_slow Zeno WindSpeed @FMTSUFFIX@
+# 1 ws_high:ws_high:0 Zeno WindStat @FMTSUFFIX@
+# 1 ws_low:ws_low:0 Zeno WindStat @FMTSUFFIX@
+# 1 ok_to_open:ok_to_open:0 Zeno WindStat @FMTSUFFIX@
+
+  1 Zeno_WindDir Wind Polar @FMTSUFFIX@ :wind
+  1 Zeno_WindSpeed Wind Polar @FMTSUFFIX@
+  
+  1 Zeno_VBatt ZenoHK VBatt @FMTSUFFIX@
+  1 Zeno_Rain ZenoHK Rain @FMTSUFFIX@
+  1 Zeno_Lightning ZenoHK LeafWet @FMTSUFFIX@ LeafWet
+  1 Zeno_BIT ZenoHK BIT @FMTSUFFIX@
+  1 Zeno_Tdrift ZenoHK TDrift @FMTSUFFIX@
+  1 ZENO_stale ZenoHK Stale @FMTSUFFIX@
