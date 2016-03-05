@@ -20,7 +20,7 @@ TM typedef unsigned short Zaber_volt_t {
 TM 1 Hz Zaber_pos_t Z1pos;
 TM 1 Hz Zaber_volt_t Z1V;
 TM 1 Hz UCHAR Z1stale, Zstale;
-Group ZaberGrp ( Z1pos, Z1V, Z1stale ) {
+Group ZaberGrp ( Z1pos, Z1V, Z1stale, Zstale ) {
   Z1pos = ZD0.position;
   Z1V = ZD0.PS_voltage;
   Z1stale = ZD0.zero ?

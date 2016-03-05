@@ -1,0 +1,20 @@
+ModuleDef Zaber {
+  Zaber Module provides motion control for the pinhole
+}
+
+mode (default) {
+  tmcbase = zaber.tmc
+  cmdbase = zaber.cmd
+  genuibase = zaber.genui
+  DISTRIB = @MODDIR@/../zaber
+  CPPFLAGS = -I @MODDIR@/..
+  %%
+@MODDIR@/../zaber :
+	cd @MODDIR@/.. && make
+}
+
+%%
+.PHONY : clean-zaber
+clean-dist : clean-zaber
+clean-zaber :
+	cd @MODDIR@/.. && make clean
