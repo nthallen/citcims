@@ -1,17 +1,15 @@
 %{
-  #include "IonGauge.h"
   #include "dtoe.h"
-  IonGauge_t IonGauge;
 %}
 TM "Receive" IonGauge 1;
 
 /* IonGauge_P_t is in mbar */
 TM typedef float IonGauge_P_t { text "%9.3e"; }
 TM typedef unsigned char IG_stat_t { text "%3u"; }
-TM 8 Hz IonGauge_P_t Hex_P;
-TM 8 Hz IonGauge_P_t ToF_P;
-TM 8 Hz IG_stat_t IG_stat;
-TM 8 Hz IG_stat_t IG_stale;
+TM @Hz@ Hz IonGauge_P_t Hex_P;
+TM @Hz@ Hz IonGauge_P_t ToF_P;
+TM @Hz@ Hz IG_stat_t IG_stat;
+TM @Hz@ Hz IG_stat_t IG_stale;
 
 Group IonGauge ( Hex_P, ToF_P, IG_stat ) {
   Hex_P = IonGauge.Hex_P;

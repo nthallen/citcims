@@ -1,0 +1,21 @@
+ModuleDef IonGauge [ Hz=8 ] {
+  IonGauge Module supports RS-485 communication with
+  IonGauge Vacuum Pressure Transducers
+}
+
+mode (default) {
+  tmcbase = IonGauge.tmc:IonGauge.tmc.in
+  colbase = IonGauge_col.tmc
+  genuibase = IonGauge.genui:IonGauge.genui.in
+  DISTRIB = @MODDIR@/../IonGauge
+  CPPFLAGS = -I @MODDIR@/..
+  %%
+@MODDIR@/../IonGauge :
+	cd @MODDIR@/.. && make
+}
+
+%%
+.PHONY : clean-IonGauge
+clean-dist : clean-IonGauge
+clean-IonGauge :
+	cd @MODDIR@/.. && make clean

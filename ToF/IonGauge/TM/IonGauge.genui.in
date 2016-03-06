@@ -1,0 +1,4 @@
+  @Hz@ Hex_P IonGauge P
+  @Hz@ ToF_P IonGauge P
+  @Hz@ IG_stale IonGauge Stale
+  @Hz@ IG_stat IonGauge Stat

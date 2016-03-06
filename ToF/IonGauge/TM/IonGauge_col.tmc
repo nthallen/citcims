@@ -1,0 +1,4 @@
+%{
+  #include "IonGauge.h"
+  IonGauge_t IonGauge;
+%}
