@@ -2,11 +2,6 @@ HEADER Time of Flight Instrument
 MNEMONIC ToF
 HOMEDIR ToF_Data_Dir
 ROWS 18
-  8 Hex_P IonGauge P
-  8 ToF_P IonGauge P
-  8 IG_stale IonGauge Stale
-  8 IG_stat IonGauge Stat
-  
   1 MFC_S1 Flows S1
   1 MFC_S1_sp Flows S1
   1 MFC_S2 Flows S2
@@ -15,25 +10,6 @@ ROWS 18
   1 ZF2_F_sp Flows ZF2
   1 Tot_F Flows Total
   1 Tot_F_sp Flows Total
-  
-  1 DilFlow Horiba Dilution
-  1 DilFlowSP Horiba Dilution
-  1 IonSrcFlow Horiba IonSrc
-  1 IonSrcFlowSP Horiba IonSrc
-  1 FFlow Horiba Fluorine
-  1 FFlowSP Horiba Fluorine
-  1 HoribaP Horiba Pressure
-  1 HoribaPSP Horiba Pressure
-  1 DilFlowSP_Stat:HoribaS:0 Horiba Status
-  1 DilFlow_Stat:HoribaS:1 Horiba Status
-  1 IonSrcFlowSP_Stat:HoribaS:2 Horiba Status
-  1 IonSrcFlow_Stat:HoribaS:3 Horiba Status
-  1 FFlowSP_Stat:HoribaS:4 Horiba Status
-  1 FFlow_Stat:HoribaS:5 Horiba Status
-  1 HoribaPSP_Stat:HoribaS:6 Horiba Status
-  1 HoribaP_Stat:HoribaS:7 Horiba Status
-  1 HCmd_Stat:HoribaS:8 Horiba Status
-  1 Horiba_Stale Horiba Stale
   
   1 T1 GasDeck Temp
   1 T3 GasDeck Temp
@@ -50,13 +26,6 @@ ROWS 18
   
   1 InL_P Inlet P
   1 InPset Inlet P SetPt
-  4 Insl_Step Inlet Step
-  4 OMS_Stale Inlet Stale
-  4 Out:Insl_Stat:3   Inlet Status %.0lf
-  4 Stop:Insl_Stat:2  Inlet Status %.0lf
-  4 Limit:Insl_Stat:1 Inlet Status %.0lf
-  4 Home:Insl_Stat:0  Inlet Status %.0lf
-  # 4 Insl_Stat
   
   #1 AII_DS0
   1 AmbZeroS:AII_DS0:0 GasCmds Status
@@ -103,11 +72,6 @@ ROWS 18
   1 Oct_Bias_RB Octopole Bias
   1 Oct_Bias_sp Octopole Bias
   1 Oct_Drive_RB Octopole Drive
-  
-  1 Z1V Iris V
-  1 Z1pos Iris Step
-  1 Z1stale Iris Stale Drive
-  1 Zstale Iris Stale Driver
   
   1 FlySt FlyValve Set
   1 Fly_Pos_RB FlyValve Pos

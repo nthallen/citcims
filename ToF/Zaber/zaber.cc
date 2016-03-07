@@ -36,12 +36,12 @@ int main(int argc, char **argv) {
     ZaberCmd ZC;
     TM_Selectee TM( "Zaber", &Zbrdata, sizeof(Zbrdata) );
     Zaber Z( zaber_port, &Zbrdata, &ZC );
-    Z.setup(9600, 8, 'n', 1, sizeof(zaber_cmd), 0 );
-    // Z.setup(9600, 8, 'n', 1, 1, 1 );
+    // Z.setup(9600, 8, 'n', 1, sizeof(zaber_cmd), 0 );
+    Z.setup(9600, 8, 'n', 1, 1, 1 );
     S.add_child(&Z);
     S.add_child(&ZC);
     S.add_child(&TM);
-    nl_error( 0, "Starting v1.0b" );
+    nl_error( 0, "Starting v1.0d" );
     Z.init();
     S.event_loop();
   }
@@ -103,7 +103,7 @@ int ZaberCmd::ProcessData(int flag) {
 
 zaber_cmd *ZaberCmd::Command() {
   if ( flags ) {
-    nl_error( 2, "HoribaCmd::query() called when flags != 0" );
+    nl_error( 2, "ZaberCmd::Command() called when flags != 0" );
     return NULL;
   }
   flags = Selector::Sel_Read;
@@ -232,10 +232,10 @@ int Zaber::ProcessData(int flag) {
     fillbuf();
     while (nc > 0) {
       if ( nc < sizeof(zc)) {
-        report_err("Received only %d bytes", nc);
+        // report_err("Received only %d bytes", nc);
         // I'm going to clear out the buffer to try to
         // maintain alignment
-        consume(cp);
+        // consume(nc);
         return 0;
       }
       ++n_reads;
@@ -256,7 +256,7 @@ int Zaber::ProcessData(int flag) {
     if ( not_yet == 0 ) {
       nl_error( 0, "Received all renumber responses" );
     } else {
-      nl_error(2, "Timeout waiting for renumber command");
+      report_err("Timeout waiting for renumber command");
     }
     identify();
   }
@@ -390,9 +390,10 @@ void Zaber::receive_data( zaber_cmd *zc ) {
   cmd_stats_t *cs;
   drive_state_t *ds;
   int late_reply = 0;
-  
+
+  report_ok();
   if ( zc->drive == 0 || zc->drive > N_DRIVES ) {
-    nl_error( 2, "Received Invalid drive number %d,%d,%d",
+    report_err( "Received Invalid drive number %d,%d,%d",
       zc->drive, zc->cmd, zc->value );
     return;
   }
@@ -405,7 +406,7 @@ void Zaber::receive_data( zaber_cmd *zc ) {
         late_reply = 1;
       cs->timeout.Clear();
     } else if ( !cmddefs[cmd_index].unsolicited ) {
-      nl_error( 2, "Unexpected reply %d:%d '%s'", zc->drive, zc->cmd,
+      report_err( "Unexpected reply %d:%d '%s'", zc->drive, zc->cmd,
               cmddefs[cmd_index].cmd_name );
     }
     register_reply( zc, late_reply );
@@ -435,14 +436,14 @@ void Zaber::register_timeout( unsigned char cmd_index, unsigned drive ) {
     case 0: /* was healthy */
     case 3: /* or tardy */
       if ( ds->state == 0 )
-        nl_error(1,"Timeout on %d:%d %s",
+        report_err("Timeout on %d:%d %s",
           drive, cmd_index,
           cmddefs[cmd_index].cmd_name );
       cs->state = 1;
       break;
     case 1:
       if ( ds->state == 0 )
-        nl_error(1,"Continuing timeout on %d:%d %s",
+        report_err("Continuing timeout on %d:%d %s",
           drive, cmd_index,
           cmddefs[cmd_index].cmd_name );
       cs->state = 2;
@@ -450,7 +451,7 @@ void Zaber::register_timeout( unsigned char cmd_index, unsigned drive ) {
     case 2:
       break;
     default:
-      nl_error( 2, "Invalid cs->state: %d", cs->state );
+      report_err( "Invalid cs->state: %d", cs->state );
       cs->state = 0;
       break;
   }
@@ -461,14 +462,14 @@ void Zaber::register_timeout( unsigned char cmd_index, unsigned drive ) {
       break;
     case 1:
       if ( cmd_index != ds->failing_cmd ) {
-        nl_error( 2, "No response from drive %d", drive );
+        report_err( "No response from drive %d", drive );
         ds->state = 2;
       }
       break;
     case 2:
       break;
     default:
-      nl_error( 2, "Invalid ds->state: %d", ds->state );
+      report_err( "Invalid ds->state: %d", ds->state );
       ds->state = 0;
       break;
   }
@@ -481,11 +482,11 @@ void Zaber::register_reply( zaber_cmd *zc, int late_reply ) {
   drive_state_t *ds;
   
   if (zc->drive == 0 || zc->drive > N_DRIVES) {
-    nl_error( 2, "Invalid drive number %d in register_reply", zc->drive);
+    report_err( "Invalid drive number %d in register_reply", zc->drive);
     return;
   }
   if (cmddefs[cmd_index].stats == 0) {
-    nl_error( 2, "cmddefs[cmd_index].stats == 0 in register_reply" );
+    report_err( "cmddefs[cmd_index].stats == 0 in register_reply" );
     return;
   }
   cs = cmd_stats(cmd_index, zc->drive);

@@ -1,0 +1,24 @@
+# Zeno Group
+  1 Zeno_Press Zeno Press %-
+  1 Zeno_RH Zeno RH %-
+  1 Zeno_SolarRadiance Zeno Radiance %- [0 1 -1.1 1.1 ] Radiance
+# 1 model_intensity Zeno Radiance %- Model
+  1 Zeno_Temp Zeno Temp %-
+# 1 Zeno_T Zeno Temp %-
+# 1 Zeno_WindDir Zeno WindDir %-
+  1 Zeno_WindSpeed Zeno WindSpeed %- [.25 .95 0 1]
+# 1 wslimit_fast Zeno WindSpeed %-
+# 1 wslimit_slow Zeno WindSpeed %-
+# 1 ws_high:ws_high:0 Zeno WindStat %-
+# 1 ws_low:ws_low:0 Zeno WindStat %-
+# 1 ok_to_open:ok_to_open:0 Zeno WindStat %-
+
+  1 Zeno_WindDir Wind Polar %- :wind
+  1 Zeno_WindSpeed Wind Polar %-
+  
+  1 Zeno_VBatt ZenoHK VBatt %-
+  1 Zeno_Rain ZenoHK Rain %-
+  1 Zeno_Lightning ZenoHK LeafWet %- LeafWet
+  1 Zeno_BIT ZenoHK BIT %-
+  1 Zeno_Tdrift ZenoHK TDrift %-
+  1 ZENO_stale ZenoHK Stale %-

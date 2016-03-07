@@ -1,0 +1,21 @@
+#  4 OMS_0_Step Inlet Step
+  4 Insl_Step Inlet Step
+#  4 OMS_2_Step Inlet Step
+#  4 OMS_3_Step Inlet Step
+  4 OMS_Stale Inlet Stale
+#  4 OMS_0_Out:OMS_0_Stat:3   Inlet Status %.0lf
+#  4 OMS_0_Stop:OMS_0_Stat:2  Inlet Status %.0lf
+#  4 OMS_0_Limit:OMS_0_Stat:1 Inlet Status %.0lf
+#  4 OMS_0_Home:OMS_0_Stat:0  Inlet Status %.0lf
+  4 Insl_Out:Insl_Stat:3   Inlet Status %.0lf
+  4 Insl_Stop:Insl_Stat:2  Inlet Status %.0lf
+  4 Insl_Limit:Insl_Stat:1 Inlet Status %.0lf
+  4 Insl_Home:Insl_Stat:0  Inlet Status %.0lf
+#  4 OMS_2_Out:OMS_2_Stat:3   Inlet Status %.0lf
+#  4 OMS_2_Stop:OMS_2_Stat:2  Inlet Status %.0lf
+#  4 OMS_2_Limit:OMS_2_Stat:1 Inlet Status %.0lf
+#  4 OMS_2_Home:OMS_2_Stat:0  Inlet Status %.0lf
+#  4 OMS_3_Out:OMS_3_Stat:3   Inlet Status %.0lf
+#  4 OMS_3_Stop:OMS_3_Stat:2  Inlet Status %.0lf
+#  4 OMS_3_Limit:OMS_3_Stat:1 Inlet Status %.0lf
+#  4 OMS_3_Home:OMS_3_Stat:0  Inlet Status %.0lf
