@@ -1,0 +1,27 @@
+ModuleDef Zaber [ E2= ] {
+  Zaber Module provides motion control for the pinhole
+  This version includes a second axis
+}
+
+mode (default,dual) {
+  mode (default) [ E2=# ] {
+    tmcbase = zaber.tmc
+    genuibase = zaber.genui:zaber.genui.in
+  }
+  mode (dual) {
+    tmcbase = zaber2.tmc
+    genuibase = zaber.genui:zaber.genui.in
+  }
+  cmdbase = zaber.cmd
+  DISTRIB = @MODDIR@/../zaber
+  CPPFLAGS = -I @MODDIR@/..
+  %%
+@MODDIR@/../zaber :
+	cd @MODDIR@/.. && make
+}
+
+%%
+.PHONY : clean-zaber
+clean-dist : clean-zaber
+clean-zaber :
+	cd @MODDIR@/.. && make clean

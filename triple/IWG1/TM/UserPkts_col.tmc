@@ -1,0 +1,11 @@
+%{
+  #include "UserPkts.h"
+  AVOCET_t AVOCET;
+  DACOM_t DACOM;
+  DLH_t DLH;
+  LARGE_t LARGE;
+  MMS_t MMS;
+  NOAA_HSP2_t NOAA_HSP2;
+  NOAA_SP2_t NOAA_SP2;
+  NOyO3_t NOyO3;
+%}

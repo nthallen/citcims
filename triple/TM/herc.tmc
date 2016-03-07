@@ -14,7 +14,7 @@ TM typedef double SCCM;
 TM typedef double TORR;
 TM typedef double TEMP_C;
 
-/* TM typedef double VOLTS; */ /* Define in zaber.tmc */
+TM typedef double VOLTS;
 
 /* 0-10V Unipolar, Differential */
 TM typedef signed short HERC_AD {

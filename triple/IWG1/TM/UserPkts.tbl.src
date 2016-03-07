@@ -1,0 +1,106 @@
+AVOCET {
+  HBox { +-; Title: AVOCET; -+ };
+  CO2: (AVOCET_CO2,9);
+}
+
+DACOM {
+  HBox { +-; Title: DACOM; -+ };
+  CO: (DACOM_CO,9);
+  Methane: (DACOM_Methane,9);
+}
+
+DLH {
+  HBox { +-; Title: DLH; -+ };
+  WaterVapor: (DLH_WaterVapor,9);
+}
+
+LARGE {
+  HBox { +-; Title: LARGE; -+ };
+  ColdCN: (LARGE_ColdCN,9);
+  HotCN: (LARGE_HotCN,9);
+  Dry_Scattering: (LARGE_Dry_Scattering,9);
+}
+
+MMS {
+  HBox { +-; Title: MMS; -+ };
+  TotalPressure: (MMS_TotalPressure,9);
+  StaticPressure: (MMS_StaticPressure,9);
+  Pitch: (MMS_Pitch,9);
+  Roll: (MMS_Roll,9);
+  Heading: (MMS_Heading,9);
+  Vns: (MMS_Vns,9);
+  Vew: (MMS_Vew,9);
+  Vup: (MMS_Vup,9);
+  Az: (MMS_Az,9);
+}
+
+NOAA_HSP2 {
+  HBox { +-; Title: NOAA_HSP2; -+ };
+  Status:           (NOAA_HSP2_Status,3);
+  IncParticleCount: (NOAA_HSP2_IncParticleCount,9);
+}
+
+NOAA_SP2 {
+  HBox { +-; Title: NOAA_SP2; -+ };
+  Status:           (NOAA_SP2_Status,3);
+  IncParticleCount: (NOAA_SP2_IncParticleCount,9);
+}
+
+NOyO3 {
+  HBox { +-; Title: NOyO3; -+ };
+  NO: (NOyO3_NO,9);
+  NOy: (NOyO3_NOy,9);
+  O3: (NOyO3_O3,9);
+}
+
+Drift {
+  HBox { +-; Title: Drift; -+ };
+  AVOCET:    (AVOCET_TDrift,6);
+  DACOM:     (DACOM_TDrift,6);
+  DLH:       (DLH_TDrift,6);
+  LARGE:     (LARGE_TDrift,6);
+  MMS:       (MMS_TDrift,6);
+  NOAA_HSP2: (NOAA_HSP2_TDrift,6);
+  NOAA_SP2:  (NOAA_SP2_TDrift,6);
+  NOyO3:     (NOyO3_TDrift,6);
+}
+
+Stale {
+  HBox { +-; Title: Stale; -+ };
+  AVOCET:    (AVOCET_stale,3);
+  DACOM:     (DACOM_stale,3);
+  DLH:       (DLH_stale,3);
+  LARGE:     (LARGE_stale,3);
+  MMS:       (MMS_stale,3);
+  NOAA_HSP2: (NOAA_HSP2_stale,3);
+  NOAA_SP2:  (NOAA_SP2_stale,3);
+  NOyO3:     (NOyO3_stale,3);
+}
+
+Status {
+  HBox { +-; Title: Status; -+ };
+  VGlue 0+1;
+  Time:  (flttime,9);
+  MFCtr: (MFCtr,5);
+}
+
+{
+  HBox {
+    |;
+    {
+      [AVOCET];
+      [DACOM];
+      [DLH];
+      [NOAA_HSP2];
+      [NOAA_SP2];
+      [Status];
+    }; |; {
+      [MMS];
+      [LARGE];
+      [NOyO3];
+    }; |; {
+      [Drift];
+      [Stale];
+    }
+  }
+}

@@ -50,7 +50,8 @@ F4 {
 }
 
 { -;
-  HBox { +|+; [Flows]; +|+; [Therms]; +|+; [Watlow]; +|+; [F4]; +|+ };
+# HBox { +|+; [Flows]; +|+; [Therms]; +|+; [Watlow]; +|+; [F4]; +|+ };
+  HBox { +|+; [Flows]; +|+; [Therms]; +|+; };
   -;
   HBox { +|+; [Pressures]; +|+; [Volts]; +|+ };
   -;

@@ -1,57 +1,62 @@
-# Makefile Generated Wed Mar 18 10:48:27 EDT 2015
+# Invoking: appgen_module IWG1 X mode=default
+# Invoking: appgen_module modbus X mode=disable
+# Invoking: appgen_module Zaber X mode=dual
+# Makefile Generated Sun Mar 06 20:55:39 EST 2016
 MNC=triple
 SPECFILE=triple.spec
 PCMFILE=triple.pcm
-SRC=base.tmc zaber.tmc herc.tmc IWG1.tmc tdrift.tmc modbus.tmc
-SRC+=dstat_conv.tmc triple.tma hrdwr.tma triple.tbl triple2.tbl
-SRC+=IWG1.tbl triple.doit fast.cdf medium.cdf tripleeng.cdf
-SRC+=triplejson.cdf zaber.cmd herc.cmd modbus.cmd SWStat.cmd
-SRC+=IWG1_col.tmc Hercules_col.tmc SWData_col.tmc tdrift_col.tmc
-SRC+=modbus_col.tmc
+SRC=base.tmc herc.tmc tdrift.tmc IWG1.tbl dstat_conv.tmc triple.tma
+SRC+=hrdwr.tma triple.tbl triple2.tbl triple.doit fast.cdf medium.cdf
+SRC+=triplejson.cdf herc.cmd SWStat.cmd Hercules_col.tmc
+SRC+=SWData_col.tmc tdrift_col.tmc triple.genui zaber.genui
 TOOL=triple.spec Makefile
 SCRIPT=interact Experiment.config
-OBJ=triplealgoa.tmc triplealgo.cc triplealgooui.c triplealgooui.o
-OBJ+=triplealgo.o tripletbl.tmc triple2tbl.tmc IWG1tbl.tmc
+OBJ=IWG1tbl.tmc IWG1disp.cc IWG1dispoui.c IWG1dispoui.o IWG1disp.o
+OBJ+=IWG1tblnc.tmc IWG1dispnc.cc IWG1dispncoui.c IWG1dispncoui.o
+OBJ+=IWG1dispnc.o triplealgoa.tmc triplealgo.cc triplealgooui.c
+OBJ+=triplealgooui.o triplealgo.o tripletbl.tmc triple2tbl.tmc
 OBJ+=tripledisp.cc tripledispoui.c tripledispoui.o tripledisp.o
-OBJ+=tripletblnc.tmc triple2tblnc.tmc IWG1tblnc.tmc tripledispnc.cc
+OBJ+=tripletblnc.tmc triple2tblnc.tmc tripledispnc.cc
 OBJ+=tripledispncoui.c tripledispncoui.o tripledispnc.o
-OBJ+=tripledoit.dep fastextcdf.oui fastext.tmc fastext.cc
+OBJ+=tripledoit.dep fastextcdf.oui fastcdf.tmc fastext.cc
 OBJ+=fastextoui.c fastextoui.o fastext.o mediumextcdf.oui
-OBJ+=mediumext.tmc mediumext.cc mediumextoui.c mediumextoui.o
-OBJ+=mediumext.o tripleengextcdf.oui tripleengext.tmc tripleengext.cc
-OBJ+=tripleengextoui.c tripleengextoui.o tripleengext.o
-OBJ+=triplejsonextcdf.oui triplejsonext.tmc triplejsonext.cc
-OBJ+=triplejsonextoui.c triplejsonextoui.o triplejsonext.o
-OBJ+=triplecmd.cc triplecmd.dat tripleclt.o triplecltoui.c
-OBJ+=triplecltoui.o triplecltnc.o triplecltncoui.c triplecltncoui.o
-OBJ+=triplesrvr.o triplesrvroui.c triplesrvroui.o triplecol.cc
-OBJ+=triple.pcm tm.dac triplecoloui.c triplecoloui.o triplecol.o
-OBJ+=dsdaq.o
-TGT=triplealgo tripledisp tripledispnc tripledoit fastext mediumext
-TGT+=tripleengext triplejsonext tripleclt triplecltnc triplesrvr
-TGT+=triplecol
-DISTRIB=../Zaber/zaber ../IWG1/IWG1 ../DSDaq/Hercules
-DISTRIB+=../Modbus/modbus triple.pcm tm.dac
+OBJ+=mediumcdf.tmc mediumext.cc mediumextoui.c mediumextoui.o
+OBJ+=mediumext.o triplejsonextcdf.oui triplejsoncdf.tmc
+OBJ+=triplejsonext.cc triplejsonextoui.c triplejsonextoui.o
+OBJ+=triplejsonext.o triplecmd.cc triplecmd.dat tripleclt.o
+OBJ+=triplecltoui.c triplecltoui.o triplecltnc.o triplecltncoui.c
+OBJ+=triplecltncoui.o triplesrvr.o triplesrvroui.c triplesrvroui.o
+OBJ+=triplecol.cc triple.pcm tm.dac triplecoloui.c triplecoloui.o
+OBJ+=triplecol.o dsdaq.o tripleengext.cdf tripleengextcdf.oui
+OBJ+=tripleengextcdf.tmc tripleengext.cc tripleengextoui.c
+OBJ+=tripleengextoui.o tripleengext.o
+TGT=IWG1disp IWG1dispnc triplealgo tripledisp tripledispnc
+TGT+=tripledoit fastext mediumext triplejsonext tripleclt triplecltnc
+TGT+=triplesrvr triplecol tripleengext
+DISTRIB=../DSDaq/Hercules ../IWG1/TM/../IWG1 ../Zaber/TM/../zaber
+DISTRIB+=triple.pcm tm.dac
 IDISTRIB=Experiment.config VERSION tripledoit
-SRCDIST=triple.tma hrdwr.tma triple.tbl triple2.tbl IWG1.tbl
-SRCDIST+=base.tmc zaber.tmc herc.tmc IWG1.tmc tdrift.tmc modbus.tmc
+SRCDIST=IWG1.tbl triple.tma hrdwr.tma triple.tbl triple2.tbl
+SRCDIST+=base.tmc herc.tmc tdrift.tmc
 SRCDIST+=/usr/local/share/huarp/cpu_usage.tmc
 SRCDIST+=/usr/local/share/huarp/tmdf.tmc
-SRCDIST+=/usr/local/share/huarp/flttime.tmc
-TMCBASE=base.tmc zaber.tmc herc.tmc IWG1.tmc tdrift.tmc modbus.tmc
+SRCDIST+=/usr/local/share/huarp/flttime.tmc ../IWG1/TM/IWG1.tmc
+SRCDIST+=../Zaber/TM/zaber2.tmc
+TMCBASE=base.tmc herc.tmc tdrift.tmc
 TMCBASE+=/usr/local/share/huarp/cpu_usage.tmc
 TMCBASE+=/usr/local/share/huarp/tmdf.tmc
-TMCBASE+=/usr/local/share/huarp/flttime.tmc
+TMCBASE+=/usr/local/share/huarp/flttime.tmc ../IWG1/TM/IWG1.tmc
+TMCBASE+=../Zaber/TM/zaber2.tmc
 CMDBASE=/usr/local/share/huarp/root.cmd
-CMDBASE+=/usr/local/share/huarp/getcon.cmd zaber.cmd herc.cmd
-CMDBASE+=modbus.cmd SWStat.cmd
-COLBASE=IWG1_col.tmc Hercules_col.tmc
-COLBASE+=/usr/local/share/huarp/cpu_usage_col.tmc
+CMDBASE+=/usr/local/share/huarp/getcon.cmd herc.cmd SWStat.cmd
+CMDBASE+=../Zaber/TM/zaber.cmd
+COLBASE=Hercules_col.tmc /usr/local/share/huarp/cpu_usage_col.tmc
 COLBASE+=/usr/local/share/huarp/tmdf_col.tmc ../DSDaq/dsdaq.cc
-COLBASE+=SWData_col.tmc tdrift_col.tmc modbus_col.tmc
+COLBASE+=SWData_col.tmc tdrift_col.tmc ../IWG1/TM/IWG1_col.tmc
 SWSBASE=
 QCLIBASE=
-PHTGT=tripletbl.tmc triple2tbl.tmc IWG1tbl.tmc
+AG_CPPFLAGS=-I ../IWG1/TM/.. -I ../Zaber/TM/..
+PHTGT=IWG1tbl.tmc tripletbl.tmc triple2tbl.tmc
 RCS=$(SRC) $(TOOL) $(SCRIPT)
 SOURCE=$(RCS) $(NONRCS)
 OBJECT=$(OBJ) *.err
@@ -60,9 +65,11 @@ DSTRB=$(TGT) $(DISTRIB) $(SCRIPT)
 TGTDIR= $(TGTNODE)/home/triple
 include /usr/local/share/huarp/appgen.mk
 
-.PHONY : all extdistribution distribution clean check_photon
+.PHONY : all all-dist extdistribution distribution clean clean-dist check_photon
 
-all : Makefile check_photon $(TGT) .cvsignore
+IGNOREFILE=.cvsignore
+all : Makefile check_photon $(TGT) $(IGNOREFILE)
+all-dist : $(DSTRB) $(SRCDIST) VERSION
 Makefile : triple.spec
 	appgen triple.spec
 VERSION=`cat VERSION`
@@ -83,6 +90,12 @@ ifeq ($(WPHOTON),YES)
 	  cmp -s $$tgt /usr/local/share/huarp/nulltbl.tmc && echo Remaking $$tgt && rm -f $$tgt; \
 	done; true
 endif
+IWG1disp : IWG1disp.o IWG1dispoui.o
+	$(LINK.normCXX) IWG1disp.o IWG1dispoui.o -ldisp -ltmph -lph -ltmpp -ltm -lnort
+	$(OUIUSE) IWG1dispoui.c
+IWG1dispnc : IWG1dispnc.o IWG1dispncoui.o
+	$(LINK.normCXX) IWG1dispnc.o IWG1dispncoui.o -ldispnc -ltmnc -lncurses -ltmpp -ltm -lnort
+	$(OUIUSE) IWG1dispncoui.c
 triplealgo : triplealgo.o triplealgooui.o
 	$(LINK.normCXX) triplealgo.o triplealgooui.o -ltmpp -ltm -lnort
 	$(OUIUSE) triplealgooui.c
@@ -100,9 +113,6 @@ fastext : fastext.o fastextoui.o
 mediumext : mediumext.o mediumextoui.o
 	$(LINK.normCXX) mediumext.o mediumextoui.o -ltmpp -ltm -lnort
 	$(OUIUSE) mediumextoui.c
-tripleengext : tripleengext.o tripleengextoui.o
-	$(LINK.normCXX) tripleengext.o tripleengextoui.o -ltmpp -ltm -lnort
-	$(OUIUSE) tripleengextoui.c
 triplejsonext : triplejsonext.o triplejsonextoui.o
 	$(LINK.normCXX) triplejsonext.o triplejsonextoui.o -ltmpp -ltm -lnort
 	$(OUIUSE) triplejsonextoui.c
@@ -120,29 +130,44 @@ triplecol : triplecol.o dsdaq.o triplecoloui.o
 	$(LINK.privCXX) triplecol.o dsdaq.o triplecoloui.o -ltmpp -ltm -lnort
 	$(OUIUSE) triplecoloui.c
 	$(PROMOTE) triplecol
+tripleengext : tripleengext.o tripleengextoui.o
+	$(LINK.normCXX) tripleengext.o tripleengextoui.o -ltmpp -ltm -lnort
+	$(OUIUSE) tripleengextoui.c
+IWG1tbl.tmc : IWG1.tbl
+IWG1disp.cc : base.tmc herc.tmc tdrift.tmc /usr/local/share/huarp/cpu_usage.tmc /usr/local/share/huarp/tmdf.tmc /usr/local/share/huarp/flttime.tmc ../IWG1/TM/IWG1.tmc IWG1tbl.tmc
+	$(TMC) base.tmc herc.tmc tdrift.tmc /usr/local/share/huarp/cpu_usage.tmc /usr/local/share/huarp/tmdf.tmc /usr/local/share/huarp/flttime.tmc ../IWG1/TM/IWG1.tmc IWG1tbl.tmc
+IWG1dispoui.c : $(OUIDIR)/dc.oui $(OUIDIR)/msg.oui
+	$(OUI) $(OUIDIR)/dc.oui $(OUIDIR)/msg.oui
+IWG1dispoui.o : IWG1dispoui.c
+IWG1disp.o : IWG1disp.cc
+IWG1tblnc.tmc : IWG1.tbl
+IWG1dispnc.cc : base.tmc herc.tmc tdrift.tmc /usr/local/share/huarp/cpu_usage.tmc /usr/local/share/huarp/tmdf.tmc /usr/local/share/huarp/flttime.tmc ../IWG1/TM/IWG1.tmc IWG1tblnc.tmc
+	$(TMC) base.tmc herc.tmc tdrift.tmc /usr/local/share/huarp/cpu_usage.tmc /usr/local/share/huarp/tmdf.tmc /usr/local/share/huarp/flttime.tmc ../IWG1/TM/IWG1.tmc IWG1tblnc.tmc
+IWG1dispncoui.c : $(OUIDIR)/nctable.oui $(OUIDIR)/dc.oui $(OUIDIR)/msg.oui
+	$(OUI) $(OUIDIR)/nctable.oui $(OUIDIR)/dc.oui $(OUIDIR)/msg.oui
+IWG1dispncoui.o : IWG1dispncoui.c
+IWG1dispnc.o : IWG1dispnc.cc
 triplealgoa.tmc : triple.tma hrdwr.tma triplesrvr
 	$(SERVER) ./triplesrvr
 	$(TMCALGO) -V "`./triplesrvr -R`" triple.tma hrdwr.tma
-triplealgo.cc : base.tmc zaber.tmc herc.tmc IWG1.tmc tdrift.tmc modbus.tmc /usr/local/share/huarp/cpu_usage.tmc /usr/local/share/huarp/tmdf.tmc /usr/local/share/huarp/flttime.tmc dstat_conv.tmc triplealgoa.tmc
-	$(TMC) base.tmc zaber.tmc herc.tmc IWG1.tmc tdrift.tmc modbus.tmc /usr/local/share/huarp/cpu_usage.tmc /usr/local/share/huarp/tmdf.tmc /usr/local/share/huarp/flttime.tmc dstat_conv.tmc triplealgoa.tmc
+triplealgo.cc : base.tmc herc.tmc tdrift.tmc /usr/local/share/huarp/cpu_usage.tmc /usr/local/share/huarp/tmdf.tmc /usr/local/share/huarp/flttime.tmc ../IWG1/TM/IWG1.tmc ../Zaber/TM/zaber2.tmc dstat_conv.tmc triplealgoa.tmc
+	$(TMC) base.tmc herc.tmc tdrift.tmc /usr/local/share/huarp/cpu_usage.tmc /usr/local/share/huarp/tmdf.tmc /usr/local/share/huarp/flttime.tmc ../IWG1/TM/IWG1.tmc ../Zaber/TM/zaber2.tmc dstat_conv.tmc triplealgoa.tmc
 triplealgooui.c : $(OUIDIR)/tma.oui $(OUIDIR)/dc.oui $(OUIDIR)/msg.oui
 	$(OUI) $(OUIDIR)/tma.oui $(OUIDIR)/dc.oui $(OUIDIR)/msg.oui
 triplealgooui.o : triplealgooui.c
 triplealgo.o : triplealgo.cc
 tripletbl.tmc : triple.tbl
 triple2tbl.tmc : triple2.tbl
-IWG1tbl.tmc : IWG1.tbl
-tripledisp.cc : base.tmc zaber.tmc herc.tmc IWG1.tmc tdrift.tmc modbus.tmc /usr/local/share/huarp/cpu_usage.tmc /usr/local/share/huarp/tmdf.tmc /usr/local/share/huarp/flttime.tmc dstat_conv.tmc tripletbl.tmc triple2tbl.tmc IWG1tbl.tmc
-	$(TMC) base.tmc zaber.tmc herc.tmc IWG1.tmc tdrift.tmc modbus.tmc /usr/local/share/huarp/cpu_usage.tmc /usr/local/share/huarp/tmdf.tmc /usr/local/share/huarp/flttime.tmc dstat_conv.tmc tripletbl.tmc triple2tbl.tmc IWG1tbl.tmc
+tripledisp.cc : base.tmc herc.tmc tdrift.tmc /usr/local/share/huarp/cpu_usage.tmc /usr/local/share/huarp/tmdf.tmc /usr/local/share/huarp/flttime.tmc ../IWG1/TM/IWG1.tmc ../Zaber/TM/zaber2.tmc dstat_conv.tmc tripletbl.tmc triple2tbl.tmc IWG1tbl.tmc
+	$(TMC) base.tmc herc.tmc tdrift.tmc /usr/local/share/huarp/cpu_usage.tmc /usr/local/share/huarp/tmdf.tmc /usr/local/share/huarp/flttime.tmc ../IWG1/TM/IWG1.tmc ../Zaber/TM/zaber2.tmc dstat_conv.tmc tripletbl.tmc triple2tbl.tmc IWG1tbl.tmc
 tripledispoui.c : $(OUIDIR)/dc.oui $(OUIDIR)/msg.oui
 	$(OUI) $(OUIDIR)/dc.oui $(OUIDIR)/msg.oui
 tripledispoui.o : tripledispoui.c
 tripledisp.o : tripledisp.cc
 tripletblnc.tmc : triple.tbl
 triple2tblnc.tmc : triple2.tbl
-IWG1tblnc.tmc : IWG1.tbl
-tripledispnc.cc : base.tmc zaber.tmc herc.tmc IWG1.tmc tdrift.tmc modbus.tmc /usr/local/share/huarp/cpu_usage.tmc /usr/local/share/huarp/tmdf.tmc /usr/local/share/huarp/flttime.tmc dstat_conv.tmc tripletblnc.tmc triple2tblnc.tmc IWG1tblnc.tmc
-	$(TMC) base.tmc zaber.tmc herc.tmc IWG1.tmc tdrift.tmc modbus.tmc /usr/local/share/huarp/cpu_usage.tmc /usr/local/share/huarp/tmdf.tmc /usr/local/share/huarp/flttime.tmc dstat_conv.tmc tripletblnc.tmc triple2tblnc.tmc IWG1tblnc.tmc
+tripledispnc.cc : base.tmc herc.tmc tdrift.tmc /usr/local/share/huarp/cpu_usage.tmc /usr/local/share/huarp/tmdf.tmc /usr/local/share/huarp/flttime.tmc ../IWG1/TM/IWG1.tmc ../Zaber/TM/zaber2.tmc dstat_conv.tmc tripletblnc.tmc triple2tblnc.tmc IWG1tblnc.tmc
+	$(TMC) base.tmc herc.tmc tdrift.tmc /usr/local/share/huarp/cpu_usage.tmc /usr/local/share/huarp/tmdf.tmc /usr/local/share/huarp/flttime.tmc ../IWG1/TM/IWG1.tmc ../Zaber/TM/zaber2.tmc dstat_conv.tmc tripletblnc.tmc triple2tblnc.tmc IWG1tblnc.tmc
 tripledispncoui.c : $(OUIDIR)/nctable.oui $(OUIDIR)/dc.oui $(OUIDIR)/msg.oui
 	$(OUI) $(OUIDIR)/nctable.oui $(OUIDIR)/dc.oui $(OUIDIR)/msg.oui
 tripledispncoui.o : tripledispncoui.c
@@ -152,46 +177,36 @@ tripledoit.dep : triple.doit
 -include tripledoit.dep
 fastextcdf.oui : fast.cdf
 	$(EDF2OUI) fast.cdf
-fastext.tmc : fast.cdf
+fastcdf.tmc : fast.cdf
 	$(EDF2EXT) fast.cdf
-fastext.cc : base.tmc zaber.tmc herc.tmc IWG1.tmc tdrift.tmc modbus.tmc /usr/local/share/huarp/cpu_usage.tmc /usr/local/share/huarp/tmdf.tmc /usr/local/share/huarp/flttime.tmc fastext.tmc
-	$(TMC) base.tmc zaber.tmc herc.tmc IWG1.tmc tdrift.tmc modbus.tmc /usr/local/share/huarp/cpu_usage.tmc /usr/local/share/huarp/tmdf.tmc /usr/local/share/huarp/flttime.tmc fastext.tmc
+fastext.cc : base.tmc herc.tmc tdrift.tmc /usr/local/share/huarp/cpu_usage.tmc /usr/local/share/huarp/tmdf.tmc /usr/local/share/huarp/flttime.tmc ../IWG1/TM/IWG1.tmc ../Zaber/TM/zaber2.tmc fastcdf.tmc
+	$(TMC) base.tmc herc.tmc tdrift.tmc /usr/local/share/huarp/cpu_usage.tmc /usr/local/share/huarp/tmdf.tmc /usr/local/share/huarp/flttime.tmc ../IWG1/TM/IWG1.tmc ../Zaber/TM/zaber2.tmc fastcdf.tmc
 fastextoui.c : fastextcdf.oui $(OUIDIR)/dc.oui $(OUIDIR)/msg.oui
 	$(OUI) fastextcdf.oui $(OUIDIR)/dc.oui $(OUIDIR)/msg.oui
 fastextoui.o : fastextoui.c
 fastext.o : fastext.cc
 mediumextcdf.oui : medium.cdf
 	$(EDF2OUI) medium.cdf
-mediumext.tmc : medium.cdf
+mediumcdf.tmc : medium.cdf
 	$(EDF2EXT) medium.cdf
-mediumext.cc : base.tmc zaber.tmc herc.tmc IWG1.tmc tdrift.tmc modbus.tmc /usr/local/share/huarp/cpu_usage.tmc /usr/local/share/huarp/tmdf.tmc /usr/local/share/huarp/flttime.tmc mediumext.tmc
-	$(TMC) base.tmc zaber.tmc herc.tmc IWG1.tmc tdrift.tmc modbus.tmc /usr/local/share/huarp/cpu_usage.tmc /usr/local/share/huarp/tmdf.tmc /usr/local/share/huarp/flttime.tmc mediumext.tmc
+mediumext.cc : base.tmc herc.tmc tdrift.tmc /usr/local/share/huarp/cpu_usage.tmc /usr/local/share/huarp/tmdf.tmc /usr/local/share/huarp/flttime.tmc ../IWG1/TM/IWG1.tmc ../Zaber/TM/zaber2.tmc mediumcdf.tmc
+	$(TMC) base.tmc herc.tmc tdrift.tmc /usr/local/share/huarp/cpu_usage.tmc /usr/local/share/huarp/tmdf.tmc /usr/local/share/huarp/flttime.tmc ../IWG1/TM/IWG1.tmc ../Zaber/TM/zaber2.tmc mediumcdf.tmc
 mediumextoui.c : mediumextcdf.oui $(OUIDIR)/dc.oui $(OUIDIR)/msg.oui
 	$(OUI) mediumextcdf.oui $(OUIDIR)/dc.oui $(OUIDIR)/msg.oui
 mediumextoui.o : mediumextoui.c
 mediumext.o : mediumext.cc
-tripleengextcdf.oui : tripleeng.cdf
-	$(EDF2OUI) tripleeng.cdf
-tripleengext.tmc : tripleeng.cdf
-	$(EDF2EXT) tripleeng.cdf
-tripleengext.cc : base.tmc zaber.tmc herc.tmc IWG1.tmc tdrift.tmc modbus.tmc /usr/local/share/huarp/cpu_usage.tmc /usr/local/share/huarp/tmdf.tmc /usr/local/share/huarp/flttime.tmc tripleengext.tmc
-	$(TMC) base.tmc zaber.tmc herc.tmc IWG1.tmc tdrift.tmc modbus.tmc /usr/local/share/huarp/cpu_usage.tmc /usr/local/share/huarp/tmdf.tmc /usr/local/share/huarp/flttime.tmc tripleengext.tmc
-tripleengextoui.c : tripleengextcdf.oui $(OUIDIR)/dc.oui $(OUIDIR)/msg.oui
-	$(OUI) tripleengextcdf.oui $(OUIDIR)/dc.oui $(OUIDIR)/msg.oui
-tripleengextoui.o : tripleengextoui.c
-tripleengext.o : tripleengext.cc
 triplejsonextcdf.oui : triplejson.cdf
 	$(EDF2OUI) triplejson.cdf
-triplejsonext.tmc : triplejson.cdf
+triplejsoncdf.tmc : triplejson.cdf
 	$(EDF2EXT) triplejson.cdf
-triplejsonext.cc : base.tmc zaber.tmc herc.tmc IWG1.tmc tdrift.tmc modbus.tmc /usr/local/share/huarp/cpu_usage.tmc /usr/local/share/huarp/tmdf.tmc /usr/local/share/huarp/flttime.tmc triplejsonext.tmc
-	$(TMC) base.tmc zaber.tmc herc.tmc IWG1.tmc tdrift.tmc modbus.tmc /usr/local/share/huarp/cpu_usage.tmc /usr/local/share/huarp/tmdf.tmc /usr/local/share/huarp/flttime.tmc triplejsonext.tmc
+triplejsonext.cc : base.tmc herc.tmc tdrift.tmc /usr/local/share/huarp/cpu_usage.tmc /usr/local/share/huarp/tmdf.tmc /usr/local/share/huarp/flttime.tmc ../IWG1/TM/IWG1.tmc ../Zaber/TM/zaber2.tmc triplejsoncdf.tmc
+	$(TMC) base.tmc herc.tmc tdrift.tmc /usr/local/share/huarp/cpu_usage.tmc /usr/local/share/huarp/tmdf.tmc /usr/local/share/huarp/flttime.tmc ../IWG1/TM/IWG1.tmc ../Zaber/TM/zaber2.tmc triplejsoncdf.tmc
 triplejsonextoui.c : triplejsonextcdf.oui $(OUIDIR)/dc.oui $(OUIDIR)/msg.oui
 	$(OUI) triplejsonextcdf.oui $(OUIDIR)/dc.oui $(OUIDIR)/msg.oui
 triplejsonextoui.o : triplejsonextoui.c
 triplejsonext.o : triplejsonext.cc
-triplecmd.cc : /usr/local/share/huarp/root.cmd /usr/local/share/huarp/getcon.cmd zaber.cmd herc.cmd modbus.cmd SWStat.cmd
-	$(CMDGEN) -d triplecmd.dat /usr/local/share/huarp/root.cmd /usr/local/share/huarp/getcon.cmd zaber.cmd herc.cmd modbus.cmd SWStat.cmd
+triplecmd.cc : /usr/local/share/huarp/root.cmd /usr/local/share/huarp/getcon.cmd herc.cmd SWStat.cmd ../Zaber/TM/zaber.cmd
+	$(CMDGEN) -d triplecmd.dat /usr/local/share/huarp/root.cmd /usr/local/share/huarp/getcon.cmd herc.cmd SWStat.cmd ../Zaber/TM/zaber.cmd
 tripleclt.o : triplecmd.cc
 	$(COMPILE.clt) triplecmd.cc
 triplecltoui.c : $(OUIDIR)/kbdclt.oui $(OUIDIR)/msg.oui
@@ -207,31 +222,54 @@ triplesrvr.o : triplecmd.cc
 triplesrvroui.c : $(OUIDIR)/cis.oui $(OUIDIR)/seteuid.oui $(OUIDIR)/msg.oui
 	$(OUI) $(OUIDIR)/cis.oui $(OUIDIR)/seteuid.oui $(OUIDIR)/msg.oui
 triplesrvroui.o : triplesrvroui.c
-triplecol.cc : base.tmc zaber.tmc herc.tmc IWG1.tmc tdrift.tmc modbus.tmc /usr/local/share/huarp/cpu_usage.tmc /usr/local/share/huarp/tmdf.tmc /usr/local/share/huarp/flttime.tmc IWG1_col.tmc Hercules_col.tmc /usr/local/share/huarp/cpu_usage_col.tmc /usr/local/share/huarp/tmdf_col.tmc SWData_col.tmc tdrift_col.tmc modbus_col.tmc
-	$(TMC.col) base.tmc zaber.tmc herc.tmc IWG1.tmc tdrift.tmc modbus.tmc /usr/local/share/huarp/cpu_usage.tmc /usr/local/share/huarp/tmdf.tmc /usr/local/share/huarp/flttime.tmc IWG1_col.tmc Hercules_col.tmc /usr/local/share/huarp/cpu_usage_col.tmc /usr/local/share/huarp/tmdf_col.tmc SWData_col.tmc tdrift_col.tmc modbus_col.tmc
+triplecol.cc : base.tmc herc.tmc tdrift.tmc /usr/local/share/huarp/cpu_usage.tmc /usr/local/share/huarp/tmdf.tmc /usr/local/share/huarp/flttime.tmc ../IWG1/TM/IWG1.tmc ../Zaber/TM/zaber2.tmc Hercules_col.tmc /usr/local/share/huarp/cpu_usage_col.tmc /usr/local/share/huarp/tmdf_col.tmc SWData_col.tmc tdrift_col.tmc ../IWG1/TM/IWG1_col.tmc
+	$(TMC.col) base.tmc herc.tmc tdrift.tmc /usr/local/share/huarp/cpu_usage.tmc /usr/local/share/huarp/tmdf.tmc /usr/local/share/huarp/flttime.tmc ../IWG1/TM/IWG1.tmc ../Zaber/TM/zaber2.tmc Hercules_col.tmc /usr/local/share/huarp/cpu_usage_col.tmc /usr/local/share/huarp/tmdf_col.tmc SWData_col.tmc tdrift_col.tmc ../IWG1/TM/IWG1_col.tmc
 triplecoloui.c : $(OUIDIR)/collect.oui $(OUIDIR)/seteuid.oui $(OUIDIR)/msg.oui
 	$(OUI) $(OUIDIR)/collect.oui $(OUIDIR)/seteuid.oui $(OUIDIR)/msg.oui
 triplecoloui.o : triplecoloui.c
 triplecol.o : triplecol.cc
 dsdaq.o : ../DSDaq/dsdaq.cc
 	$(COMPILE.cc) ../DSDaq/dsdaq.cc
+tripleengext.cdf : triple.genui ../IWG1/TM/IWG1.genui zaber.genui
+	$(GENUI2CDF) triple.genui ../IWG1/TM/IWG1.genui zaber.genui
+tripleengextcdf.oui : tripleengext.cdf
+	$(EDF2OUI) tripleengext.cdf
+tripleengextcdf.tmc : tripleengext.cdf
+	$(EDF2EXT) tripleengext.cdf
+tripleengext.cc : base.tmc herc.tmc tdrift.tmc /usr/local/share/huarp/cpu_usage.tmc /usr/local/share/huarp/tmdf.tmc /usr/local/share/huarp/flttime.tmc ../IWG1/TM/IWG1.tmc ../Zaber/TM/zaber2.tmc tripleengextcdf.tmc
+	$(TMC) base.tmc herc.tmc tdrift.tmc /usr/local/share/huarp/cpu_usage.tmc /usr/local/share/huarp/tmdf.tmc /usr/local/share/huarp/flttime.tmc ../IWG1/TM/IWG1.tmc ../Zaber/TM/zaber2.tmc tripleengextcdf.tmc
+tripleengextoui.c : tripleengextcdf.oui $(OUIDIR)/dc.oui $(OUIDIR)/msg.oui
+	$(OUI) tripleengextcdf.oui $(OUIDIR)/dc.oui $(OUIDIR)/msg.oui
+tripleengextoui.o : tripleengextoui.c
+tripleengext.o : tripleengext.cc
 
 tidy :
 	rm -f $(OBJECT)
 clean : tidy
 	rm -f $(TARGET)
-.cvsignore : Makefile
-	@for i in $(OBJECT) $(TARGET); do echo "$$i"; done >.cvsignore
+clean-dist : clean
+$(IGNOREFILE) : Makefile
+	@for i in $(OBJECT) $(TARGET); do echo "$$i"; done >$(IGNOREFILE)
+../IWG1/TM/../IWG1 :
+	cd ../IWG1/TM/.. && make IWG1
+.PHONY : clean-IWG1
+clean-dist : clean-IWG1
+clean-IWG1 :
+	cd ../IWG1/TM/.. && make clean
+.PHONY : clean-modbus
+clean-dist : clean-modbus
+clean-modbus :
+	cd ../Modbus/TM/.. && make clean
+../Zaber/TM/../zaber :
+	cd ../Zaber/TM/.. && make
+.PHONY : clean-zaber
+clean-dist : clean-zaber
+clean-zaber :
+	cd ../Zaber/TM/.. && make clean
 COLFLAGS='-Haddress.h'
-CPPFLAGS+= -I ../Zaber -I ../IWG1 -I ../DSDaq -I ../Modbus
+CPPFLAGS+= -I ../DSDaq
 CXXFLAGS=-Wall -g
 
-tripleeng.cdf : genui.txt
-	genui -d ../eng -c genui.txt
-../Zaber/zaber :
-	( cd ../Zaber; make )
 ../DSDaq/Hercules :
 	( cd ../DSDaq; make )
-../Modbus/modbus :
-	( cd ../Modbus; make )
 address.h : triplecol.cc

@@ -1,0 +1,34 @@
+ModuleDef IWG1 {
+  IWG1 Module receives standard parameters from NASA Aircraft
+}
+
+mode (default,UserPkts) {
+  tmcbase = IWG1.tmc
+  colbase = IWG1_col.tmc
+  genuibase = IWG1.genui
+  IWG1disp : IWG1.tbl:IWG1.tbl.src
+  DISTRIB = @MODDIR@/../IWG1
+  CPPFLAGS = -I @MODDIR@/..
+
+  mode (UserPkts) {
+    tmcbase = UserPkts.tmc
+    colbase = UserPkts_col.tmc
+    # genuibase = UserPkts.genui
+    UserPktsdisp : UserPkts.tbl:UserPkts.tbl.src
+    UserPktsext : UserPkts.cdf
+    DISTRIB = @MODDIR@/../UserPkts
+    %%
+@MODDIR@/../UserPkts :
+	cd @MODDIR@/.. && make UserPkts
+  }
+
+  %%
+@MODDIR@/../IWG1 :
+	cd @MODDIR@/.. && make IWG1
+}
+
+%%
+.PHONY : clean-IWG1
+clean-dist : clean-IWG1
+clean-IWG1 :
+	cd @MODDIR@/.. && make clean

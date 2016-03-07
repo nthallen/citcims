@@ -1,6 +1,7 @@
 TM typedef unsigned short USHRT { text "%5u"; }
 TM 1 Hz USHRT MFCtr, Synch;
 TM typedef unsigned char SWStat_t { text "%3d"; }
+TM typedef unsigned char UCHAR { text "%3d"; }
 TM typedef unsigned short SWStatw_t { text "%5d"; }
 
 TM 1 Hz SWStat_t SWStat; collect SWStat = SWData.SWStat; 

@@ -1,0 +1,22 @@
+Watlow {
+  >Watlow<;
+  T1:    (PM6C_T1,5)  C;
+  SP1:   (PM6C_SP1,5) C;
+  T2:    (PM6C_T2,5)  C;
+  SP2:   (PM6C_SP2,5) C;
+  stale: (MBstale,3);
+}
+
+F4 {
+  >F4<;
+  T1:  (F4_IV1,5) C;
+  T2:  (F4_IV2,5) C;
+  T3:  (F4_IV3,5) C;
+  SP1:  (F4_SP1,5) C;
+  SP2:  (F4_SP2,5) C;
+  Op:  (F4_Op,7);
+}
+
+modbus {
+  HBox { [Watlow]; +|+; [F4] }
+}

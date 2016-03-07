@@ -1,4 +1,0 @@
-%{
-  #include "omsdrv.h"
-  OMS_TM_Data OMS_status;
-%}

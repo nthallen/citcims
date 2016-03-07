@@ -1,0 +1,122 @@
+TM 1 Hz IWG1_Drift AVOCET_TDrift;
+TM 1 Hz IWG1_float AVOCET_CO2;
+TM 1 Hz UCHAR AVOCET_stale;
+TM "Receive" AVOCET 0;
+
+Group AVOCET (AVOCET_TDrift, AVOCET_CO2, AVOCET_stale) {
+  AVOCET_TDrift = calc_drift(AVOCET.Time);
+  AVOCET_CO2 = AVOCET.CO2;
+  AVOCET_stale = AVOCET_obj->stale(255);
+}
+
+TM 1 Hz IWG1_Drift DACOM_TDrift;
+TM 1 Hz IWG1_float DACOM_CO;
+TM 1 Hz IWG1_float DACOM_Methane;
+TM 1 Hz UCHAR DACOM_stale;
+TM "Receive" DACOM 0;
+
+Group DACOM (DACOM_TDrift, DACOM_Methane, DACOM_stale) {
+  DACOM_TDrift = calc_drift(DACOM.Time);
+  DACOM_CO = DACOM.CO;
+  DACOM_Methane = DACOM.Methane;
+  DACOM_stale = DACOM_obj->stale(255);
+}
+
+TM 1 Hz IWG1_Drift DLH_TDrift;
+TM 1 Hz IWG1_alt DLH_WaterVapor;
+TM 1 Hz UCHAR DLH_stale;
+TM "Receive" DLH 0;
+
+Group DLH (DLH_TDrift, DLH_WaterVapor, DLH_stale) {
+  DLH_TDrift = calc_drift(DLH.Time);
+  DLH_WaterVapor = DLH.WaterVapor;
+  DLH_stale = DLH_obj->stale(255);
+}
+
+TM 1 Hz IWG1_Drift LARGE_TDrift;
+TM 1 Hz IWG1_float LARGE_ColdCN;
+TM 1 Hz IWG1_float LARGE_HotCN;
+TM 1 Hz IWG1_float LARGE_Dry_Scattering;
+TM 1 Hz UCHAR LARGE_stale;
+TM "Receive" LARGE 0;
+
+Group LARGE (LARGE_TDrift, LARGE_ColdCN, LARGE_HotCN,
+             LARGE_Dry_Scattering, LARGE_stale) {
+  LARGE_TDrift = calc_drift(LARGE.Time);
+  LARGE_ColdCN = LARGE.ColdCN;
+  LARGE_HotCN = LARGE.HotCN;
+  LARGE_Dry_Scattering = LARGE.Dry_Scattering;
+  LARGE_stale = LARGE_obj->stale(255);
+}
+
+TM 1 Hz IWG1_Drift MMS_TDrift;
+TM 1 Hz IWG1_float MMS_TotalPressure;
+TM 1 Hz IWG1_float MMS_StaticPressure;
+TM 1 Hz IWG1_float MMS_Pitch;
+TM 1 Hz IWG1_float MMS_Roll;
+TM 1 Hz IWG1_float MMS_Heading;
+TM 1 Hz IWG1_float MMS_Vns;
+TM 1 Hz IWG1_float MMS_Vew;
+TM 1 Hz IWG1_float MMS_Vup;
+TM 1 Hz IWG1_float MMS_Az;
+TM 1 Hz UCHAR MMS_stale;
+TM "Receive" MMS 0;
+
+Group MMS (MMS_TDrift, MMS_TotalPressure, MMS_StaticPressure,
+           MMS_Pitch, MMS_Roll, MMS_Heading, MMS_Vns, MMS_Vew,
+           MMS_Vup, MMS_Az, MMS_stale) {
+  MMS_TDrift = calc_drift(MMS.Time);
+  MMS_TotalPressure = MMS.TotalPressure;
+  MMS_StaticPressure = MMS.StaticPressure;
+  MMS_Pitch = MMS.Pitch;
+  MMS_Roll = MMS.Roll;
+  MMS_Heading = MMS.Heading;
+  MMS_Vns = MMS.Vns;
+  MMS_Vew = MMS.Vew;
+  MMS_Vup = MMS.Vup;
+  MMS_Az = MMS.Az;
+  MMS_stale = MMS_obj->stale(255);
+}
+
+TM 1 Hz IWG1_Drift NOAA_HSP2_TDrift;
+TM 1 Hz IWG1_float NOAA_HSP2_IncParticleCount;
+TM 1 HZ UCHAR NOAA_HSP2_Status;
+TM 1 Hz UCHAR NOAA_HSP2_stale;
+TM "Receive" NOAA_HSP2 0;
+
+Group NOAA_HSP2 (NOAA_HSP2_TDrift, NOAA_HSP2_IncParticleCount,
+                 NOAA_HSP2_Status, NOAA_HSP2_stale) {
+  NOAA_HSP2_TDrift = calc_drift(NOAA_HSP2.Time);
+  NOAA_HSP2_IncParticleCount = NOAA_HSP2.HSP2_IncParticleCount;
+  NOAA_HSP2_stale = NOAA_HSP2_obj->stale(255);
+}
+
+TM 1 Hz IWG1_Drift NOAA_SP2_TDrift;
+TM 1 Hz IWG1_float NOAA_SP2_IncParticleCount;
+TM 1 HZ UCHAR NOAA_SP2_Status;
+TM 1 Hz UCHAR NOAA_SP2_stale;
+TM "Receive" NOAA_SP2 0;
+
+Group NOAA_SP2 (NOAA_SP2_TDrift, NOAA_SP2_IncParticleCount,
+                 NOAA_SP2_Status, NOAA_SP2_stale) {
+  NOAA_SP2_TDrift = calc_drift(NOAA_SP2.Time);
+  NOAA_SP2_IncParticleCount = NOAA_SP2.SP2_IncParticleCount;
+  NOAA_SP2_stale = NOAA_SP2_obj->stale(255);
+}
+
+TM 1 Hz IWG1_Drift NOyO3_TDrift;
+TM 1 Hz IWG1_float NOyO3_NO;
+TM 1 Hz IWG1_float NOyO3_NOy;
+TM 1 Hz IWG1_float NOyO3_O3;
+TM 1 Hz UCHAR NOyO3_stale;
+TM "Receive" NOyO3 0;
+
+Group NOyO3 (NOyO3_TDrift, NOyO3_NO, NOyO3_NOy,
+             NOyO3_O3, NOyO3_stale) {
+  NOyO3_TDrift = calc_drift(NOyO3.Time);
+  NOyO3_NO = NOyO3.NO;
+  NOyO3_NOy = NOyO3.NOy;
+  NOyO3_O3 = NOyO3.O3;
+  NOyO3_stale = NOyO3_obj->stale(255);
+}
+

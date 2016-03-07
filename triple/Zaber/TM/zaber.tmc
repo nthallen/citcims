@@ -1,0 +1,31 @@
+%{
+  #include "zaber.h"
+  zaber_tms_t Zaber;
+  #define ZD0 Zaber.drive[0]
+%}
+TM "Receive" Zaber 1;
+
+TM typedef unsigned long Zaber_pos_t { text "%7lu"; }
+TM typedef unsigned short Zaber_volt_t {
+  convert VOLTS;
+  text "%4.1lf";
+}
+  Calibration ( Zaber_volt_t, VOLTS ) {
+    0, 0,
+    999, 99.9,
+    1000, 999,
+    1001, 999
+  }
+
+TM 1 Hz Zaber_pos_t Z1pos;
+TM 1 Hz Zaber_volt_t Z1V;
+TM 1 Hz UCHAR Z1stale, Zstale;
+Group ZaberGrp ( Z1pos, Z1V, Z1stale, Zstale ) {
+  Z1pos = ZD0.position;
+  Z1V = ZD0.PS_voltage;
+  Z1stale = ZD0.zero ?
+    ( Z1stale < 255 ? Z1stale+1 : 255 ) : 0;
+  ZD0.zero = 1;
+  Zstale = Zaber_obj->stale(255);
+  Zaber_obj->synch();
+}

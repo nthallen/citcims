@@ -21,7 +21,7 @@
   ;
 
 &zaber_drive <int>
-	: All Drives { $0 = 0; }
-	: Drive 1 { $0 = 1; }
-	: Drive 2 { $0 = 2; }
-	;
+  : All Drives { $0 = 0; }
+  : Drive 1 { $0 = 1; }
+  : Drive 2 { $0 = 2; }
+  ;

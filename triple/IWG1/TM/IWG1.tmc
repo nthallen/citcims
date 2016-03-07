@@ -1,6 +1,6 @@
 TM typedef signed short IWG1_Drift { text "%6d"; }
 TM typedef float IWG1_float { text "%9.4f"; }
-TM typedef float IWG1_alt { text "%9.3f"; }
+TM typedef IWG1_float IWG1_alt { text "%9.3f"; }
 TM 1 Hz IWG1_Drift TDrift;
 TM 1 Hz IWG1_float TDDrift;
 TM 1 Hz IWG1_float Lat;

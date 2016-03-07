@@ -1,0 +1,23 @@
+ModuleDef modbus {
+  modbus Module supports RS-485 communication with
+  Modbus-compatible components. This incarnation
+  addresses Watlow PM6C and F4 controllers.
+}
+
+mode (default) {
+  tmcbase = modbus.tmc
+  colbase = modbus_col.tmc
+  cmdbase = modbus.cmd
+  genuibase = modbus.genui
+  DISTRIB = @MODDIR@/../modbus
+  CPPFLAGS = -I @MODDIR@/..
+  %%
+@MODDIR@/../modbus :
+	cd @MODDIR@/.. && make
+}
+
+%%
+.PHONY : clean-modbus
+clean-dist : clean-modbus
+clean-modbus :
+	cd @MODDIR@/.. && make clean
