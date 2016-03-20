@@ -3,9 +3,9 @@ ModuleDef nXDS {
   This module definition does not account for the following:
     -The nXDS.tbl currently needs to be manually included in screen def
     -There is no support for
-      =remote experiment data reception
       =disable substitution in genui
 }
+
 mode (default) {
   tmcbase = nXDS.tmc
   colbase = nXDS_col.tmc
@@ -17,11 +17,16 @@ mode (default) {
   %%
 @MODDIR@/../nXDS :
 	cd @MODDIR@/.. && make
-}
-
-%%
 .PHONY : clean-nXDS
 clean-dist : clean-nXDS
 clean-nXDS :
 	cd @MODDIR@/.. && make clean
+}
 
+mode (remote) {
+  tmcbase = nXDS.tmc
+  colbase = nXDS_col.tmc
+  genuibase = nXDS.genui
+  extbase = nXDS_conv.tmc
+  CPPFLAGS = -I @MODDIR@/..
+}

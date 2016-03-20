@@ -3,21 +3,14 @@
 <include> msg
 <follow> msg
 
-<opts> "d:"
+<opts> "d:x:n:e:"
 <sort>
-	-d <serial device>
-  -n <drive number> Do not read or write to specifed drive
-<switch>
-  case 'd':
-    nxds_path = optarg;
-    break;
-  case 'n':
-    { uint8_t drv = atoi(optarg);
-      if (drv < N_NXDS_DRIVES) {
-        nxds_absent |= 1 << drv;
-      }
-    }
-    break;
+	-d <serial device> -- Port connected to nXDS
+	-x <drive number> -- Do not read or write to specifed drive
+	-n <remote node> -- for secondary telemetry reports
+	-e <remote experiment> -- for secondary telemetry reports
+<init>
+  nxds_init_options(argc, argv);
 
 <package> msghdr_default
 <var>

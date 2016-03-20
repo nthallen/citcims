@@ -8,7 +8,7 @@
 # Invoking: appgen_module Zaber X mode=default
 # Invoking: appgen_module Sonic X mode=disable Hz=8
 # Invoking: appgen_module Zeno X mode=disable
-# Makefile Generated Mon Mar 07 14:52:49 EST 2016
+# Makefile Generated Sun Mar 20 11:45:11 EDT 2016
 MNC=ToF
 SPECFILE=ToF.spec
 PCMFILE=ToF.pcm
@@ -343,7 +343,6 @@ clean-IonGauge :
 clean-dist : clean-nXDS
 clean-nXDS :
 	cd ../Edwards_nXDS/TM/.. && make clean
-
 ../UPS/TM/../ups :
 	cd ../UPS/TM/.. && make
 .PHONY : clean-UPS

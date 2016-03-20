@@ -3,7 +3,7 @@ CPPFLAGS= -I /usr/local/include
 CXXFLAGS= -Wall -g
 LIBS=-ltmpp -ltm -lnort
 
-SRC = nXDS_main.cc nXDS.cc nXDS_cmd.cc CmdReq.cc nXDSoui.c
+SRC = nXDS_main.cc nXDS.cc nXDS_cmd.cc CmdReq.cc nXDSoui.c nXDS_TM.cc
 OBJ = ${addsuffix .o, ${basename $(SRC) } } 
 TGT = nXDS
 

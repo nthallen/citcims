@@ -5,7 +5,6 @@
 
   /* Definitions for Selector/Selectee classes for Edwards nXDS Driver */
   #include <stdint.h>
-  extern char *nxds_path;
   extern uint8_t nxds_absent;
 
   #define N_NXDS_DRIVES 2
@@ -44,6 +43,14 @@
   typedef struct __attribute__((__packed__)) {
     nXDS_TM_t drive[N_NXDS_DRIVES];
   } nXDS_t;
+
+  #ifdef __cplusplus
+    extern "C" {
+  #endif
+      extern void nxds_init_options(int argc, char **argv);
+  #ifdef __cplusplus
+    };
+  #endif
 
   #ifndef NXDS_HIDE_INTERNALS
   #ifdef __cplusplus
@@ -121,6 +128,25 @@
         int ProcessData(int flag);
       private:
         nXDS *nX;
+    };
+
+    class nXDS_TM : public Selectee {
+      public:
+        nXDS_TM(nXDS_t *data, const char *remnode = 0,
+          const char *remexp = 0);
+        nXDS_TM();
+        ~nXDS_TM();
+        void init(nXDS_t *data, const char *remnode,
+          const char *remexp);
+        void Connect();
+        int ProcessData(int flag);
+        Timeout *GetTimeout();
+      protected:
+        send_id TMid;
+        static const char *NXDS_TM_NAME;
+        const char *remote;
+        nXDS_t *TM_data;
+        Timeout TO;
     };
 
   #endif // __cplusplus
