@@ -34,7 +34,8 @@ Module Zaber mode=dual
 Module ../../ToF/Edwards_nXDS/TM/nXDS mode=remote
 
 triplealgo : dstat_conv.tmc triple.tma hrdwr.tma
-tripledisp : dstat_conv.tmc triple.tbl triple2.tbl IWG1.tbl
+tripledisp : dstat_conv.tmc ../../ToF/Edwards_nXDS/TM/nXDS_conv.tmc \
+  triple.tbl triple2.tbl IWG1.tbl
 tripledoit : triple.doit
 fastext : fast.cdf
 mediumext : medium.cdf

@@ -2,7 +2,7 @@
 # Invoking: appgen_module modbus X mode=disable
 # Invoking: appgen_module Zaber X mode=dual
 # Invoking: appgen_module ../../ToF/Edwards_nXDS/TM/nXDS X mode=remote
-# Makefile Generated Sun Mar 20 11:39:52 EDT 2016
+# Makefile Generated Sun Mar 20 13:01:39 EDT 2016
 MNC=triple
 SPECFILE=triple.spec
 PCMFILE=triple.pcm
@@ -161,16 +161,16 @@ triplealgooui.o : triplealgooui.c
 triplealgo.o : triplealgo.cc
 tripletbl.tmc : triple.tbl
 triple2tbl.tmc : triple2.tbl
-tripledisp.cc : base.tmc herc.tmc tdrift.tmc /usr/local/share/huarp/cpu_usage.tmc /usr/local/share/huarp/tmdf.tmc /usr/local/share/huarp/flttime.tmc ../IWG1/TM/IWG1.tmc ../Zaber/TM/zaber2.tmc ../../ToF/Edwards_nXDS/TM/nXDS.tmc dstat_conv.tmc tripletbl.tmc triple2tbl.tmc IWG1tbl.tmc
-	$(TMC) base.tmc herc.tmc tdrift.tmc /usr/local/share/huarp/cpu_usage.tmc /usr/local/share/huarp/tmdf.tmc /usr/local/share/huarp/flttime.tmc ../IWG1/TM/IWG1.tmc ../Zaber/TM/zaber2.tmc ../../ToF/Edwards_nXDS/TM/nXDS.tmc dstat_conv.tmc tripletbl.tmc triple2tbl.tmc IWG1tbl.tmc
+tripledisp.cc : base.tmc herc.tmc tdrift.tmc /usr/local/share/huarp/cpu_usage.tmc /usr/local/share/huarp/tmdf.tmc /usr/local/share/huarp/flttime.tmc ../IWG1/TM/IWG1.tmc ../Zaber/TM/zaber2.tmc ../../ToF/Edwards_nXDS/TM/nXDS.tmc dstat_conv.tmc ../../ToF/Edwards_nXDS/TM/nXDS_conv.tmc tripletbl.tmc triple2tbl.tmc IWG1tbl.tmc
+	$(TMC) base.tmc herc.tmc tdrift.tmc /usr/local/share/huarp/cpu_usage.tmc /usr/local/share/huarp/tmdf.tmc /usr/local/share/huarp/flttime.tmc ../IWG1/TM/IWG1.tmc ../Zaber/TM/zaber2.tmc ../../ToF/Edwards_nXDS/TM/nXDS.tmc dstat_conv.tmc ../../ToF/Edwards_nXDS/TM/nXDS_conv.tmc tripletbl.tmc triple2tbl.tmc IWG1tbl.tmc
 tripledispoui.c : $(OUIDIR)/dc.oui $(OUIDIR)/msg.oui
 	$(OUI) $(OUIDIR)/dc.oui $(OUIDIR)/msg.oui
 tripledispoui.o : tripledispoui.c
 tripledisp.o : tripledisp.cc
 tripletblnc.tmc : triple.tbl
 triple2tblnc.tmc : triple2.tbl
-tripledispnc.cc : base.tmc herc.tmc tdrift.tmc /usr/local/share/huarp/cpu_usage.tmc /usr/local/share/huarp/tmdf.tmc /usr/local/share/huarp/flttime.tmc ../IWG1/TM/IWG1.tmc ../Zaber/TM/zaber2.tmc ../../ToF/Edwards_nXDS/TM/nXDS.tmc dstat_conv.tmc tripletblnc.tmc triple2tblnc.tmc IWG1tblnc.tmc
-	$(TMC) base.tmc herc.tmc tdrift.tmc /usr/local/share/huarp/cpu_usage.tmc /usr/local/share/huarp/tmdf.tmc /usr/local/share/huarp/flttime.tmc ../IWG1/TM/IWG1.tmc ../Zaber/TM/zaber2.tmc ../../ToF/Edwards_nXDS/TM/nXDS.tmc dstat_conv.tmc tripletblnc.tmc triple2tblnc.tmc IWG1tblnc.tmc
+tripledispnc.cc : base.tmc herc.tmc tdrift.tmc /usr/local/share/huarp/cpu_usage.tmc /usr/local/share/huarp/tmdf.tmc /usr/local/share/huarp/flttime.tmc ../IWG1/TM/IWG1.tmc ../Zaber/TM/zaber2.tmc ../../ToF/Edwards_nXDS/TM/nXDS.tmc dstat_conv.tmc ../../ToF/Edwards_nXDS/TM/nXDS_conv.tmc tripletblnc.tmc triple2tblnc.tmc IWG1tblnc.tmc
+	$(TMC) base.tmc herc.tmc tdrift.tmc /usr/local/share/huarp/cpu_usage.tmc /usr/local/share/huarp/tmdf.tmc /usr/local/share/huarp/flttime.tmc ../IWG1/TM/IWG1.tmc ../Zaber/TM/zaber2.tmc ../../ToF/Edwards_nXDS/TM/nXDS.tmc dstat_conv.tmc ../../ToF/Edwards_nXDS/TM/nXDS_conv.tmc tripletblnc.tmc triple2tblnc.tmc IWG1tblnc.tmc
 tripledispncoui.c : $(OUIDIR)/nctable.oui $(OUIDIR)/dc.oui $(OUIDIR)/msg.oui
 	$(OUI) $(OUIDIR)/nctable.oui $(OUIDIR)/dc.oui $(OUIDIR)/msg.oui
 tripledispncoui.o : tripledispncoui.c
