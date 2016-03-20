@@ -8,7 +8,7 @@
 # Invoking: appgen_module Zaber X mode=default
 # Invoking: appgen_module Sonic X mode=disable Hz=8
 # Invoking: appgen_module Zeno X mode=disable
-# Makefile Generated Sat Mar 05 21:28:51 EST 2016
+# Makefile Generated Mon Mar 07 14:52:49 EST 2016
 MNC=ToF
 SPECFILE=ToF.spec
 PCMFILE=ToF.pcm
@@ -304,7 +304,7 @@ ToFcol.o : ToFcol.cc SWData.h
 dsdaq.o : ../DSDaq/dsdaq.cc SWData.h
 	$(COMPILE.cc) ../DSDaq/dsdaq.cc
 ToFengext.cdf : ToF.genui ../Horiba/TM/Horiba.genui IonGauge.genui ../Edwards_nXDS/TM/nXDS.genui OMS.genui ../UPS/TM/UPS.genui ../GPS/TM/gpsd.genui ../IWG1/TM/IWG1.genui ../Zaber/TM/zaber.genui
-	$(GENUI2CDF) ToF.genui ../Horiba/TM/Horiba.genui IonGauge.genui ../Edwards_nXDS/TM/nXDS.genui OMS.genui ../UPS/TM/UPS.genui ../GPS/TM/gpsd.genui ../IWG1/TM/IWG1.genui ../Zaber/TM/zaber.genui
+	$(GENUI2ENG) ToF.genui ../Horiba/TM/Horiba.genui IonGauge.genui ../Edwards_nXDS/TM/nXDS.genui OMS.genui ../UPS/TM/UPS.genui ../GPS/TM/gpsd.genui ../IWG1/TM/IWG1.genui ../Zaber/TM/zaber.genui
 ToFengextcdf.oui : ToFengext.cdf
 	$(EDF2OUI) ToFengext.cdf
 ToFengextcdf.tmc : ToFengext.cdf
