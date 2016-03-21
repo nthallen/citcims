@@ -1,0 +1,71 @@
+/* UPS.tmc
+*/
+%{
+  const char *QMOD_text(uint8_t code) {
+    static char obuf[2] = "x";
+    const char QMOD_codes[] = "PSYLBTFECD";
+    if (code > sizeof(QMOD_codes)) {
+      obuf[0] = '?';
+    } else {
+      obuf[0] = QMOD_codes[code];
+    }
+    return((const char *)obuf);
+  }
+%}
+TM "Receive" UPS_TM 1;
+
+TM typedef unsigned char QMOD_t { text "%1d" QMOD_text(); }
+TM typedef unsigned char UPS_U8_t { text "%3d"; }
+TM typedef UPS_U8_t UPS_U8B_t { text "%02x"; }
+TM typedef unsigned short UPS_U16_1_t { text "%6.1lf"; }
+TM typedef unsigned short UPS_U16_t { text "%04x"; }
+
+TM 1 Hz UPS_U8B_t UPS_Response;
+TM 1 Hz QMOD_t UPS_Mode;
+TM 1 Hz UPS_U16_1_t UPS_V_in;
+TM 1 Hz UPS_U16_1_t UPS_F_in;
+TM 1 Hz UPS_U16_1_t UPS_V_out;
+TM 1 Hz UPS_U16_1_t UPS_F_out;
+TM 1 Hz UPS_U16_1_t UPS_I_out;
+TM 1 Hz UPS_U8_t UPS_LoadPct;
+TM 1 Hz UPS_U16_1_t UPS_VBusP;
+TM 1 Hz UPS_U16_1_t UPS_VBusN;
+TM 1 Hz UPS_U16_1_t UPS_VBatP;
+TM 1 Hz UPS_U16_1_t UPS_VBatN;
+TM 1 Hz UPS_U16_1_t UPS_Tmax;
+TM 1 Hz UPS_U16_t UPS_Status;
+TM 1 Hz UPS_U16_t UPS_Warn;
+TM 1 Hz UPS_U8_t UPS_Stale;
+TM 1 Hz UPS_U16_1_t UPS_VBat;
+TM 1 Hz UPS_U8_t UPS_Piece;
+TM 1 Hz UPS_U8_t UPS_Group;
+TM 1 Hz UPS_U8_t UPS_Capacity;
+TM 1 Hz UPS_U8_t UPS_Remain_Time;
+
+Group UPS (UPS_Response, UPS_Mode, UPS_V_in, UPS_F_in, UPS_V_out, UPS_F_out,
+      UPS_VBusP, UPS_VBusN, UPS_VBatP, UPS_VBatN, UPS_Tmax, UPS_Status,
+      UPS_Warn, UPS_VBat, UPS_Piece, UPS_Group, UPS_Capacity,
+      UPS_Remain_Time, UPS_Stale) {
+  UPS_Response = UPS_TM.UPS_Response2;
+  UPS_Mode = UPS_TM.QMOD;
+  UPS_V_in = UPS_TM.QGS_V_in;
+  UPS_F_in = UPS_TM.QGS_F_in;
+  UPS_V_out = UPS_TM.QGS_V_out;
+  UPS_F_out = UPS_TM.QGS_F_out;
+  UPS_I_out = UPS_TM.QGS_I_out;
+  UPS_LoadPct = UPS_TM.QGS_LoadPct;
+  UPS_VBusP = UPS_TM.QGS_VBusP;
+  UPS_VBusN = UPS_TM.QGS_VBusN;
+  UPS_VBatP = UPS_TM.QGS_VBatP;
+  UPS_VBatN = UPS_TM.QGS_VBatN;
+  UPS_Tmax = UPS_TM.QGS_Tmax;
+  UPS_Status = UPS_TM.QGS_Status;
+  UPS_Warn = UPS_TM.QWS;
+  UPS_VBat = UPS_TM.QBV_Vbat;
+  UPS_Piece = UPS_TM.QBV_Piece;
+  UPS_Group = UPS_TM.QBV_Group;
+  UPS_Capacity = UPS_TM.QBV_Capacity;
+  UPS_Remain_Time = UPS_TM.QBV_Remain_Time;
+  UPS_Stale = UPS_TM_obj->stale(255);
+  UPS_TM_obj->synch();
+}

@@ -2,9 +2,11 @@
 <include> msg
 <follow> msg
 <include> "UPS.h"
-<opts> "p:"
+<opts> "p:n:e:"
 <sort>
 	-p <serial device>
+	-n <remote node> -- for secondary telemetry reports
+	-e <remote experiment> -- for secondary telemetry reports
 <init>
   ups_init_options(argc, argv);
 

@@ -26,6 +26,7 @@
     uint16_t QWS;
     uint16_t QBV_Vbat;
     uint8_t UPS_Response;
+    uint8_t UPS_Response2;
     uint8_t QMOD;
     uint8_t QGS_LoadPct;
     uint8_t QBV_Piece;
@@ -109,6 +110,8 @@
         bool submit_req(UPS_cmd_req *req);
       private:
         void update_termios();
+        void set_response_bit(uint8_t mask);
+        void clear_response_bit(uint8_t mask);
         int not_bin(uint16_t &word, int nbits);
         int not_fixed_1( unsigned int &val );
         int out_of_range(int val, const char *desc, int low, int high);
@@ -122,6 +125,25 @@
         std::deque<UPS_cmd_req *>::const_iterator cur_poll;
         UPS_cmd_req *pending;
         termios termios_s;
+        Timeout TO;
+    };
+
+    class UPS_TM : public Selectee {
+      public:
+        UPS_TM(UPS_TM_t *data, const char *remnode = 0,
+          const char *remexp = 0);
+        UPS_TM();
+        ~UPS_TM();
+        void init(UPS_TM_t *data, const char *remnode,
+          const char *remexp);
+        void Connect();
+        int ProcessData(int flag);
+        Timeout *GetTimeout();
+      protected:
+        send_id TMid;
+        static const char *UPS_TM_NAME;
+        const char *remote;
+        UPS_TM_t *TM_data;
         Timeout TO;
     };
     

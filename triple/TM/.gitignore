@@ -15,12 +15,14 @@ triplealgooui.o
 triplealgo.o
 tripletbl.tmc
 triple2tbl.tmc
+UPStbl.tmc
 tripledisp.cc
 tripledispoui.c
 tripledispoui.o
 tripledisp.o
 tripletblnc.tmc
 triple2tblnc.tmc
+UPStblnc.tmc
 tripledispnc.cc
 tripledispncoui.c
 tripledispncoui.o

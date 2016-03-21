@@ -1,10 +1,10 @@
-ModuleDef UPS {
+ModuleDef UPS [ RN= ] {
   UPS Module supports RS-232 communication with
   Orion Power Systems DC3000RT Uninterruptable power supply
 }
 
 mode (default) {
-  tmcbase = UPS.tmc
+  tmcbase = UPS.tmc:UPS.tmc.in
   colbase = UPS_col.tmc
   cmdbase = UPS.cmd
   genuibase = UPS.genui
@@ -13,10 +13,15 @@ mode (default) {
   %%
 @MODDIR@/../ups :
 	cd @MODDIR@/.. && make
-}
-
-%%
 .PHONY : clean-UPS
 clean-dist : clean-UPS
 clean-UPS :
 	cd @MODDIR@/.. && make clean
+}
+
+mode (remote) [ RN=2 ] {
+  tmcbase = UPS.tmc:UPS.tmc.in
+  colbase = UPS_col.tmc
+  genuibase = UPS.genui
+  CPPFLAGS = -I @MODDIR@/..
+}

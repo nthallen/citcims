@@ -80,6 +80,16 @@ void UPS_ser::update_termios() {
   }
 }
 
+void UPS_ser::set_response_bit(uint8_t mask) {
+  UPS_TMp->UPS_Response |= mask;
+  UPS_TMp->UPS_Response2 |= mask;
+}
+
+void UPS_ser::clear_response_bit(uint8_t mask) {
+  UPS_TMp->UPS_Response &= ~mask;
+  UPS_TMp->UPS_Response2 &= ~mask;
+}
+
 /**
  * @return NULL on error.
  */
