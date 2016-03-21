@@ -31,5 +31,5 @@
   Launch - IWG1
   Launch - UserPkts
 # Launch - Zeno_Ser -d /dev/ser4
-  Launch - ups -p /dev/ser4
+  Launch - ups -p /dev/ser4 -n tripherc -e triple
   Launch - ToFalgo -v

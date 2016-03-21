@@ -2,3 +2,4 @@
   memo=AthenaII.log
   echo "Running script runfile.AII" >>$memo
   Launch AthenaII AthenaII -o $memo
+  parent_loop="-q -M $! -t 5"
