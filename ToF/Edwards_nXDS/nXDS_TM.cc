@@ -57,7 +57,7 @@ void nXDS_TM::Connect() {
       flags |= Selector::Sel_Except;
     }
   } else {
-    if (!TO.Expired()) {}
+    if (!TO.Expired()) {
       nl_error(1, "TM connection failed to %s", remote);
     }
     TO.Set(10,0);
