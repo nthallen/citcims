@@ -19,7 +19,7 @@ int UPS_ser::parse_QMOD(UPS_cmd_req *cr) {
     for (i=0; modes[i] != '\0'; ++i) {
       if (c == modes[i]) {
         UPS_TMp->QMOD = i;
-        UPS_TMp->UPS_Response |= UPSR_QMOD;
+	set_response_bit(UPSR_QMOD);
         report_ok();
         return 0;
       }
@@ -141,7 +141,7 @@ int UPS_ser::parse_QGS(UPS_cmd_req *cr) {
   UPS_TMp->QGS_VBatN = X;
   UPS_TMp->QGS_Tmax = T;
   UPS_TMp->QGS_Status = ba;
-  UPS_TMp->UPS_Response |= UPSR_QGS;
+  set_response_bit(UPSR_QGS);
   report_ok();
   return 0;
 }
@@ -163,7 +163,7 @@ int UPS_ser::parse_QWS(UPS_cmd_req *cr) {
     ((A1>>7)&(1<<8)) |
     ((A4<<7)&(3<<9)) |
     ((A4<<2)&(1<<11));
-  UPS_TMp->UPS_Response |= UPSR_QWS;
+  set_response_bit(UPSR_QWS);
   report_ok();
   return 0;
 }
@@ -201,7 +201,7 @@ int UPS_ser::parse_QBV(UPS_cmd_req *cr) {
   UPS_TMp->QBV_Group = M;
   UPS_TMp->QBV_Capacity = C;
   UPS_TMp->QBV_Remain_Time = T;
-  UPS_TMp->UPS_Response |= UPSR_QBV;
+  set_response_bit(UPSR_QBV);
   if (!(out_of_range(N, "Battery Piece", 1, 20) ||
         out_of_range(M, "Battery Group", 1, 99) ||
         out_of_range(C, "Battery Capacity", 0, 100) ||
@@ -216,11 +216,11 @@ int UPS_ser::parse_QSK1(UPS_cmd_req *cr) {
   if (not_found('(') || not_bin(N,1)) {
     return cp >= nc;
   }
-  UPS_TMp->UPS_Response |= UPSR_QSK1;
+  set_response_bit(UPSR_QSK1);
   if (N) {
-    UPS_TMp->UPS_Response |= UPSR_QSK1_ON;
+    set_response_bit(UPSR_QSK1_ON);
   } else {
-    UPS_TMp->UPS_Response &= ~UPSR_QSK1_ON;
+    clear_response_bit(UPSR_QSK1_ON);
   }
   return 0;
 }

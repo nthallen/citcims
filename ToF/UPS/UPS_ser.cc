@@ -185,7 +185,6 @@ Timeout *UPS_ser::GetTimeout() {
  */
 int UPS_ser::ProcessData(int flag) {
   if (flag & Selector::gflag(0)) {
-    UPS_TMp->UPS_Response &= ~UPSR_RESPONSES;
     if (cur_poll == polls.end()) {
       cur_poll = polls.begin();
     }
