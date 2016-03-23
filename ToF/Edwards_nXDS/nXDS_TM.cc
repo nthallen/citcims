@@ -81,10 +81,16 @@ nXDS_TM::~nXDS_TM() {
  * Calls Col_send() and sets gflag(0)
  */
 int nXDS_TM::ProcessData(int flag) {
+  const char *rem_text = remote ? "remote" : "local";
   if (TMid == 0) {
     Connect(); // Will either set TMid or TO
   }
   if ((flag | Selector::Sel_Except) || (TMid && Col_send(TMid))) {
+    if (flag|Selector::Sel_Except) {
+      nl_error(0, "Closing %s TM connection due to Sel_Except", rem_text);
+    } else {
+      nl_error(0, "Closing %s TM connection due to Col_send() error", rem_text);
+    }
     if (Col_send_reset(TMid)) {
       if (flag|Selector::Sel_Except) {
         nl_error(0, "Expected error closing %s TM connection: %s",
