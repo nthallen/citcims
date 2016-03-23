@@ -106,6 +106,9 @@ int nXDS_TM::ProcessData(int flag) {
       return 1;
     }
   }
+  if (!remote) {
+    Stor->set_gflag(0);
+  }
 // nXDS does not have specific response flags
 //if (remote) {
 //  TM_data->data2_status = 0;

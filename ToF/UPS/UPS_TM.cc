@@ -112,6 +112,7 @@ int UPS_TM::ProcessData(int flag) {
   if (remote) {
     TM_data->UPS_Response2 &= ~UPSR_RESPONSES;
   } else {
+    Stor->set_gflag(0);
     TM_data->UPS_Response &= ~UPSR_RESPONSES;
   }
   return 0;
