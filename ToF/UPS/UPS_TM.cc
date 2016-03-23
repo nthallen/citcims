@@ -56,6 +56,7 @@ void UPS_TM::Connect() {
     flags = Selector::Sel_Write;
     if (remote) {
       nl_error(0, "TM connection established to %s", remote);
+      flags |= Selector::Sel_Except;
     }
   } else {
     if (!TO.Expired()) {
@@ -85,29 +86,33 @@ int UPS_TM::ProcessData(int flag) {
   if (TMid == 0) {
     Connect(); // Will either set TMid or TO
   }
-  if (TMid) {
-    if (Col_send(TMid)) {
-      if (Col_send_reset(TMid)) {
-        nl_error(3, "Error closing %s TM connection: %s",
+  if ((flag | Selector::Sel_Except) || (TMid && Col_send(TMid))) {
+    if (Col_send_reset(TMid)) {
+      if (flag|Selector::Sel_Except) {
+        nl_error(0, "Expected error closing %s TM connection: %s",
+          remote ? "remote" : "local", strerror(errno));
+      } else {
+        nl_error(2, "Error closing %s TM connection: %s",
           remote ? "remote" : "local", strerror(errno));
       }
-      TMid = 0;
-      fd = -1;
-      if (remote) {
-        TO.Set(10,0);
-        flags = Selector::Sel_Timeout;
-        return 0;
-      } else {
-        flags = 0;
-        nl_error(0, "Connection to local TM closed");
-        return 1;
-      }
     }
+    TMid = 0;
+    fd = -1;
     if (remote) {
-      TM_data->UPS_Response2 &= ~UPSR_RESPONSES;
+      TO.Set(10,0);
+      flags = Selector::Sel_Timeout;
+      nl_error(0, "Connection to remote TM closed");
+      return 0;
     } else {
-      TM_data->UPS_Response &= ~UPSR_RESPONSES;
+      flags = 0;
+      nl_error(0, "Connection to local TM closed");
+      return 1;
     }
+  }
+  if (remote) {
+    TM_data->UPS_Response2 &= ~UPSR_RESPONSES;
+  } else {
+    TM_data->UPS_Response &= ~UPSR_RESPONSES;
   }
   return 0;
 }

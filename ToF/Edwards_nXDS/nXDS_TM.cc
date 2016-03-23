@@ -54,9 +54,12 @@ void nXDS_TM::Connect() {
     flags = Selector::Sel_Write;
     if (remote) {
       nl_error(0, "TM connection established to %s", remote);
+      flags |= Selector::Sel_Except;
     }
   } else {
-    nl_error(MSG_DBG(0), "TM connection failed to %s", remote);
+    if (!TO.Expired()) {}
+      nl_error(1, "TM connection failed to %s", remote);
+    }
     TO.Set(10,0);
     flags = Selector::Sel_Timeout;
   }
@@ -81,32 +84,36 @@ int nXDS_TM::ProcessData(int flag) {
   if (TMid == 0) {
     Connect(); // Will either set TMid or TO
   }
-  if (TMid) {
-    if (Col_send(TMid)) {
-      if (Col_send_reset(TMid)) {
-        nl_error(3, "Error closing %s TM connection: %s",
+  if ((flag | Selector::Sel_Except) || (TMid && Col_send(TMid))) {
+    if (Col_send_reset(TMid)) {
+      if (flag|Selector::Sel_Except) {
+        nl_error(0, "Expected error closing %s TM connection: %s",
+          remote ? "remote" : "local", strerror(errno));
+      } else {
+        nl_error(2, "Error closing %s TM connection: %s",
           remote ? "remote" : "local", strerror(errno));
       }
-      TMid = 0;
-      fd = -1;
-      if (remote) {
-        TO.Set(10,0);
-        flags = Selector::Sel_Timeout;
-        return 0;
-      } else {
-        flags = 0;
-        nl_error(0, "Connection to local TM closed");
-        return 1;
-      }
     }
-//    if (remote) {
-//      TM_data->data2_status = 0;
-//      TM_data->err2_status = 0;
-//    } else {
-//      TM_data->data_status = 0;
-//      TM_data->err_status = 0;
-//    }
+    TMid = 0;
+    fd = -1;
+    if (remote) {
+      TO.Set(10,0);
+      flags = Selector::Sel_Timeout;
+      return 0;
+    } else {
+      flags = 0;
+      nl_error(0, "Connection to local TM closed");
+      return 1;
+    }
   }
+// nXDS does not have specific response flags
+//if (remote) {
+//  TM_data->data2_status = 0;
+//  TM_data->err2_status = 0;
+//} else {
+//  TM_data->data_status = 0;
+//  TM_data->err_status = 0;
+//}
   return 0;
 }
 
