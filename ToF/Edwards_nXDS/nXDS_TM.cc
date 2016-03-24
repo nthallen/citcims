@@ -57,7 +57,7 @@ void nXDS_TM::Connect() {
       flags |= Selector::Sel_Except;
     }
   } else {
-    if (!TO.Expired()) {
+    if (!TO.Set()) {
       nl_error(1, "TM connection failed to %s", remote);
     }
     TO.Set(10,0);
@@ -82,17 +82,19 @@ nXDS_TM::~nXDS_TM() {
  */
 int nXDS_TM::ProcessData(int flag) {
   const char *rem_text = remote ? "remote" : "local";
-  if (TMid == 0) {
+  if (TMid == 0 && TO.Expired()) {
+    nl_error(0, "TMid==0, flag=%d", flag);
     Connect(); // Will either set TMid or TO
   }
-  if ((flag | Selector::Sel_Except) || (TMid && Col_send(TMid))) {
-    if (flag|Selector::Sel_Except) {
-      nl_error(0, "Closing %s TM connection due to Sel_Except", rem_text);
+  if ((flag & Selector::Sel_Except) ||
+      (TMid && (flag & Selector::Sel_Write) && Col_send(TMid))) {
+    if (flag&Selector::Sel_Except) {
+      nl_error(0, "Closing %s TM connection due to Sel_Except. flags=%d, flag=%d", rem_text, flags, flag);
     } else {
       nl_error(0, "Closing %s TM connection due to Col_send() error", rem_text);
     }
     if (Col_send_reset(TMid)) {
-      if (flag|Selector::Sel_Except) {
+      if (flag&Selector::Sel_Except) {
         nl_error(0, "Expected error closing %s TM connection: %s",
           remote ? "remote" : "local", strerror(errno));
       } else {
@@ -112,7 +114,7 @@ int nXDS_TM::ProcessData(int flag) {
       return 1;
     }
   }
-  if (!remote) {
+  if (!remote && (flag & Selector::Sel_Write)) {
     Stor->set_gflag(0);
   }
 // nXDS does not have specific response flags

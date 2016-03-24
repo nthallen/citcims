@@ -33,7 +33,7 @@ void ups_init_options( int argc, char **argv) {
 
 int main(int argc, char **argv) {
   oui_init_options(argc, argv);
-  nl_error( 0, "Starting V0.4" );
+  nl_error( 0, "Starting V0.7" );
   { Selector Loop;
     UPS_TM_t UPSData;
     // Initialize 

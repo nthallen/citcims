@@ -59,7 +59,7 @@ void UPS_TM::Connect() {
       flags |= Selector::Sel_Except;
     }
   } else {
-    if (!TO.Expired()) {
+    if (!TO.Set()) {
       nl_error(1, "TM connection failed to %s", remote);
     }
     TO.Set(10,0);
@@ -83,12 +83,13 @@ UPS_TM::~UPS_TM() {
  * Calls Col_send() and sets gflag(0)
  */
 int UPS_TM::ProcessData(int flag) {
-  if (TMid == 0) {
+  if (TMid == 0 && TO.Expired()) {
     Connect(); // Will either set TMid or TO
   }
-  if ((flag | Selector::Sel_Except) || (TMid && Col_send(TMid))) {
+  if ((flag & Selector::Sel_Except) ||
+      (TMid && (flag & Selector::Sel_Write) && Col_send(TMid))) {
     if (Col_send_reset(TMid)) {
-      if (flag|Selector::Sel_Except) {
+      if (flag&Selector::Sel_Except) {
         nl_error(0, "Expected error closing %s TM connection: %s",
           remote ? "remote" : "local", strerror(errno));
       } else {
