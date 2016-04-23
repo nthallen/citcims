@@ -28,7 +28,7 @@ Module nXDS mode=default
 Module OMS mode=Y OMS1=Insl Group=Inlet
 Module UPS mode=default
 Module gpsd mode=default
-Module IWG1 mode=UserPkts
+Module IWG1 mode=UserPkts2
 Module Zaber mode=default
 Module Sonic mode=disable Hz=8
 Module Zeno mode=disable

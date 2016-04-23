@@ -58,11 +58,11 @@ Drift {
   AVOCET:    (AVOCET_TDrift,6);
   DACOM:     (DACOM_TDrift,6);
   DLH:       (DLH_TDrift,6);
-  LARGE:     (LARGE_TDrift,6);
-  MMS:       (MMS_TDrift,6);
-  NOAA_HSP2: (NOAA_HSP2_TDrift,6);
-  NOAA_SP2:  (NOAA_SP2_TDrift,6);
-  NOyO3:     (NOyO3_TDrift,6);
+# LARGE:     (LARGE_TDrift,6);
+# MMS:       (MMS_TDrift,6);
+# NOAA_HSP2: (NOAA_HSP2_TDrift,6);
+# NOAA_SP2:  (NOAA_SP2_TDrift,6);
+# NOyO3:     (NOyO3_TDrift,6);
 }
 
 Stale {
@@ -70,11 +70,11 @@ Stale {
   AVOCET:    (AVOCET_stale,3);
   DACOM:     (DACOM_stale,3);
   DLH:       (DLH_stale,3);
-  LARGE:     (LARGE_stale,3);
-  MMS:       (MMS_stale,3);
-  NOAA_HSP2: (NOAA_HSP2_stale,3);
-  NOAA_SP2:  (NOAA_SP2_stale,3);
-  NOyO3:     (NOyO3_stale,3);
+# LARGE:     (LARGE_stale,3);
+# MMS:       (MMS_stale,3);
+# NOAA_HSP2: (NOAA_HSP2_stale,3);
+# NOAA_SP2:  (NOAA_SP2_stale,3);
+# NOyO3:     (NOyO3_stale,3);
 }
 
 Status {
@@ -91,13 +91,13 @@ Status {
       [AVOCET];
       [DACOM];
       [DLH];
-      [NOAA_HSP2];
-      [NOAA_SP2];
+#     [NOAA_HSP2];
+#     [NOAA_SP2];
       [Status];
-    }; |; {
-      [MMS];
-      [LARGE];
-      [NOyO3];
+#   }; |; {
+#     [MMS];
+#     [LARGE];
+#     [NOyO3];
     }; |; {
       [Drift];
       [Stale];

@@ -20,7 +20,7 @@ UserPktsdispncoui.c
 UserPktsdispncoui.o
 UserPktsdispnc.o
 UserPktsextcdf.oui
-UserPktscdf.tmc
+UserPkts2cdf.tmc
 UserPktsext.cc
 UserPktsextoui.c
 UserPktsextoui.o

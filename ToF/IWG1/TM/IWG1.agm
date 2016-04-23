@@ -2,7 +2,7 @@ ModuleDef IWG1 {
   IWG1 Module receives standard parameters from NASA Aircraft
 }
 
-mode (default,UserPkts) {
+mode (default,UserPkts,UserPkts2) {
   tmcbase = IWG1.tmc
   colbase = IWG1_col.tmc
   genuibase = IWG1.genui
@@ -26,7 +26,7 @@ mode (default,UserPkts) {
     tmcbase = UserPkts2.tmc
     colbase = UserPkts2_col.tmc
     # genuibase = UserPkts2.genui
-    UserPktsdisp : UserPkts2.tbl:UserPkts2.tbl.src
+    UserPktsdisp : UserPkts.tbl:UserPkts2.tbl.src
     UserPktsext : UserPkts2.cdf
     DISTRIB = @MODDIR@/../UserPkts2
     %%

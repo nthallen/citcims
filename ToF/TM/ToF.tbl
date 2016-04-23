@@ -151,8 +151,8 @@ TDrift {
 }
 
 { HBox{
-    { [Flows]; [Horiba]; [Fly]; [zaber] }; |+;
-    { [Turbo]; [GasV]; VGlue 0+1; [TDrift] }; |+;
+    { [Flows]; [Horiba]; [Turbo]; }; |+;
+    { [Fly]; [zaber]; [GasV]; VGlue 0+1; [TDrift] }; |+;
     { [GasCmds]; [Scroll]; [OMS] }; |+;
     { [IG]; [Oct]; [Misc]; [IWG1]; VGlue 0+1; [Status] }
   }
