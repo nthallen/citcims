@@ -7,9 +7,11 @@
 #include <arpa/inet.h>
 #include <errno.h>
 
+#include "msg.h"
 #include "nortlib.h"
+#include "nl_assert.h"
 #include "oui.h"
-#include "UserPkts_int.h"
+#include "UserPkts2_int.h"
 
 #define MAX_UDP_PORTS 10
 static int udp_ports[MAX_UDP_PORTS];
@@ -64,6 +66,8 @@ UserPkt::UserPkt(const char *KW_in) {
   TM_id = 0;
   n_errors = 0;
   n_suppressed = 0;
+  total_errors = 0;
+  total_suppressed = 0;
   buf = 0;
   nc = 0;
   cp = 0;
@@ -146,7 +150,7 @@ int UserPkt::not_ndigits(int n, int &value) {
   return 0;
 }
 
-int UserPkt::not_str(const char *str, unsigned int len) {
+int UserPkt::not_str(const char *str_in, unsigned int len) {
   unsigned int start_cp = cp;
   unsigned int i;
   const unsigned char *str = (const unsigned char *)str_in;
@@ -165,14 +169,14 @@ int UserPkt::not_str(const char *str, unsigned int len) {
   return 0;
 }
 
-int UserPkt::not_float( float &val ) {
+int UserPkt::not_double( double *value ) {
   char *endptr;
   int ncf;
-  if ( cp < 0 || cp > nc || nc < 0 || nc >= bufsize || buf == 0 )
+  if ( cp < 0 || cp > nc || nc < 0 || buf == 0 )
     msg( 4, "%s not_float precondition failed: "
-      "cp = %d, nc = %d, bufsize = %d, buf %s",
-      KW, cp, nc, bufsize, buf ? "not NULL" : "is NULL" );
-  val = strtof( (char*)&buf[cp], &endptr );
+      "cp = %d, nc = %d, buf %s",
+      KW, cp, nc, buf ? "not NULL" : "is NULL" );
+  *value = strtod( (char*)&buf[cp], &endptr );
   ncf = endptr - (char*)&buf[cp];
   if ( ncf == 0 ) {
     report_err( "%s Expected float at column %d", KW, cp );
@@ -182,6 +186,14 @@ int UserPkt::not_float( float &val ) {
     cp += ncf;
     return 0;
   }
+}
+
+
+int UserPkt::not_float( float *value ) {
+  double dval;
+  int rv = not_double(&dval);
+  *value = dval;
+  return rv;
 }
 
 int UserPkt::not_ISO8601(double *Time, bool w_hyphens) {
@@ -199,7 +211,7 @@ int UserPkt::not_ISO8601(double *Time, bool w_hyphens) {
       not_str(":",1) ||
       not_ndigits(2, buft.tm_min) ||
       not_str(":",1) ||
-      not_float(secs))
+      not_float(&secs))
     return 1;
   buft.tm_year -= 1900;
   buft.tm_mon -= 1;
@@ -215,21 +227,21 @@ int UserPkt::not_ISO8601(double *Time, bool w_hyphens) {
  * accept a float or return a NaN (99999.)
  * if the next char is a comma or CR
  */
-int UserPkt::not_nfloat(float &value, float NaNval) {
+int UserPkt::not_nfloat(float *value, float NaNval) {
   float val;
   while (cp < nc && buf[cp] == ' ') ++cp;
   if (cp >= nc) return 1;
   if (buf[cp] == ',' || buf[cp] == '\r' || buf[cp] == '\n') {
-    value = NaNval;
+    *value = NaNval;
     return 0;
   }
   if (strnicmp((const char *)&buf[cp], "NaN", 3) == 0) {
     cp += 3;
-    value = NaNval;
+    *value = NaNval;
     return 0;
   }
-  if (not_float(val)) return 1;
-  value = val;
+  if (not_float(&val)) return 1;
+  *value = val;
   return 0;
 }
 
@@ -284,14 +296,18 @@ DACOMpkt::DACOMpkt() : UserPkt("DACOM") {
 
 int DACOMpkt::Process_Pkt() {
   return (
-    not_float(&DACOM.Time) || not_str( ",", 1) ||
+    not_double(&DACOM.Time) || not_str( ",", 1) ||
     not_nfloat(&DACOM.CO) || not_str( ",", 1) ||
     not_nfloat(&DACOM.Methane));
 }
 
+DLHpkt::DLHpkt() : UserPkt("DLH") {
+  TM_init(&DLH, sizeof(DLH_t));
+}
+
 int DLHpkt::Process_Pkt() {
   return (
-    not_float(&DLH.Time) ||
+    not_double(&DLH.Time) ||
     not_str( ",", 1) ||
     not_nfloat(&DLH.WaterVapor));
 }
@@ -395,14 +411,14 @@ UserPkts_UDP::UserPkts_UDP(int udp_port, UserPkts *PktDefs) : Ser_Sel( 0, 0, 600
 int UserPkts_UDP::ProcessData(int flag) {
   char KW[30];
   int rv;
-  std::vector<UserPkts *>::const_iterator cur_pkt;
+  std::vector<UserPkt *>::const_iterator cur_pkt;
   if (fillbuf()) return 1;
   if (not_KW(&KW[0])) {
     nc = cp = 0;
     return 0;
   }
-  for (cur_pkt = Pkts.begin(); cur_pkt != Pkts.end(); ++cur_pkt) {
-    UserPkt *pkt = *cur_pkt;
+  for (cur_pkt = Pkts->Pkts.begin(); cur_pkt != Pkts->Pkts.end(); ++cur_pkt) {
+    UserPkt * const pkt = *cur_pkt;
     if (strcmp(KW,pkt->KW) == 0) {
       rv = pkt->Process_Pkt(buf+cp, nc-cp);
       if (rv) {

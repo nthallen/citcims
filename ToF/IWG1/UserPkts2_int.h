@@ -2,15 +2,27 @@
 #define USERPKTS_INT_H_INCLUDED
 
 #include <math.h>
-#include "SerSelector.h"
+#include <stdarg.h>
 #include "UserPkts.h"
+
+#ifdef __cplusplus
+  extern "C" {
+#endif
+extern void pkts_init_options(int argc, char **argv);
+#ifdef __cplusplus
+  };
+#endif
+
+#ifdef __cplusplus
+
+#include "SerSelector.h"
 
 class UserPkt {
   public:
     UserPkt(const char *KW_in);
     ~UserPkt();
     int Process_Pkt(unsigned char *s, unsigned nc);
-    int Process_Pkt() = 0;
+    virtual int Process_Pkt() = 0;
     void report_err(const char *fmt, ...);
     void report_ok();
     const char *KW;
@@ -21,12 +33,15 @@ class UserPkt {
     unsigned int cp;
     unsigned int n_errors;
     unsigned int n_suppressed;
+    unsigned int total_errors;
+    unsigned int total_suppressed;
     void TM_init(void *data, unsigned short size);
     int not_ndigits(int n, int &value);
     int not_str(const char *str, unsigned int len);
     int not_ISO8601(double *Time, bool w_hyphens = true);
-    int not_float(float &value);
-    int not_nfloat(float &value, float NaNval = 999999.);
+    int not_double(double *value);
+    int not_float(float *value);
+    int not_nfloat(float *value, float NaNval = 999999.);
     int not_uchar(unsigned char &val);
     int not_int(int &val);
 };
@@ -70,6 +85,7 @@ class UserPkts_UDP : public Ser_Sel {
     void Bind(int port);
     int fillbuf();
     int not_KW(char *KWbuf);
+    UserPkts *Pkts;
     // send_id DACOM_id;
     // int Process_DACOM();
     // DACOM_t DACOM;
@@ -93,4 +109,5 @@ class UserPkts_UDP : public Ser_Sel {
     // NOyO3_t NOyO3;
 };
 
+#endif // __cplusplus
 #endif // USERPKTS_INT_H_INCLUDED
