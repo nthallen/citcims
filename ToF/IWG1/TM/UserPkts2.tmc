@@ -1,0 +1,34 @@
+TM 1 Hz IWG1_Drift AVOCET_TDrift;
+TM 1 Hz IWG1_float AVOCET_CO2;
+TM 1 Hz UCHAR AVOCET_stale;
+TM "Receive" AVOCET 0;
+
+Group AVOCET (AVOCET_TDrift, AVOCET_CO2, AVOCET_stale) {
+  AVOCET_TDrift = calc_drift(AVOCET.Time);
+  AVOCET_CO2 = AVOCET.CO2;
+  AVOCET_stale = AVOCET_obj->stale(255);
+}
+
+TM 1 Hz IWG1_Drift DACOM_TDrift;
+TM 1 Hz IWG1_float DACOM_CO;
+TM 1 Hz IWG1_float DACOM_Methane;
+TM 1 Hz UCHAR DACOM_stale;
+TM "Receive" DACOM 0;
+
+Group DACOM (DACOM_TDrift, DACOM_Methane, DACOM_stale) {
+  DACOM_TDrift = calc_drift(DACOM.Time);
+  DACOM_CO = DACOM.CO;
+  DACOM_Methane = DACOM.Methane;
+  DACOM_stale = DACOM_obj->stale(255);
+}
+
+TM 1 Hz IWG1_Drift DLH_TDrift;
+TM 1 Hz IWG1_alt DLH_WaterVapor;
+TM 1 Hz UCHAR DLH_stale;
+TM "Receive" DLH 0;
+
+Group DLH (DLH_TDrift, DLH_WaterVapor, DLH_stale) {
+  DLH_TDrift = calc_drift(DLH.Time);
+  DLH_WaterVapor = DLH.WaterVapor;
+  DLH_stale = DLH_obj->stale(255);
+}

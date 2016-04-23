@@ -22,6 +22,18 @@ mode (default,UserPkts) {
 	cd @MODDIR@/.. && make UserPkts
   }
 
+  mode (UserPkts2) {
+    tmcbase = UserPkts2.tmc
+    colbase = UserPkts2_col.tmc
+    # genuibase = UserPkts2.genui
+    UserPktsdisp : UserPkts2.tbl:UserPkts2.tbl.src
+    UserPktsext : UserPkts2.cdf
+    DISTRIB = @MODDIR@/../UserPkts2
+    %%
+@MODDIR@/../UserPkts2 :
+	cd @MODDIR@/.. && make UserPkts2
+  }
+
   %%
 @MODDIR@/../IWG1 :
 	cd @MODDIR@/.. && make IWG1

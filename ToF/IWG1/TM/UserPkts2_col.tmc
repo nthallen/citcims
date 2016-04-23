@@ -1,0 +1,6 @@
+%{
+  #include "UserPkts.h"
+  AVOCET_t AVOCET;
+  DACOM_t DACOM;
+  DLH_t DLH;
+%}
