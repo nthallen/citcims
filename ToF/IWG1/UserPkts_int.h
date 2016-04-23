@@ -49,3 +49,7 @@ class UserPkts_UDP : public Ser_Sel {
 // Port 7071 is the standard port, but for historical reasons, DC-8 uses 5101 as the primary.
 // Instrument data comes on port 5110 in a format similar to IWG1:
 // InstMnc,TIME,data,data,data,...,\r\n
+
+// April 23, 2016: Prep for KORUS/ATOM
+//   IWG1 is coming in on 7071
+//   Instrument data is coming in on multiple UDP ports

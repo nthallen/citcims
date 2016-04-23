@@ -11,6 +11,10 @@ UserPktsSRC = UserPkts.cc UserPktsoui.c
 UserPktsOBJ = ${addsuffix .o, ${basename $(UserPktsSRC) } } 
 UserPktsTGT = UserPkts
 
+UserPkts2SRC = UserPkts2.cc UserPkts2oui.c
+UserPkts2OBJ = ${addsuffix .o, ${basename $(UserPkts2SRC) } }
+UserPkts2TGT = UserPkts2
+
 .PHONY : all clean
 
 all : UserPkts IWG1
@@ -26,6 +30,12 @@ $(UserPktsTGT) : $(UserPktsOBJ)
 	usemsg $(UserPktsTGT) UserPktsoui.c
 UserPktsoui.c : UserPkts.oui
 	oui -o UserPktsoui.c UserPkts.oui
+
+$(UserPkts2TGT) : $(UserPkts2OBJ)
+	$(LINK.cc) -o $(UserPkts2TGT) $(UserPkts2OBJ) $(LIBS)
+	usemsg $(UserPkts2TGT) UserPkts2oui.c
+UserPkts2oui.c : UserPkts2.oui
+	oui -o UserPkts2oui.c UserPkts2.oui
 
 clean :
 	rm -f *.o IWG1oui.c IWG1 UserPktsoui.c UserPkts
