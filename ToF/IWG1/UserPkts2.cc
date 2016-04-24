@@ -283,13 +283,13 @@ AVOCETpkt::AVOCETpkt() : UserPkt("AVOCET") {
   TM_init(&AVOCET, sizeof(AVOCET_t));
 }
 
-int AVOCETpkt::Process_Pkt() 
+int AVOCETpkt::Process_Pkt() {
   // AVOCET,20160421T21:52:19.497,408.67,409.34,1.914,0.196
   // AVO_HSKPG,40.869,2.777,250.488,0.786
   return (
     not_ISO8601(&AVOCET.Time, false) || not_str( ",", 1) ||
     not_nfloat(&AVOCET.CO2_Licor) || not_str( ",", 1) ||
-    not_nfloat(&AVOCET.CO2_Picro) || not_str( ",", 1) ||
+    not_nfloat(&AVOCET.CO2_Picaro) || not_str( ",", 1) ||
     not_nfloat(&AVOCET.Methane) || not_str( ",", 1) ||
     not_nfloat(&AVOCET.CO)
   );

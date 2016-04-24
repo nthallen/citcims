@@ -17,7 +17,7 @@ UserPkts2TGT = UserPkts2
 
 .PHONY : all clean
 
-all : UserPkts IWG1
+all : UserPkts IWG1 UserPkts2
 
 $(IWG1TGT) : $(IWG1OBJ)
 	$(LINK.cc) -o $(IWG1TGT) $(IWG1OBJ) $(LIBS)
@@ -38,4 +38,4 @@ UserPkts2oui.c : UserPkts2.oui
 	oui -o UserPkts2oui.c UserPkts2.oui
 
 clean :
-	rm -f *.o IWG1oui.c IWG1 UserPktsoui.c UserPkts
+	rm -f *.o IWG1oui.c IWG1 UserPktsoui.c UserPkts UserPkts2oui.c UserPkts2
