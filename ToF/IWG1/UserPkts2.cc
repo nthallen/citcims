@@ -300,6 +300,7 @@ DACOMpkt::DACOMpkt() : UserPkt("DACOM") {
 }
 
 int DACOMpkt::Process_Pkt() {
+  // DACOM,78499.17,166.61,1873.44
   return (
     not_double(&DACOM.Time) || not_str( ",", 1) ||
     not_nfloat(&DACOM.CO) || not_str( ",", 1) ||
@@ -311,6 +312,7 @@ DLHpkt::DLHpkt() : UserPkt("DLH") {
 }
 
 int DLHpkt::Process_Pkt() {
+  // DLH,78742.50,52.886
   return (
     not_double(&DLH.Time) ||
     not_str( ",", 1) ||
@@ -324,7 +326,7 @@ TDLIFpkt::TDLIFpkt() : UserPkt("TDLIF") {
 int TDLIFpkt::Process_Pkt() {
   // TDLIF,20160421T21:52:21,0.008,0.067,0.001
   return (
-    not_double(&TDLIF.Time) || not_str( ",", 1) ||
+    not_ISO8601(&TDLIF.Time) || not_str( ",", 1) ||
     not_nfloat(&TDLIF.NO2_ppbv) || not_str( ",", 1) ||
     not_nfloat(&TDLIF.PNs_ppbv) || not_str( ",", 1) ||
     not_nfloat(&TDLIF.ANs_ppbv)
