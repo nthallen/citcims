@@ -12,5 +12,7 @@ typedef struct __attribute__((__packed__)) {
 #define IG_TOF_P_FRESH 4
 
 extern const char *iongauge_path;
+extern int channel_1_enable;
+extern int channel_2_enable;
 
 #endif
