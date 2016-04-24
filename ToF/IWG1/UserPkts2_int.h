@@ -3,7 +3,7 @@
 
 #include <math.h>
 #include <stdarg.h>
-#include "UserPkts.h"
+#include "UserPkts2.h"
 
 #ifdef __cplusplus
   extern "C" {
@@ -70,6 +70,22 @@ class DLHpkt : public UserPkt {
     DLH_t DLH;
 };
 
+class TDLIFpkt : public UserPkt {
+  public:
+    TDLIFpkt();
+    int Process_Pkt();
+  private:
+    TDLIF_t TDLIF;
+};
+
+class NOxyO3pkt : public UserPkt {
+  public:
+    NOxyO3pkt();
+    int Process_Pkt();
+  private:
+    NOxyO3_t NOxyO3;
+};
+
 class UserPkts {
   public:
     UserPkts();
@@ -86,12 +102,6 @@ class UserPkts_UDP : public Ser_Sel {
     int fillbuf();
     int not_KW(char *KWbuf);
     UserPkts *Pkts;
-    // send_id DACOM_id;
-    // int Process_DACOM();
-    // DACOM_t DACOM;
-    // send_id DLH_id;
-    // int Process_DLH();
-    // DLH_t DLH;
     // send_id LARGE_id;
     // int Process_LARGE();
     // LARGE_t LARGE;

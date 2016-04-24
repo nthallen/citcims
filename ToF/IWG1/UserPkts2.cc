@@ -283,11 +283,16 @@ AVOCETpkt::AVOCETpkt() : UserPkt("AVOCET") {
   TM_init(&AVOCET, sizeof(AVOCET_t));
 }
 
-int AVOCETpkt::Process_Pkt() {
+int AVOCETpkt::Process_Pkt() 
+  // AVOCET,20160421T21:52:19.497,408.67,409.34,1.914,0.196
+  // AVO_HSKPG,40.869,2.777,250.488,0.786
   return (
-    not_ISO8601(&AVOCET.Time, false) ||
-    not_str( ",", 1) ||
-    not_nfloat(&AVOCET.CO2));
+    not_ISO8601(&AVOCET.Time, false) || not_str( ",", 1) ||
+    not_nfloat(&AVOCET.CO2_Licor) || not_str( ",", 1) ||
+    not_nfloat(&AVOCET.CO2_Picro) || not_str( ",", 1) ||
+    not_nfloat(&AVOCET.Methane) || not_str( ",", 1) ||
+    not_nfloat(&AVOCET.CO)
+  );
 }
 
 DACOMpkt::DACOMpkt() : UserPkt("DACOM") {
@@ -312,10 +317,41 @@ int DLHpkt::Process_Pkt() {
     not_nfloat(&DLH.WaterVapor));
 }
 
+TDLIFpkt::TDLIFpkt() : UserPkt("TDLIF") {
+  TM_init(&TDLIF, sizeof(TDLIF_t));
+}
+
+int TDLIFpkt::Process_Pkt() {
+  // TDLIF,20160421T21:52:21,0.008,0.067,0.001
+  return (
+    not_double(&TDLIF.Time) || not_str( ",", 1) ||
+    not_nfloat(&TDLIF.NO2_ppbv) || not_str( ",", 1) ||
+    not_nfloat(&TDLIF.PNs_ppbv) || not_str( ",", 1) ||
+    not_nfloat(&TDLIF.ANs_ppbv)
+  );
+}
+
+NOxyO3pkt::NOxyO3pkt() : UserPkt("NOxyO3") {
+  TM_init(&NOxyO3, sizeof(NOxyO3_t));
+}
+
+int NOxyO3pkt::Process_Pkt() {
+  // NOxyO3,
+  return (
+    not_double(&NOxyO3.Time) || not_str( ",", 1) ||
+    not_nfloat(&NOxyO3.NO) || not_str( ",", 1) ||
+    not_nfloat(&NOxyO3.NO2) || not_str( ",", 1) ||
+    not_nfloat(&NOxyO3.NOy) || not_str( ",", 1) ||
+    not_nfloat(&NOxyO3.O3)
+  );
+}
+
 UserPkts::UserPkts() {
   Pkts.push_back(new AVOCETpkt());
   Pkts.push_back(new DACOMpkt());
   Pkts.push_back(new DLHpkt());
+  Pkts.push_back(new TDLIFpkt());
+  // Pkts.push_back(new NOxyO3pkt());
 }
 
 UserPkts::~UserPkts() {
