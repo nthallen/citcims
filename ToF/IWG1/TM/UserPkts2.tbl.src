@@ -1,20 +1,20 @@
 AVOCET {
   HBox { +-; Title: AVOCET; -+ };
-  CO2_Licor: (AVOCET_CO2_Licor,9);
-  CO2_Picaro: (AVOCET_CO2_Picaro,9);
-  Methane: (AVOCET_Methane,9);
-  CO: (AVOCET_CO,9);
+  CO2_Licor: (AVOCET_CO2_Licor,9) ppm;
+  CO2_Picaro: (AVOCET_CO2_Picaro,9) ppm;
+  Methane: (AVOCET_Methane,9) ppm;
+  CO: (AVOCET_CO,9) ppm;
 }
 
 DACOM {
   HBox { +-; Title: DACOM; -+ };
-  CO: (DACOM_CO,9);
-  Methane: (DACOM_Methane,9);
+  CO: (DACOM_CO,9) ppb;
+  Methane: (DACOM_Methane,9) ppb;
 }
 
 DLH {
   HBox { +-; Title: DLH; -+ };
-  WaterVapor: (DLH_WaterVapor,9);
+  WaterVapor: (DLH_WaterVapor,9) ppm;
 }
 
 TDLIF {
@@ -90,7 +90,7 @@ Stale {
   DACOM:     (DACOM_stale,3);
   DLH:       (DLH_stale,3);
   TDLIF:     (TDLIF_stale,3);
-  NOxyO3:    (NOxyO3,3);
+  NOxyO3:    (NOxyO3_stale,3);
 # LARGE:     (LARGE_stale,3);
 # MMS:       (MMS_stale,3);
 # NOAA_HSP2: (NOAA_HSP2_stale,3);
@@ -112,9 +112,9 @@ Status {
       [DACOM];
       [DLH];
       [TDLIF];
+      [NOxyO3];
 #     [NOAA_HSP2];
 #     [NOAA_SP2];
-      [Status];
 #   }; |; {
 #     [MMS];
 #     [LARGE];
@@ -122,6 +122,8 @@ Status {
     }; |; {
       [Drift];
       [Stale];
+      VGlue 0+1;
+      [Status];
     }
   }
 }

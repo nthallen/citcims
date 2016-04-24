@@ -1,5 +1,8 @@
 TM 1 Hz IWG1_Drift AVOCET_TDrift;
-TM 1 Hz IWG1_float AVOCET_CO2;
+TM 1 Hz IWG1_float AVOCET_CO2_Licor;
+TM 1 Hz IWG1_float AVOCET_CO2_Picaro;
+TM 1 Hz IWG1_float AVOCET_Methane;
+TM 1 Hz IWG1_float AVOCET_CO;
 TM 1 Hz UCHAR AVOCET_stale;
 TM "Receive" AVOCET 0;
 
@@ -44,7 +47,7 @@ TM 1 Hz IWG1_alt TDLIF_ANs;
 TM 1 Hz UCHAR TDLIF_stale;
 TM "Receive" TDLIF 0;
 
-Group TDLIF (TDLIF_TDrift, TDLIF_NO2, TDLIF_PNs, TDLIV_ANs, TDLIF_stale) {
+Group TDLIF (TDLIF_TDrift, TDLIF_NO2, TDLIF_PNs, TDLIF_ANs, TDLIF_stale) {
   TDLIF_TDrift = calc_drift(TDLIF.Time);
   TDLIF_NO2 = TDLIF.NO2_ppbv;
   TDLIF_PNs = TDLIF.PNs_ppbv;
