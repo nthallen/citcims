@@ -14,9 +14,10 @@ mode (default,UserPkts,UserPkts2) {
     tmcbase = UserPkts.tmc
     colbase = UserPkts_col.tmc
     # genuibase = UserPkts.genui
-    UserPktsdisp : UserPkts.tbl:UserPkts.tbl.src
-    UserPktsext : UserPkts.cdf
-    DISTRIB = @MODDIR@/../UserPkts
+    # Move the real build targets into .spec file for now
+    UPdisp : UserPkts.tbl:UserPkts.tbl.src
+    # UserPktsext : UserPkts.cdf
+    DISTRIB = @MODDIR@/../UserPkts UserPktsdisp UserPktsext
     %%
 @MODDIR@/../UserPkts :
 	cd @MODDIR@/.. && make UserPkts
@@ -26,9 +27,10 @@ mode (default,UserPkts,UserPkts2) {
     tmcbase = UserPkts2.tmc
     colbase = UserPkts2_col.tmc
     # genuibase = UserPkts2.genui
-    UserPktsdisp : UserPkts.tbl:UserPkts2.tbl.src
-    UserPktsext : UserPkts2.cdf
-    DISTRIB = @MODDIR@/../UserPkts2
+    # Move the real build targets into .spec file for now
+    UPdisp : UserPkts.tbl:UserPkts2.tbl.src
+    # UserPktsext : UserPkts2.cdf
+    DISTRIB = @MODDIR@/../UserPkts2 UserPktsdisp UserPktsext
     %%
 @MODDIR@/../UserPkts2 :
 	cd @MODDIR@/.. && make UserPkts2
