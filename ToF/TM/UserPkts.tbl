@@ -1,35 +1,17 @@
 AVOCET {
   HBox { +-; Title: AVOCET; -+ };
-  CO2_Licor: (AVOCET_CO2_Licor,9) ppm;
-  CO2_Picaro: (AVOCET_CO2_Picaro,9) ppm;
-  Methane: (AVOCET_Methane,9) ppm;
-  CO: (AVOCET_CO,9) ppm;
+  CO2: (AVOCET_CO2,9);
 }
 
 DACOM {
   HBox { +-; Title: DACOM; -+ };
-  CO: (DACOM_CO,9) ppb;
-  Methane: (DACOM_Methane,9) ppb;
+  CO: (DACOM_CO,9);
+  Methane: (DACOM_Methane,9);
 }
 
 DLH {
   HBox { +-; Title: DLH; -+ };
-  WaterVapor: (DLH_WaterVapor,9) ppm;
-}
-
-TDLIF {
-  HBox { +-; Title: TDLIF; -+ };
-  NO2: (TDLIF_NO2,9) ppbv;
-  PNs: (TDLIF_PNs,9) ppbv;
-  ANs: (TDLIF_ANs,9) ppbv;
-}
-
-NOxyO3 {
-  HBox { +-; Title: NOxyO3; -+ };
-  NO:  (NOxyO3_NO,9)  pptv;
-  NO2: (NOxyO3_NO2,9) pptv;
-  NOy: (NOxyO3_NOy,9) pptv;
-  O3:  (NOxyO3_O3,9)  ppbv;
+  WaterVapor: (DLH_WaterVapor,9);
 }
 
 LARGE {
@@ -76,12 +58,11 @@ Drift {
   AVOCET:    (AVOCET_TDrift,6);
   DACOM:     (DACOM_TDrift,6);
   DLH:       (DLH_TDrift,6);
-  TDLIF:     (TDLIF_TDrift,6);
-  NOxyO3:    (NOxyO3_TDrift,6);
-# LARGE:     (LARGE_TDrift,6);
-# MMS:       (MMS_TDrift,6);
-# NOAA_HSP2: (NOAA_HSP2_TDrift,6);
-# NOAA_SP2:  (NOAA_SP2_TDrift,6);
+  LARGE:     (LARGE_TDrift,6);
+  MMS:       (MMS_TDrift,6);
+  NOAA_HSP2: (NOAA_HSP2_TDrift,6);
+  NOAA_SP2:  (NOAA_SP2_TDrift,6);
+  NOyO3:     (NOyO3_TDrift,6);
 }
 
 Stale {
@@ -89,12 +70,11 @@ Stale {
   AVOCET:    (AVOCET_stale,3);
   DACOM:     (DACOM_stale,3);
   DLH:       (DLH_stale,3);
-  TDLIF:     (TDLIF_stale,3);
-  NOxyO3:    (NOxyO3_stale,3);
-# LARGE:     (LARGE_stale,3);
-# MMS:       (MMS_stale,3);
-# NOAA_HSP2: (NOAA_HSP2_stale,3);
-# NOAA_SP2:  (NOAA_SP2_stale,3);
+  LARGE:     (LARGE_stale,3);
+  MMS:       (MMS_stale,3);
+  NOAA_HSP2: (NOAA_HSP2_stale,3);
+  NOAA_SP2:  (NOAA_SP2_stale,3);
+  NOyO3:     (NOyO3_stale,3);
 }
 
 Status {
@@ -111,19 +91,16 @@ Status {
       [AVOCET];
       [DACOM];
       [DLH];
-      [TDLIF];
-      [NOxyO3];
-#     [NOAA_HSP2];
-#     [NOAA_SP2];
-#   }; |; {
-#     [MMS];
-#     [LARGE];
-#     [NOyO3];
+      [NOAA_HSP2];
+      [NOAA_SP2];
+      [Status];
+    }; |; {
+      [MMS];
+      [LARGE];
+      [NOyO3];
     }; |; {
       [Drift];
       [Stale];
-      VGlue 0+1;
-      [Status];
     }
   }
 }

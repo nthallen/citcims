@@ -28,7 +28,7 @@ Module nXDS mode=default
 Module OMS mode=Y OMS1=Insl Group=Inlet
 Module UPS mode=default
 Module gpsd mode=default
-Module IWG1 mode=UserPkts2
+Module IWG1 mode=UserPkts
 Module Zaber mode=default
 Module Sonic mode=disable Hz=8
 Module Zeno mode=disable
@@ -47,7 +47,7 @@ ToFdisp : AthenaII_conv.tmc Hercules_conv.tmc ../Horiba/TM/Horiba_conv.tmc \
 #ToFdisp : AthenaII_conv.tmc Hercules_conv.tmc ../Horiba/TM/Horiba_conv.tmc \
 #   ToFz.tbl  ../Sonic/TM/sonic.tbl
 UserPktsdisp : UserPkts.tbl
-UserPktsext : ../IWG1/TM/UserPkts2.cdf
+UserPktsext : ../IWG1/TM/UserPkts.cdf
 
 ToFBdisp : ../Edwards_nXDS/TM/nXDS_conv.tmc ../GPS/TM/gpsd_conv.tmc ToFB.tbl
 
