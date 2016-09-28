@@ -1,0 +1,8 @@
+%{
+  #include "UserPkts2.h"
+  AVOCET_t AVOCET;
+  DACOM_t DACOM;
+  DLH_t DLH;
+  TDLIF_t TDLIF;
+  NOxyO3_t NOxyO3;
+%}

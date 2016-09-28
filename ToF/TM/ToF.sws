@@ -19,6 +19,10 @@ SW_Variable: SWStat SW Status
   SWS_DATA_STOP      116 Data loop stop:	 Validate data_idle; break;
   SWS_DATA_LP_NC     117 Data loop no cal:	 Validate data_loop_nc; break;
   SWS_DATA_QC	     118 Quick cal:		 Validate cal_quick; break;
+  SWS_DATA_AMB_ZERO_LOOP_START	119 Amb zero loop start:	Validate Loop_init_sdc; break;
+  SWS_DATA_AMB_ZERO_LOOP_STOP	120 Amb zero loop stop: Validate Loop_idle; break;
+  SWS_AUTO_CAL_START	121 Auto cal start: Validate Auto_cal_run; break;
+  SWS_AUTO_CAL_STOP	122 Auto cal stop: Validate Auto_cal_idle; Validate Loop_idle; break;
   SWS_QUICK_SHUTDOWN 254 Shutdown Quick:         Validate Quick_Shutdown; break;
   SWS_SHUTDOWN       255 Shutdown Full:          Validate Shutdown; break;
 

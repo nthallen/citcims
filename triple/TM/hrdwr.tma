@@ -24,7 +24,7 @@ State zaber_close {
 }
 
 State zaber_open {
-      > zaber move drive 2 absolute 57250
+      > zaber move drive 2 absolute 59500
   +1  Validate zaber_monitor;
 }
 
@@ -79,7 +79,7 @@ State Inlet_hold {
 }
 
 State Inlet_PControl {
-     > zaber move drive 1 absolute 56000
+     > zaber move drive 1 absolute 52000
      ## this value was 47200, assuming want near open but not. 
   +3 { Inlet_Dir = 0; }
      { msg(0, "Validate Inlet_PControl_real"); }
@@ -90,7 +90,7 @@ State Inlet_PControl_real {
   depending on ( 2 Hz ) {
     double Insl_Step1, FT_P, FT_SP; 
     Insl_Step1 = Z1pos;
-    histor_1 = 700;
+    histor_1 = 500;
     In_St1 = 1000;
     In_St2 = 200;
     In_St3 = 50;
@@ -176,8 +176,8 @@ State flows_stdby {
   +1 hold until valid (cal_idle);
      > zaber command drive 1 1 0
      > Reagent Valve close
-     Validate scrub_out;
-  +1 hold until valid (scrub_ready_wait);   
+     Validate scrub_out; # change back for op w/ tof
+  +1 hold until valid (scrub_ready_wait); # change back to ready wait for use w/ tof   
   +1 > ReagentMFC open on
      ### (N2 thru dryz frit)
   +1 > ionsourceMFC open off
@@ -195,8 +195,8 @@ State flows_n2_zero {
   +1 hold until valid (Inlet_hold);
      > zaber command drive 1 1 0 
   +1 > ScrubAir Valve Close
-     > Set dilute MFC 690
-     > Set Ionsource MFC 1625
+     > Set dilute MFC 745
+     > Set Ionsource MFC 1640
      { msg(0,"validating flows_idle");}
   +1 Validate flows_idle;
 }
@@ -207,9 +207,8 @@ State flows_amb_zero {
      depending on (Inlet_PControl_real) { Validate Inlet_Idle; }
   +1 hold until valid (Inlet_hold);
      > zaber command drive 1 1 0
-     > Set dilute MFC 500
-     ### adj down b/c of inflowing amb z
-     > Set Ionsource MFC 1625
+     > Set dilute MFC 573 
+     > Set Ionsource MFC 1640
      Validate scrub_in; #change back to scrub_in w/ single
   +1 hold until valid (scrub_idle);
      { msg(0,"validating flows_idle");}
@@ -224,8 +223,8 @@ State flows_n2_cal {
      > zaber command drive 1 1 0
   +1 > ScrubAir Valve Close
      ### (no amb z air please)
-     > Set dilute MFC 610
-     > Set Ionsource MFC 1625
+     > Set dilute MFC 680
+     > Set Ionsource MFC 1640
      Validate cal_in;
   +1 hold until valid (cal_idle);
   +1 Validate flows_idle;
@@ -236,8 +235,8 @@ State flows_amb_cal {
      depending on (Inlet_PControl_real) { Validate Inlet_Idle; }
   +1 hold until valid (Inlet_hold);
      > zaber command drive 1 1 0 
-     > Set dilute MFC 420
-     > Set ionsource MFC 1625
+     > Set dilute MFC 505 
+     > Set ionsource MFC 1640
      Validate cal_in;
   +1 hold until valid (cal_idle);
      Validate scrub_in;  #change back for op w/ single
@@ -254,7 +253,7 @@ State flows_amb_caltwo {
      > Set ionsource MFC 1625
      Validate cal_in;
   +1 hold until valid (cal_idle);
-     Validate scrub_in_tripsolo; 
+     Validate scrub_in; 
   +1 hold until valid (scrub_idle);
   +1 > Set Scrub MFC 117
   #  > Set Scrub MFC 45
@@ -279,13 +278,13 @@ State flows_amb_calthree {
 
 State flows_measure {
  #   depending on ( scrub_idle ) { Validate scrub_out; }
- #+1 hold until valid (scrub_ready_wait);
+ #+1 hold until valid (scrub_ready_wait);  # change back to ready wait for use w/ tof
      Validate cal_out;
   +1 hold until valid (cal_idle);
   +1 > ScrubAir Valve Close
        ### (no amb z air please)
-     > Set dilute MFC 500
-     > Set Ionsource MFC 1625
+     > Set dilute MFC 573 
+     > Set Ionsource MFC 1640
      Validate Inlet_PControl;
      hold until ( convert(Pressure100T) > 24 );
   +1 Validate flows_idle;
@@ -337,10 +336,10 @@ State cal_dither {
 }
 
 State cal_MHP {
-     > Labelled Cal bypass bypass
-     > Labelled Cal scrub on
-  +1 > Normal Cal bypass into system
-  +2 > Normal Cal Scrub bypass
+     > Normal Cal bypass bypass
+     > Normal Cal scrub on
+  +1 > Labelled Cal bypass into system
+  +2 > Labelled Cal Scrub bypass
   +1 Validate cal_idle;	
 }
 
@@ -369,7 +368,8 @@ State scrub_ready_wait {
 }
 
 State scrub_idle {
-     { if (convert(Sp_5V) > 1.5) { Validate scrub_out; } }
+	{ msg(0,"Im in scrub idle"); }
+    { if (convert(Sp_5V) > 1.5) { Validate scrub_out; } }
      #change back for op w/ single
 
 # +10 validate scrub_idle; 
@@ -391,7 +391,8 @@ State scrub_ready {
 
 State scrub_in {
   +1 > scrubair valve open
-  +1 > ToF ambient flow on
+  {if (convert(Sp_5V) < 1.5) {
+  ci_sendfcmd (0,"ToF ambient flow on \n");}}
  #+1 > ToF Set ambient zero flow rate 0.400   
  # won't complile on some nodes
   +1 Validate scrub_idle;
@@ -399,13 +400,15 @@ State scrub_in {
 
 State scrub_in_tripsolo {
   +1 > scrubair valve open
-  +1 > set Scrub MFC 241
+  +1 > set Scrub MFC 285
   +1 Validate scrub_idle;
 } 
 
 State scrub_out {
      { msg(0,"Scrub_outing"); }
-  +1 > ToF ambient flow off
+    { if (convert(Sp_5V) <  1.5) {
+    ci_sendfcmd (0,"ToF ambient flow off \n");}} 
+
  #+1 > ToF Set ambient zero flow rate 0.100    
    # won't complile some nodes
   +2 > scrubair valve close
@@ -415,7 +418,7 @@ State scrub_out {
 
 State scrub_out_tripsolo {
      { msg(0,"Scrub_outing"); }
-  +1 > set Scrub MFC 0
+  +1 > set Scrub MFC 150
   +2 > scrubair valve close
   +1 Validate scrub_idle;
 }
@@ -434,13 +437,13 @@ State polj_idle {
 
 
 State pol_neg {
-     > set reagent mfc 170
+     > set reagent mfc 100
   +1 hold until ( (!D1200A) || !(H_DIO_D&1) );
   +1 Validate pol_pos;
 } 
 
 State pol_pos {
-     > set reagent mfc 0
+#     > set reagent mfc 0
   +1 hold until ( (D1200A) || (H_DIO_D&1) );
   +1 Validate pol_neg;
 }
@@ -634,3 +637,79 @@ State water_step {
   +1 hold until ( (!D1200A) || !(H_DIO_D&1) );
   +1 Validate water_step;
 }
+
+Partition
+
+%{
+int temp_sp1=30;
+int temp_sp2=60;
+int temp_sp3=130;
+int temp_cold=-10;
+int temp_sp;
+int loop_i;
+int loop1;
+int loop2;
+int ramprate1;
+int ramprate2;
+%}
+
+State Ramp_idle {}
+
+State Ramp_init2 {
+     {loop_i=0;
+      loop1=15;
+      ramprate1=2;
+      loop2=7;
+      ramprate2=10;
+      ci_sendfcmd(0,"watlow PM set channel 1 %d\n",temp_sp1);
+     }
+     +30 Validate Ramp_ramp1;
+     }
+
+State Ramp_init1 {
+     {loop_i=0;
+      loop1=30;
+      ramprate1=1;
+      loop2=14;
+      ramprate2=5;
+      ci_sendfcmd(0,"watlow PM set channel 1 %d\n",temp_sp1);
+     }
+     +30 Validate Ramp_ramp1;
+     }
+
+State Ramp_ramp1 {
+      { 
+      if (++loop_i > loop1) {
+          loop_i=0;
+          Validate Ramp_ramp2;
+          } else { 
+          temp_sp=temp_sp1+(loop_i-1)*ramprate1;
+          ci_sendfcmd(0,"watlow PM set channel 1 %d\n",temp_sp);
+          }
+     }
+     +20 Validate Ramp_ramp1;
+     }
+
+State Ramp_ramp2 {
+     {
+     if (++loop_i > loop2) {
+          Validate Ramp_hold;
+          } else {
+          temp_sp=temp_sp2+(loop_i-1)*ramprate2;
+          ci_sendfcmd(0,"watlow PM set channel 1 %d\n",temp_sp);
+          }
+     }
+      +30 Validate Ramp_ramp2;
+     }
+
+State Ramp_hold {
+     { ci_sendfcmd(0,"watlow PM set channel 1 %d\n",temp_sp3);
+     }
+     +120 Validate Ramp_off;
+     }
+
+State Ramp_off {
+     {ci_sendfcmd(0,"watlow PM set channel 1 %d\n",temp_cold);
+     }
+     +10 Validate Ramp_idle;
+     }

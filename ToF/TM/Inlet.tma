@@ -73,8 +73,8 @@ State Inlet_Closed { }
 
 State Inlet_PControl {
      > oms set inlet slit speed 1200
-     > oms drive inlet slit to 1350
-  +2 Validate Inlet_PControl_real;
+     > oms drive inlet slit to 1625
+  +1 Validate Inlet_PControl_real;
 }
 
 State Inlet_PControl_real {
@@ -84,75 +84,75 @@ State Inlet_PControl_real {
   {
     int Insl_Step1; 
     int pstep_gain;
-    pstep_gain = ceil(convert(InH_P)/400);
+    pstep_gain = ceil((convert(INTP))/400);
     Insl_Step1 = Insl_Step;
-    histor_1 = 200;
-    In_St1 = 10;
-    In_St2 = 3;
+    histor_1 = 75;
+    In_St1 = 25;
+    In_St2 = 5;
     In_St3 = 2;
     In_St4 = 1;
     FT_P = convert(InL_P);
     FT_SP = convert(InPset);
 
-    if ( FT_P < 0.988*FT_SP ) { 
+    if ( FT_P < 0.994*FT_SP ) { 
       if (FT_P < FT_SP*0.988 &&
-          Inlet_Dir == 1 &&
+          Inlet_Dir == 0 &&
           Insl_Step1 < 6000) {
         oms_drive( 'Y', histor_1);
         Insl_Step1+=histor_1;
-        Inlet_Dir=0;
+        Inlet_Dir=1;
       } else if ( FT_P < FT_SP*0.710 &&
-                  Inlet_Dir == 0 &&
+                  Inlet_Dir == 1 &&
                   Insl_Step1 < 6000 ) {
         oms_drive( 'Y', In_St1);
         Insl_Step1 += In_St1;
       } else if ( FT_P >= FT_SP*0.710 &&
                   FT_P < 0.980*FT_SP &&
-                  Inlet_Dir == 0 &&
+                  Inlet_Dir == 1 &&
                   Insl_Step1 < 6000 ) {
         oms_drive( 'Y', In_St2);
         Insl_Step1 += In_St2;
       } else if ( FT_P >= FT_SP*0.980 &&
                   FT_P < 0.988*FT_SP &&
-                  Inlet_Dir == 0 &&
+                  Inlet_Dir == 1 &&
                   Insl_Step1 < 6000 ) {
         oms_drive( 'Y', In_St3);
         Insl_Step1 += In_St3;
       } else if ( FT_P >= 0.988*FT_SP &&
 		  FT_P < 0.994*FT_SP &&
-		  Inlet_Dir == 0 &&
+		  Inlet_Dir == 1 &&
 		  Insl_Step1 < 6000 ) {
 	oms_drive( 'Y', In_St4);
 	Insl_Step1 += In_St4;
       }
 
-    } else if (FT_P > 1.012*FT_SP) {
+    } else if (FT_P > 1.006*FT_SP) {
       if ( FT_P > FT_SP*1.012 &&
-           Inlet_Dir == 0 &&
+           Inlet_Dir == 1 &&
            Insl_Step1 > 800) {
         oms_drive( 'Y', -histor_1);
         Insl_Step1-=histor_1;
-        Inlet_Dir=1;
+        Inlet_Dir = 0;
       } else if ( FT_P > 1.290*FT_SP &&
-                  Inlet_Dir == 1 &&
+                  Inlet_Dir == 0 &&
                   Insl_Step1 > 800) {
         oms_drive( 'Y', -In_St1);
         Insl_Step1 -= In_St1;
       } else if ( FT_P > 1.020*FT_SP &&
                   FT_P <= 1.290*FT_SP &&
-                  Inlet_Dir == 1 &&
+                  Inlet_Dir == 0 &&
                   Insl_Step1 > 800) {
         oms_drive( 'Y', -In_St2);
         Insl_Step1 -= In_St2;
       } else if ( FT_P > 1.012*FT_SP &&
                   FT_P <= 1.020*FT_SP &&
-                  Inlet_Dir == 1 &&
+                  Inlet_Dir == 0 &&
                   Insl_Step1 > 800) {
         oms_drive( 'Y', -In_St3);
         Insl_Step1 -= In_St3;
       } else if ( FT_P > 1.006*FT_SP &&
 		  FT_P <= 1.012*FT_SP &&
-		  Inlet_Dir == 1 &&
+		  Inlet_Dir == 0 &&
 		  Insl_Step1 > 800) {
 	oms_drive( 'Y', -In_St4);
 	Insl_Step1 -= In_St4;
@@ -162,3 +162,418 @@ State Inlet_PControl_real {
 }
 
 State Inlet_Lab { }
+
+Partition
+
+# Partition 11:  Ambient zero pressure control
+
+
+%{
+  /* Inlet_PControl implements a simple PI controller
+     on the inlet motor.
+     8 Hz V100torr_t InL_P: Inlet Pressure
+     1 Hz V100torr_t InPset: Pressure Setpoint
+     1 Hz SWStatf InP_Pgain: Proportional Gain
+     1 Hz SWStatf InP_Igain: Integral Gain
+
+     We will integrate error for a second before
+     taking action.
+  */
+ 
+  #include "nortlib.h"
+  #include "math.h"
+
+  void ambz_set( long sp ) {
+    if (not_playback)
+      ci_sendfcmd( 2, "Set ambient zero flow %ld sccm\n", sp );
+  }
+
+%}
+
+State ambz_idle { }
+
+
+
+{ double FT_P2, FT_SP2;
+  long In2_St1; 
+  long In2_St2;
+  long In2_St3;
+  long In2_St4;
+}
+
+
+State ambz_PControl {
+}
+
+State ambz_PControl_real {
+  depending on (Shutdown) { Validate Inlet_Close; }
+  depending on (Quick_Shutdown) { Validate Inlet_Close; }
+
+  {
+    long ambz_sp; 
+    ambz_sp = convert(ZF2_F_sp);
+    In2_St1 = 25;
+    In2_St2 = 10;
+    In2_St3 = 5;
+    In2_St4 = 2;
+    FT_P2 = convert(InL_P);
+    FT_SP2 = convert(InPset);
+
+    if ( FT_P2 < 0.994*FT_SP2 ) { 
+      if ( FT_P2 < FT_SP2*0.710 &&
+                  ambz_sp < 1000 ) {
+        ambz_sp += In2_St1;
+        ambz_set( ambz_sp );
+      } else if ( FT_P2 >= FT_SP2*0.710 &&
+                  FT_P2 < 0.980*FT_SP2 &&
+                  ambz_sp < 1000 ) {
+        ambz_sp += In2_St2;
+        ambz_set( ambz_sp );
+      } else if ( FT_P2 >= FT_SP2*0.980 &&
+                  FT_P2 < 0.988*FT_SP2 &&
+                  ambz_sp < 1000 ) {
+        ambz_sp += In2_St3;
+        ambz_set( ambz_sp );
+      } else if ( FT_P2 >= 0.988*FT_SP2 &&
+		  FT_P2 < 0.994*FT_SP2 &&
+		  ambz_sp < 1000 ) {
+        ambz_sp += In2_St4;
+        ambz_set( ambz_sp );
+      }
+
+    } else if (FT_P2 > 1.006*FT_SP2) {
+      if ( FT_P2 > 1.290*FT_SP2 &&
+                  ambz_sp > 0) {
+        ambz_sp -= In2_St1;
+        ambz_set( ambz_sp );
+      } else if ( FT_P2 > 1.020*FT_SP2 &&
+                  FT_P2 <= 1.290*FT_SP2 &&
+                  ambz_sp > 0) {
+        ambz_sp -= In2_St2;
+        ambz_set( ambz_sp );
+      } else if ( FT_P2 > 1.012*FT_SP2 &&
+                  FT_P2 <= 1.020*FT_SP2 &&
+                  ambz_sp > 0) {
+        ambz_sp -= In2_St3;
+        ambz_set( ambz_sp );
+      } else if ( FT_P2 > 1.006*FT_SP2 &&
+		  FT_P2 <= 1.012*FT_SP2 &&
+		  ambz_sp > 0) {
+        ambz_sp -= In2_St4;
+        ambz_set( ambz_sp );
+      }
+    }
+  }
+}
+
+Partition
+
+# Partition XX:  N2 zero (dilution) pressure control
+
+
+%{
+  /* Inlet_PControl implements a simple PI controller
+     on the inlet motor.
+     8 Hz V100torr_t InL_P: Inlet Pressure
+     1 Hz V100torr_t InPset: Pressure Setpoint
+     1 Hz SWStatf InP_Pgain: Proportional Gain
+     1 Hz SWStatf InP_Igain: Integral Gain
+
+     We will integrate error for a second before
+     taking action.
+  */
+ 
+  #include "nortlib.h"
+  #include "math.h"
+
+  void N2z_set( long sp2 ) {
+    if (not_playback)
+      ci_sendfcmd( 2, "Set dilution flow %ld sccm\n", sp2 );
+  }
+
+%}
+
+State N2z_idle { }
+
+
+
+{ double FT_P3, FT_SP3;
+  long In3_St1; 
+  long In3_St2;
+  long In3_St3;
+  long In3_St4;
+}
+
+
+State N2z_PControl {
+}
+
+State N2z_PControl_real {
+  depending on (Shutdown) { Validate Inlet_Close; }
+  depending on (Quick_Shutdown) { Validate Inlet_Close; }
+
+  {
+    long N2z_sp; 
+    N2z_sp = convert(DilFlowSP);
+    In3_St1 = 25;
+    In3_St2 = 15;
+    In3_St3 = 5;
+    In3_St4 = 2;
+    FT_P3 = convert(InL_P);
+    FT_SP3 = convert(InPset);
+
+    if ( FT_P3 < 0.994*FT_SP3 ) { 
+      if ( FT_P3 < 0.710*FT_SP3 &&
+                  N2z_sp < 2200 ) {
+        N2z_sp += In3_St1;
+        N2z_set( N2z_sp );
+      } else if ( FT_P3 >= 0.710*FT_SP3 &&
+                  FT_P3 < 0.980*FT_SP3 &&
+                  N2z_sp < 2200 ) {
+        N2z_sp += In3_St2;
+        N2z_set( N2z_sp );
+      } else if ( FT_P3 >= 0.980*FT_SP3 &&
+                  FT_P3 < 0.985*FT_SP3 &&
+                  N2z_sp < 2200 ) {
+        N2z_sp += In3_St3;
+        N2z_set( N2z_sp );
+      } else if ( FT_P3 >= 0.985*FT_SP3 &&
+		  FT_P3 < 0.994*FT_SP3 &&
+		  N2z_sp < 2200 ) {
+        N2z_sp += In3_St4;
+        N2z_set( N2z_sp );
+      }
+
+    } else if (FT_P3 > 1.006*FT_SP3) {
+      if ( FT_P3 > 1.290*FT_SP3 &&
+                  N2z_sp > 0) {
+        N2z_sp -= In3_St1;
+        N2z_set( N2z_sp );
+      } else if ( FT_P3 > 1.020*FT_SP3 &&
+                  FT_P3 <= 1.290*FT_SP3 &&
+                  N2z_sp > 0) {
+        N2z_sp -= In3_St2;
+        N2z_set( N2z_sp );
+      } else if ( FT_P3 > 1.015*FT_SP3 &&
+                  FT_P3 <= 1.020*FT_SP3 &&
+                  N2z_sp > 0) {
+        N2z_sp -= In3_St3;
+        N2z_set( N2z_sp );
+      } else if ( FT_P3 > 1.006*FT_SP3 &&
+		  FT_P3 <= 1.015*FT_SP3 &&
+		  N2z_sp > 0) {
+        N2z_sp -= In3_St4;
+        N2z_set( N2z_sp );
+      }
+    }
+  }
+}
+
+
+Partition
+
+%{
+int z = 15;
+int loop_i;
+int ambi;
+int dfi;
+%}
+
+State Loop_idle {}
+
+State Loop_init_sdc {
+   { loop_i = 0;
+	Validate Loop_step_dc;
+    }
+}
+
+State Loop_init_sdnc {
+	{ loop_i = 0;
+	  Validate Loop_step_dnc;
+        }
+}
+
+State Loop_init_suc {
+	{ loop_i = 0;
+	  Validate Loop_step_uc;
+	}
+}
+
+State Loop_init_sunc {
+	{ loop_i = 0;
+	  Validate Loop_step_unc;
+	}
+}
+
+State Loop_step_dc {
+
+	{
+	dfi = 1025;
+	ambi = 650;
+
+	 if ( ++loop_i > 33 ) {
+		Validate Loop_idle;
+		} else {
+		 int stp, stp2;
+		 stp = dfi + ( loop_i - 1 )*z*.9;
+		 stp2 = ambi - ( loop_i - 1 )*z;
+		 ci_sendfcmd(0,"set dilution flow %d sccm\n",stp);
+		 ci_sendfcmd(0,"set ambient zero flow %d sccm\n",stp2);
+		}
+	}
+	+15 Validate Loop_step_dc;
+}
+
+State Loop_step_dnc {
+
+	{
+	dfi = 1085;
+	ambi = 650;
+
+	if ( ++loop_i > 33 ) {
+		Validate Loop_idle;
+		} else {
+		  int stp, stp2;
+		  stp = dfi + ( loop_i - 1 )*z*0.90;
+		  stp2 = ambi - ( loop_i -1 )*z;
+		  ci_sendfcmd(0,"set ambient zero flow %d sccm\n",stp2);
+		  ci_sendfcmd(0,"set dilution flow %d sccm\n",stp);
+		}
+	}
+	+15 Validate Loop_step_dnc;
+}
+
+State Loop_step_uc {
+
+	{
+	dfi = 1470;
+	ambi = 170;
+
+	if ( ++loop_i > 33 ) {
+		Validate Loop_idle;
+		} else {
+		  int stp, stp2;
+		  stp = dfi - ( loop_i - 1 )*z*0.95;
+		  stp2 = ambi + ( loop_i - 1 )*z;
+		  ci_sendfcmd(0,"set dilution flow %d sccm\n",stp);
+		  ci_sendfcmd(0,"set ambient zero flow %d sccm\n",stp2);
+		}
+	}
+	+15 Validate Loop_step_uc;
+}
+
+State Loop_step_unc {
+
+	{
+
+	dfi = 1530;
+	ambi = 170;
+	if ( ++loop_i > 33 ) {
+		Validate Loop_idle;
+		} else {
+		  int stp, stp2;
+		  stp = dfi - ( loop_i - 1 )*z*.95;
+		  stp2 = ambi + ( loop_i -1 )*z;
+		  ci_sendfcmd(0,"set dilution flow %d sccm\n",stp);
+		  ci_sendfcmd(0,"set ambient zero flow %d sccm\n",stp2);
+		}
+	}
+	+15 Validate Loop_step_unc;
+}
+
+Partition
+
+State Auto_cal_idle { }
+
+State Auto_cal_run_orif { 
+
+ Validate Loop_init_sdc;
+ +1 hold until valid ( Loop_idle );
+ +2 Validate Loop_init_sunc;
+ +1 hold until valid ( Loop_idle );
+ Validate Auto_cal_idle; 
+
+}
+
+
+State Auto_cal_run { 
+	
+	> Set oct amp 0 volts
+	Validate Flows_ON_Z_AM;
+	+1 hold until valid ( GD_Wait );
+	> set dilution flow 1290 sccm
+	+10 > Set oct amp 0.80 volts
+	+180 Validate Loop_init_sdnc;
+	+1 hold until valid ( Loop_idle );
+	> Set oct amp 0 volts
+	Validate Flows_ON_Z_N2;
+	+1 hold until valid ( GD_Wait );
+	> set dilution flow 1630 sccm
+	> Set oct amp 0.80 volts
+	+120 > set oct amp 0 volts
+	Validate Flows_ON_Z_AM;
+	+1 hold until valid ( GD_Wait );
+	> Set ambient zero flow 170 sccm
+	> Set dilution flow 1620 sccm
+	+5 > Set oct amp 0.80 volts
+	+30 Validate Loop_init_sunc;
+        +1 hold until valid ( Loop_idle );
+	> Set oct amp 0 volts
+	Validate Flows_ON_CAL_N2;
+	Validate Calib_IN;
+	+1 hold until valid ( Calib_Wait );
+	> Set oct amp 0.80 volts 
+	+20 Validate Calib_ON;
+	+1 hold until valid ( Calib_Wait );
+	+600 Validate Flows_ON_CAL_AM_Z;
+	+1 hold until valid ( GD_Wait );
+	+240 Validate Loop_init_sdc;
+	+1 hold until valid ( Loop_idle );
+	> set oct amp 0 volts
+	Validate Flows_ON_Z_N2;
+	+1 hold until valid ( GD_Wait );
+	> set dilution flow 1570 sccm
+	> set oct amp 0.8 volts
+	+120 > set oct amp 0 volts
+	Validate Flows_ON_Z_AM;
+	+1 hold until valid ( GD_Wait );
+	> set ambient zero flow 170 sccm
+	> set dilution flow 1530 sccm
+	+1 > set oct amp 0.80 volts
+	+30 Validate Loop_init_suc;
+	+1 hold until valid ( Loop_idle );
+	> set oct amp 0 volts
+	Validate Flows_ON_CAL_N2;
+	+1 hold until valid ( GD_Wait );
+	> set oct amp 0.8 volts
+#	+240 Validate Calib_OFF;
+#	+1 hold until valid ( Calib_Wait );
+	+240 > set oct amp 0 volts
+	Validate Calib_OUT;
+	+1 hold until valid ( Calib_Wait );
+	Validate Flows_ON_Z_AM;
+	+1 hold until valid ( GD_Wait );
+	> set dilution flow 1290 sccm
+	> Set oct amp 0.80 volts
+	+240 Validate Loop_init_sdnc;
+	+1 hold until valid ( Loop_idle );
+	> set oct amp 0 volts
+	+1 Validate Flows_ON_Z_N2;
+	+1 hold until valid ( GD_Wait );
+	> set dilution flow 1630 sccm
+	> set oct amp 0.80 volts
+	+60 > set oct amp 0 volts 
+	Validate Flows_ON_Z_AM;
+	+1 hold until valid ( GD_wait );
+	> set ambient zero flow 170 sccm
+	> set dilution flow 1530 sccm
+	+1 > set oct amp 0.80 volts
+	+30 Validate Loop_init_sunc;
+	+1 hold until valid ( Loop_idle );
+	> set oct amp 0 volts
+	Validate Flows_ON_Z_N2;
+	+1 hold until valid ( GD_Wait );
+	> set dilution flow 1630 sccm
+	> set oct amp 0.80 volts
+	Validate Auto_cal_idle;
+}

@@ -1,0 +1,74 @@
+TM 1 Hz IWG1_Drift AVOCET_TDrift;
+TM 1 Hz IWG1_float AVOCET_CO2_Licor;
+TM 1 Hz IWG1_float AVOCET_CO2_Picaro;
+TM 1 Hz IWG1_float AVOCET_Methane;
+TM 1 Hz IWG1_float AVOCET_CO;
+TM 1 Hz UCHAR AVOCET_stale;
+TM "Receive" AVOCET 0;
+
+Group AVOCET (AVOCET_TDrift, AVOCET_CO2_Licor, AVOCET_CO2_Picaro,
+    AVOCET_Methane, AVOCET_CO, AVOCET_stale) {
+  AVOCET_TDrift = calc_drift(AVOCET.Time);
+  AVOCET_CO2_Licor = AVOCET.CO2_Licor;
+  AVOCET_CO2_Picaro = AVOCET.CO2_Picaro;
+  AVOCET_Methane = AVOCET.Methane;
+  AVOCET_CO = AVOCET.CO;
+  AVOCET_stale = AVOCET_obj->stale(255);
+}
+
+TM 1 Hz IWG1_Drift DACOM_TDrift;
+TM 1 Hz IWG1_float DACOM_CO;
+TM 1 Hz IWG1_float DACOM_Methane;
+TM 1 Hz UCHAR DACOM_stale;
+TM "Receive" DACOM 0;
+
+Group DACOM (DACOM_TDrift, DACOM_Methane, DACOM_stale) {
+  DACOM_TDrift = calc_drift(DACOM.Time);
+  DACOM_CO = DACOM.CO;
+  DACOM_Methane = DACOM.Methane;
+  DACOM_stale = DACOM_obj->stale(255);
+}
+
+TM 1 Hz IWG1_Drift DLH_TDrift;
+TM 1 Hz IWG1_alt DLH_WaterVapor;
+TM 1 Hz UCHAR DLH_stale;
+TM "Receive" DLH 0;
+
+Group DLH (DLH_TDrift, DLH_WaterVapor, DLH_stale) {
+  DLH_TDrift = calc_drift(DLH.Time);
+  DLH_WaterVapor = DLH.WaterVapor;
+  DLH_stale = DLH_obj->stale(255);
+}
+
+TM 1 Hz IWG1_Drift TDLIF_TDrift;
+TM 1 Hz IWG1_alt TDLIF_NO2;
+TM 1 Hz IWG1_alt TDLIF_PNs;
+TM 1 Hz IWG1_alt TDLIF_ANs;
+TM 1 Hz UCHAR TDLIF_stale;
+TM "Receive" TDLIF 0;
+
+Group TDLIF (TDLIF_TDrift, TDLIF_NO2, TDLIF_PNs, TDLIF_ANs, TDLIF_stale) {
+  TDLIF_TDrift = calc_drift(TDLIF.Time);
+  TDLIF_NO2 = TDLIF.NO2_ppbv;
+  TDLIF_PNs = TDLIF.PNs_ppbv;
+  TDLIF_ANs = TDLIF.ANs_ppbv;
+  TDLIF_stale = TDLIF_obj->stale(255);
+}
+
+TM 1 Hz IWG1_Drift NOxyO3_TDrift;
+TM 1 Hz IWG1_alt NOxyO3_NO;
+TM 1 Hz IWG1_alt NOxyO3_NO2;
+TM 1 Hz IWG1_alt NOxyO3_NOy;
+TM 1 Hz IWG1_alt NOxyO3_O3;
+TM 1 Hz UCHAR NOxyO3_stale;
+TM "Receive" NOxyO3 0;
+
+Group NOxyO3 (NOxyO3_TDrift, NOxyO3_NO, NOxyO3_NO2, NOxyO3_NOy, NOxyO3_O3,
+      NOxyO3_stale) {
+  NOxyO3_TDrift = calc_drift(NOxyO3.Time);
+  NOxyO3_NO = NOxyO3.NO;
+  NOxyO3_NO2 = NOxyO3.NO2;
+  NOxyO3_NOy = NOxyO3.NOy;
+  NOxyO3_O3 = NOxyO3.O3;
+  NOxyO3_stale = NOxyO3_obj->stale(255);
+}

@@ -27,14 +27,14 @@ Partition
 State ToF_idle { }
 
 State ToF_start {
-#	Validate pumps_on;
-#	+10 Hold until valid ( pumps_idle );
+	Validate pumps_on;
+	+10 Hold until valid ( pumps_idle );
         > sw status Turbo pumps on
         +3 Hold until ( convert(TPB_SPD) > 9.5 );
         > Set oct bias 0.5 volts
         > Set oct amp 0.80 volts
         { if (convert(InL_P) < 45) {
-		ci_sendfcmd(0,"zaber move iris absolute 140000\n");
+		ci_sendfcmd(0,"zaber move iris absolute 105000\n");
 	}}
 	+1 Validate Flows_ON_Z_N2;
 	+1 hold until valid (GD_Wait);
@@ -47,14 +47,14 @@ State ToF_stop {
         +2 > zaber move iris absolute 0
 	+1 > set oct amp 0 volts
 	   > set oct bias 0 volts
-#	   > set ion source flow 300 sccm
-#	   > set dilution flow 300 sccm 
-#           "Turn of ToF N2 and ambient zero valve!";
-#	   hold until ( convert(InL_P) < 0 );
-#	+2  Validate pumps_off;
+	   > set ion source flow 300 sccm
+	   > set dilution flow 300 sccm 
+           "Turn of ToF N2 and ambient zero valve!";
+	   hold until ( convert(InL_P) < 0 );
+	+2  Validate pumps_off;
 	+1 > set dilution flow 50 sccm
 	+1 > set ion source flow 50 sccm
-#	+2  Hold until valid ( pumps_idle );
+	+2  Hold until valid ( pumps_idle );
 }
 
 Partition
@@ -62,10 +62,11 @@ Partition
 State pumps_idle { }
 
 State pumps_on {
-
+	> nxds a start
         > turbo scroll pump on
      +5 > Turbo scroll pump valve on
         "Make certain turbo pump manual valve is open!!";
+	> nxds b start
      +2 > Flow tube scroll pump on
 	"Turn on ToF N2!!";
      +1 > Flow tube dewar valve on
@@ -82,6 +83,7 @@ State pumps_off {
 	+4 > sw status turbo pumps off
 	+2 > Turbo scroll pump valve off
 	+1 > Turbo scroll pump off
+        +1 > nxds a stop
 	"Turn off ToF N2 and ambient zero valve!!";
 	+5 { if ( convert(InL_P) < 1 ) {
 		ci_sendfcmd ( 0, "Flow tube scroll pump valve off\n");
@@ -93,6 +95,7 @@ State pumps_off {
 	}
 	+2 { if ( convert(InL_P) < 1 ) {
 		ci_sendfcmd ( 0, "Flow tube scroll pump off\n");
+		ci_sendfcmd ( 0, "nxds b stop\n");
 	}
 	}
 	+1 Validate pumps_idle; 
@@ -106,7 +109,9 @@ State data_idle2 { }
 State data_idle {
 
 	Validate zero_N2;
-	+1 Validate data_idle2;
+	+5 Validate ambz_idle;
+        +5 Validate N2z_idle;
+        +1 Validate data_idle2;
  }
 
 State data_loop {
@@ -130,6 +135,26 @@ State data_loop {
 		Validate zero_AM;
 		+2 hold until valid ( Collect_Idle );
 		Validate data_AM;
+                +2 hold until valid ( Collect_Idle );
+                Validate zero_AM;
+                +2 hold until valid ( Collect_Idle );
+                Validate data_AM;
+                +2 hold until valid ( Collect_Idle );
+                Validate zero_AM;
+                +2 hold until valid ( Collect_Idle );
+                Validate data_AM;
+                +2 hold until valid ( Collect_Idle );
+                Validate zero_AM;
+                +2 hold until valid ( Collect_Idle );
+                Validate data_AM;
+                +2 hold until valid ( Collect_Idle );
+                Validate zero_AM;
+                +2 hold until valid ( Collect_Idle );
+                Validate data_AM;
+                +2 hold until valid ( Collect_Idle );
+                Validate zero_AM;
+                +2 hold until valid ( Collect_Idle );
+                Validate data_AM;
                 +2 hold until valid ( Collect_Idle );
                 Validate zero_AM;
                 +2 hold until valid ( Collect_Idle );
@@ -168,7 +193,7 @@ State zero_N2 {
 	Validate Flows_ON_Z_N2;
 	+1 hold until valid ( GD_Wait );
 	> Set oct amp 0.80 volts
-	+120 Validate Collect_Idle;
+	+60 Validate Collect_Idle;
 	
 }
 
@@ -178,7 +203,7 @@ State zero_AM {
 	Validate Flows_ON_Z_AM;
 	+1 hold until valid ( GD_Wait );
 	> Set oct amp 0.80 volts
-	+120 > Set oct amp 0 volts
+	+60 > Set oct amp 0 volts
         Validate Flows_ON_Z_N2;
 	+1 hold until valid ( GD_Wait );
 	> Set oct amp 0.80 volts
@@ -193,14 +218,18 @@ State cal {
 	Validate Calib_IN;
 	+1 hold until valid ( Calib_Wait );
 	> Set oct amp 0.80 volts
-	+20 Validate Calib_ON;
-	+1 hold until valid ( Calib_Wait );
-	+180 Validate Flows_ON_CAL_AM_Z;
+	# +20 Validate Calib_ON;
+	# +1 hold until valid ( Calib_Wait );
+	+120 Validate Flows_ON_CAL_AM_Z;
 	+1 hold until valid ( GD_Wait );
-	+180 Validate Calib_OFF;
-	+90 Validate Calib_OUT;
+	# +120 Validate Calib_OFF;
+	+120 Validate Calib_OUT;
 	+1 hold until valid ( Calib_Wait );
-	Validate Collect_Idle; 
+	> Set oct amp 0 volts
+	Validate Flows_ON_Z_N2;
+	+1 hold until valid ( GD_Wait );
+	> Set oct amp 0.80 volts
+	+30 Validate Collect_Idle; 
 	
 }
 
@@ -225,6 +254,6 @@ State data_AM {
 	Validate Flows_ON_ME;
 	+1 hold until valid ( GD_Wait );
 	> Set oct amp 0.80 volts
-	+1500 Validate Collect_idle;
+	+900 Validate Collect_idle;
 
 }

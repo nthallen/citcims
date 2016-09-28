@@ -4,9 +4,14 @@
 #include "oui.h"
 
 const char *iongauge_path = "/net/athenaII_a/dev/ser4";
+int channel_1_enable = 0;
+int channel_2_enable = 1;
 
 int main(int argc, char **argv) {
   oui_init_options(argc, argv);
+  nl_error( 0, "Starting V1.1" );
+  if (channel_1_enable == 0 && channel_2_enable == 0)
+    nl_error(-1, "No channels enabled, Terminating");
   { Selector S;
     IonGauge_t IGdata;
     IonGauge IG( iongauge_path, &IGdata );
@@ -16,7 +21,6 @@ int main(int argc, char **argv) {
     S.add_child(&IG);
     S.add_child(&QC);
     S.add_child(&TM);
-    nl_error( 0, "Starting" );
     S.event_loop();
   }
   nl_error( 0, "Terminating" );
@@ -24,7 +28,7 @@ int main(int argc, char **argv) {
 
 IonGauge::IonGauge( const char *path, IonGauge_t *data ) :
     Ser_Sel( path, O_RDWR | O_NONBLOCK, 40 ) {
-  state = Q1;
+  state = channel_1_enable ? Q1 : Q2;
   query_pending = 0;
   TMdata = data;
   flags |= Selector::gflag(0);
@@ -75,12 +79,12 @@ int IonGauge::ProcessData(int flag) {
             case 100:
               TMdata->Hex_P = val;
               TMdata->IG_stat |= IG_HEX_P_FRESH;
-              state = Q2;
+              state = channel_2_enable ? Q2 : Q1;
               break;
             case 101:
               TMdata->ToF_P = val;
               TMdata->IG_stat |= IG_TOF_P_FRESH;
-              state = Q1;
+              state = channel_1_enable ? Q1 : Q2;
               break;
             default:
               nl_error(1, "Unexpected address: @%d", addr2 );
@@ -110,20 +114,28 @@ void IonGauge::IssueQuery(bool synch) {
       fillbuf();
       report_err("Timeout reading from @101");
       FlushInput();
-      // fall through
-    case Q1:
-      query = "@100PR4?;FF";
-      state = R1;
+      state = channel_1_enable ? Q1 : Q2;
       break;
     case R1:
       fillbuf();
       report_err("Timeout reading from @100");
       FlushInput();
-      // fall through
+      state = channel_2_enable ? Q2 : Q1;
+      break;
+    default:
+      break;
+  }
+  switch (state) {
+    case Q1:
+      query = "@100PR4?;FF";
+      state = R1;
+      break;
     case Q2:
       query = "@101PR4?;FF";
       state = R2;
       break;
+    default:
+      nl_error(4,"Invalid state in second switch");
   }
   rv = write( fd, query, 11 ); //
   if ( rv < 0 ) {

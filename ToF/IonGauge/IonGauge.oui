@@ -3,12 +3,20 @@
 <include> msg
 <follow> msg
 
-<opts> "d:"
+<opts> "d:12"
 <sort>
 	-d <serial device>
+	-1 disable channel 1 queries
+	-2 disable channel 2 queries
 <switch>
   case 'd':
     iongauge_path = optarg;
+    break;
+  case '1':
+    channel_1_enable = 0;
+    break;
+  case '2':
+    channel_2_enable = 0;
     break;
 
 <package> msghdr_default

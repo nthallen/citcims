@@ -1,0 +1,16 @@
+<package> UserPkts2
+<include> msg
+<follow> msg
+<include> "UserPkts2_int.h"
+<opts> "p:"
+<sort>
+	-p <udp_port> (may be specified more than once)
+<init>
+  pkts_init_options(argc,argv);
+<unsort>
+<blank>
+Currently supports packets from AVOCET, DLH and DACOM.
+
+<package> msghdr_init
+<init>
+  msg_hdr_default = "UserP";

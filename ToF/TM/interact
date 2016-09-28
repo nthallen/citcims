@@ -23,13 +23,13 @@
   Launch - tmdf
   Launch - lgr -N `mlf_find LOG`
   Launch - omsdrv -i7
-# Launch - IonGauge -d /net/tofathena/dev/ser4
+  Launch - IonGauge -d /net/tofathena/dev/ser4
   Launch - horiba -d /net/tofathena/dev/ser3
-  Launch - nXDS -d /dev/ser1 -n tripherc -e triple -v
+  Launch - nXDS -d /dev/ser2 -n tripherc -e triple -v
 # Launch - sonic -p /net/tofherc/dev/ser1
-  Launch - zaber -p /dev/ser3
+  Launch - zaber -p /dev/ser4
   Launch - IWG1
-  Launch - UserPkts
+  Launch - UserPkts2 -p 5100 -p 5558
 # Launch - Zeno_Ser -d /dev/ser4
-  Launch - ups -p /dev/ser4 -n tripherc -e triple
+  Launch - ups -p /dev/ser1 -n tripherc -e triple
   Launch - ToFalgo -v

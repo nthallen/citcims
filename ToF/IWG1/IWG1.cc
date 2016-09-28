@@ -28,7 +28,7 @@ IWG1_UDP::IWG1_UDP() : Ser_Sel( 0, 0, 600 ) {
   // Set up TM
   tm_id = Col_send_init( "IWG1", &IWG1, sizeof(IWG1_data_t), 0);
   // Set up UDP listener
-  Bind(5101);
+  Bind(7071);
   flags = Selector::Sel_Read;
   flush_input();
   setenv("TZ", "UTC0", 1); // Force UTC for mktime()

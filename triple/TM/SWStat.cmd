@@ -9,7 +9,7 @@
     
     void send_to_tof(const char *cmd) {
       int fd, nb_in, nb;
-      fd = open("/net/herc_a/dev/huarp/ToF/cmd/server", O_WRONLY|O_NONBLOCK);
+      fd = open("/net/tofherc/dev/huarp/ToF/cmd/server", O_WRONLY|O_NONBLOCK);
       if (fd < 0) {
         nl_error(2, "Unable to contact ToF command server");
         return;
@@ -32,9 +32,11 @@
   : Telemetry Logging Resume * {}
   : &SWTM * { if_SWData.Turf(); }
   : ToF ambient flow on * {
-        send_to_tof( "Set ambient zero flow 480 sccm\n" ); }
+        send_to_tof( "Set ambient zero flow 550 sccm\n" ); }
   : ToF ambient flow off * {
-        send_to_tof( "Set ambient zero flow 100 sccm\n" ); }
+        send_to_tof( "Set ambient zero flow 300 sccm\n" ); }
+  : ToF command %s (Enter command to send to ToF) * {
+        send_to_tof( strcat($3, "\n")); }
   ;
 
 &SWTM
@@ -65,4 +67,6 @@
   : SitOn Neg AmbCal { $0 = SWS_SITON_NEG_AMBCAL; }
   : SitOn Pos AmbCal { $0 = SWS_SITON_POS_AMBCAL; }
   : Init Continue { $0 = SWS_INIT_CONTINUE; }
+  : Auto Cal Start { $0 = SWS_AUTOCALTRIPLE_START; }
+  : Auto Cal Stop { $0 = SWS_AUTOCALTRIPLE_STOP; }
   ;

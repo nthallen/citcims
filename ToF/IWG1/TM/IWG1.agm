@@ -2,7 +2,7 @@ ModuleDef IWG1 {
   IWG1 Module receives standard parameters from NASA Aircraft
 }
 
-mode (default,UserPkts) {
+mode (default,UserPkts,UserPkts2) {
   tmcbase = IWG1.tmc
   colbase = IWG1_col.tmc
   genuibase = IWG1.genui
@@ -14,12 +14,26 @@ mode (default,UserPkts) {
     tmcbase = UserPkts.tmc
     colbase = UserPkts_col.tmc
     # genuibase = UserPkts.genui
-    UserPktsdisp : UserPkts.tbl:UserPkts.tbl.src
-    UserPktsext : UserPkts.cdf
-    DISTRIB = @MODDIR@/../UserPkts
+    # Move the real build targets into .spec file for now
+    UPdisp : UserPkts.tbl:UserPkts.tbl.src
+    # UserPktsext : UserPkts.cdf
+    DISTRIB = @MODDIR@/../UserPkts UserPktsdisp UserPktsext
     %%
 @MODDIR@/../UserPkts :
 	cd @MODDIR@/.. && make UserPkts
+  }
+
+  mode (UserPkts2) {
+    tmcbase = UserPkts2.tmc
+    colbase = UserPkts2_col.tmc
+    # genuibase = UserPkts2.genui
+    # Move the real build targets into .spec file for now
+    UPdisp : UserPkts.tbl:UserPkts2.tbl.src
+    # UserPktsext : UserPkts2.cdf
+    DISTRIB = @MODDIR@/../UserPkts2 UserPktsdisp UserPktsext
+    %%
+@MODDIR@/../UserPkts2 :
+	cd @MODDIR@/.. && make UserPkts2
   }
 
   %%

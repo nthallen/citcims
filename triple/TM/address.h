@@ -1,7 +1,7 @@
 #define ReagentMFCset_Address 0x2003
 #define IonSourceMFCset_Address 0x2002
-#define DiluteMFCset_Address 0x2001
-#define ScrubMFCset_Address 0x2000
+#define DiluteMFCset_Address 0x2000
+#define ScrubMFCset_Address 0x2001
 #define MainFlowMeter_Address 0xF
 #define Sp_10V_Address 0xE
 #define Sp_5V_Address 0xD

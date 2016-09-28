@@ -33,6 +33,10 @@
   : Data loop stop { $0 = SWS_DATA_STOP; }
   : Data loop no cal { $0 = SWS_DATA_LP_NC; }
   : Quick cal { $0 = SWS_DATA_QC; }
+  : Amb zero loop start { $0 = SWS_DATA_AMB_ZERO_LOOP_START; }
+  : Amb zero loop stop { $0 = SWS_DATA_AMB_ZERO_LOOP_STOP; }
+  : Auto cal start { $0 = SWS_AUTO_CAL_START; }
+  : Auto cal stop { $0 = SWS_AUTO_CAL_STOP; }
   : Shutdown Quick { $0 = SWS_QUICK_SHUTDOWN; }
   : Shutdown Full { $0 = SWS_SHUTDOWN; }
   ;
