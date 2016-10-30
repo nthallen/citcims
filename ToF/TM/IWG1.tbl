@@ -35,7 +35,7 @@ Col2 {
   Sun_Az_AC: (Sun_Az_AC,9);
   IWG1_Stale: (IWG1_Stale,9);
   VGlue 0+1;
-  -;
+  +-+;
   TDrift: (TDrift,9);
   TDDrift: (TDDrift,9);
   Time: (flttime,9);
@@ -43,6 +43,7 @@ Col2 {
 }
 
 {
-  HBox { +-; Title: IWG1; -+ };
-  HBox { [Col1]; |; [Col2] };
+  HBox { -; Title: IWG1; - };
+  HBox { +|+; [Col1]; |; [Col2]; +|+ };
+  -;
 }

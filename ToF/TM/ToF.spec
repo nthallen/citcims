@@ -46,8 +46,8 @@ ToFdisp : AthenaII_conv.tmc Hercules_conv.tmc ../Horiba/TM/Horiba_conv.tmc \
 #  ToF.tbl  IWG1.tbl ../Sonic/TM/sonic.tbl
 #ToFdisp : AthenaII_conv.tmc Hercules_conv.tmc ../Horiba/TM/Horiba_conv.tmc \
 #   ToFz.tbl  ../Sonic/TM/sonic.tbl
-UserPktsdisp : UserPkts.tbl
-UserPktsext : ../IWG1/TM/UserPkts2.cdf
+#UserPktsdisp : UserPkts.tbl
+#UserPktsext : ../IWG1/TM/UserPkts2.cdf
 
 ToFBdisp : ../Edwards_nXDS/TM/nXDS_conv.tmc ../GPS/TM/gpsd_conv.tmc ToFB.tbl
 
