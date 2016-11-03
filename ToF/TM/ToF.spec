@@ -32,6 +32,7 @@ Module IWG1 mode=UserPkts2
 Module Zaber mode=default
 Module Sonic mode=disable Hz=8
 Module Zeno mode=disable
+Module TwisTorr drives=AB
 
 SCRIPT = interact runfile.AII runfile.AIIa
 DISTRIB = ../DSDaq/AthenaII
@@ -50,6 +51,7 @@ UserPktsdisp : UserPkts.tbl
 UserPktsext : ../IWG1/TM/UserPkts2.cdf
 
 ToFBdisp : ../Edwards_nXDS/TM/nXDS_conv.tmc ../GPS/TM/gpsd_conv.tmc ToFB.tbl
+TwisTorrdisp : TwisTorr_conv.tmc TwisTorr.tbl
 
 ToFext : ToF.cdf
 

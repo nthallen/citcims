@@ -1,0 +1,261 @@
+#! /usr/bin/perl -w
+use strict;
+
+# TwisTorr_gen <srcfile>
+#   <srcfile> should include a single line of the format
+#   drives=A?B?C?
+# Generates the following:
+#   TwisTorr.tmc
+#   TwisTorr_col.tmc
+#   TwisTorr.cmd
+#   TwisTorr_conv.tmc
+#   TwisTorr.genui
+my $src = $ARGV[0] || 'stdin';
+my ($A, $B, $C);
+my %drive;
+my @drives = qw(A B C);
+while (<>) {
+  if ( m/^drives=(A?)(B?)(C?) *$/ ) {
+    $drive{A} = $1 ne '';
+    $drive{B} = $2 ne '';
+    $drive{C} = $3 ne '';
+  } else {
+    chomp;
+    die "$src: Invalid syntax: '$_'\n";
+  }
+}
+die "TwisTorr_gen: drives not specifed\n"
+  unless defined($drive{A}) && defined($drive{B}) && defined($drive{C});
+# print "A=$drive{A} B=$drive{B} C=$drive{C}\n";
+
+# TwisTorr.tmc
+open(my $TMC, ">", "TwisTorr.tmc") || die "Unable to write TwisTorr.tmc\n";
+print $TMC <<'EOF';
+%{
+  #include "TwisTorr.h"
+  #define TTselect(x,y) TwisTorr.drive[x].y
+  const char *TT_Status_text(signed short stat) {
+    const char *rv = "********";
+    switch (stat) {
+      case 0: rv = "    Stop"; break;
+      case 1: rv = "WtIntlck"; break;
+      case 2: rv = "Starting"; break;
+      case 3: rv = "AutoTune"; break;
+      case 4: rv = " Braking"; break;
+      case 5: rv = "  Normal"; break;
+      case 6: rv = "    Fail"; break;
+      default: break;
+    }
+    return rv;
+  };
+%}
+TM "Receive" TwisTorr 1;
+
+TM typedef signed short TT_Amps { text "%6.3f"; }
+TM typedef signed short TT_Volts { text "%3d"; }
+TM typedef signed short TT_Watts { text "%3d"; }
+TM typedef signed short TT_Hz { text "%5d"; }
+TM typedef signed short TT_Celcius { text "%3d"; }
+TM typedef signed short TT_Status_t { text "%8d" TT_Status_text(); }
+TM typedef unsigned char TT_flag_t { text "%02x"; }
+TM typedef unsigned char TT_stale_t { text "%3u"; }
+TM typedef unsigned short TT_ErrStat_t { text "%03x"; }
+
+TM 1 Hz TT_stale_t TT_stale;
+EOF
+
+
+for my $drv (@drives) {
+  if ($drive{$drv}) {
+    print $TMC <<EOF;
+
+TM 1 Hz TT_Amps TT${drv}_I;
+TM 1 Hz TT_Volts TT${drv}_V;
+TM 1 Hz TT_Watts TT${drv}_W;
+TM 1 Hz TT_Hz TT${drv}_drvf;
+TM 1 Hz TT_Hz TT${drv}_spd;
+TM 1 Hz TT_Celcius TT${drv}_T;
+TM 1 Hz TT_Status_t TT${drv}_Status;
+TM 1 Hz TT_flag_t TT${drv}_flags;
+TM 1 Hz TT_ErrStat_t TT${drv}_ErrStat;
+EOF
+  }
+}
+
+print $TMC <<'EOF';
+
+Group TwisTorr_grp (
+EOF
+
+for my $drv (@drives) {
+  if ($drive{$drv}) {
+    print $TMC <<EOF;
+    TT${drv}_I, TT${drv}_V, TT${drv}_W, TT${drv}_drvf, TT${drv}_spd,
+    TT${drv}_T, TT${drv}_Status, TT${drv}_flags, TT${drv}_ErrStat,
+EOF
+  }
+}
+
+print $TMC <<'EOF';
+    TT_stale) {
+EOF
+
+for my $i (0..$#drives) {
+  my $drv = $drives[$i];
+  if ($drive{$drv}) {
+    print $TMC <<EOF;
+
+  TT${drv}_I = TTselect($i,pump_current);
+  TT${drv}_V = TTselect($i,pump_voltage);
+  TT${drv}_W = TTselect($i,pump_power);
+  TT${drv}_drvf = TTselect($i,driving_freq);
+  TT${drv}_spd = TTselect($i,rotation_speed);
+  TT${drv}_T = TTselect($i,pump_temperature);
+  TT${drv}_Status = TTselect($i,pump_status);
+  TT${drv}_flags = TTselect($i,flags);
+  TT${drv}_ErrStat = TTselect($i,error_status);
+EOF
+  }
+}
+
+print $TMC <<'EOF';
+  
+  TT_stale = TwisTorr_obj->stale(255);
+  TwisTorr_obj->synch();
+}
+EOF
+
+close($TMC) || warn "Error closing TwisTorr.tmc\n";
+
+open(my $COL, ">", "TwisTorr_col.tmc") || die "Unable to write TwisTorr_col.tmc";
+print $COL <<'EOF';
+%{
+  TwisTorr_t TwisTorr;
+%}
+EOF
+close($COL) || warn "Error closing TwisTorr_col.tmc\n";
+
+#   TwisTorr.cmd
+open(my $CMD, ">", "TwisTorr.cmd") || die "Unable to write TwisTorr.cmd";
+print $CMD <<'EOF';
+%INTERFACE <TwisTorr>
+&command
+  : TwisTorr &TTdev Start * { if_TwisTorr.Turf("W:%d:0:1\n", $2); }
+  : TwisTorr &TTdev Stop  * { if_TwisTorr.Turf("W:%d:0:0\n", $2); }
+  : TwisTorr &TTdev Low Speed On * { if_TwisTorr.Turf("W:%d:1:1\n", $2); }
+  : TwisTorr &TTdev Low Speed Off * { if_TwisTorr.Turf("W:%d:1:0\n", $2); }
+  : TwisTorr &TTdev Vent Open * { if_TwisTorr.Turf("W:%d:122:0\n", $2); }
+  : TwisTorr &TTdev Vent Closed * { if_TwisTorr.Turf("W:%d:122:1\n", $2); }
+  : TwisTorr &TTdev Vent Auto * { if_TwisTorr.Turf("W:%d:125:0\n", $2); }
+  : TwisTorr &TTdev Vent Manual * { if_TwisTorr.Turf("W:%d:125:1\n", $2); }
+  : TwisTorr &TTdev Soft Start Yes * { if_TwisTorr.Turf("W:%d:100:1\n", $2); }
+  : TwisTorr &TTdev Soft Start No * { if_TwisTorr.Turf("W:%d:100:0\n", $2); }
+  : TwisTorr &TTdev Soft Start Auto * { if_TwisTorr.Turf("W:%d:100:2\n", $2); }
+  : TwisTorr &TTdev Active Stop Yes * { if_TwisTorr.Turf("W:%d:107:1\n", $2); }
+  : TwisTorr &TTdev Active Stop No * { if_TwisTorr.Turf("W:%d:107:0\n", $2); }
+  ;
+&TTdev <int>
+EOF
+
+for my $i (0..$#drives) {
+  my $drv = $drives[$i];
+  if ($drive{$drv}) {
+    print $CMD <<EOF;
+  : $drv { \$0 = $i; }
+EOF
+  }
+}
+print $CMD "  ;\n";
+close($CMD) || warn "Error closing TwisTorr.cmd\n";
+
+#   TwisTorr_conv.tmc
+open(my $CNV, ">", "TwisTorr_conv.tmc") || die "Unable to write TwisTorr_conv.tmc";
+print $CNV <<'EOF';
+%{
+  #define TT_Start_text(x) ((x)?"Start":" Stop")
+  #define TT_Speed_text(x) ((x)?" Low":"High")
+  #define TT_YN_text(x) ((x)?"Yes":" No")
+  #define TT_ClOp_text(x) ((x)?"Closed":"  Open")
+  #define TT_VentOp_text(x) ((x)?" Cmd":"Auto")
+  #define TT_Resp_text(x) ((x)?"Fail":"  OK")
+%}
+TM typedef unsigned char TT_Start_t { text "%5d" TT_Start_text(); }
+TM typedef unsigned char TT_Speed_t { text "%4d" TT_Speed_text(); }
+TM typedef unsigned char TT_YN_t { text "%3d" TT_YN_text(); }
+TM typedef unsigned char TT_ClOp_t { text "%3d" TT_ClOp_text(); }
+TM typedef unsigned char TT_VentOp_t { text "%4d" TT_VentOp_text(); }
+TM typedef unsigned char TT_Resp_t { text "%4d" TT_Resp_text(); }
+EOF
+
+for my $drv (@drives) {
+  if ($drive{$drv}) {
+    print $CNV <<EOF;
+
+TT_Start_t TT${drv}_Start; Invalidate TT${drv}_Start;
+  { TT${drv}_Start = (TT${drv}_flags >> 0) & 1; Validate TT${drv}_Start; }
+TT_Speed_t TT${drv}_Speed; Invalidate TT${drv}_Speed;
+  { TT${drv}_Speed = (TT${drv}_flags >> 1) & 1; Validate TT${drv}_Speed; }
+TT_YN_t TT${drv}_WtrCl; Invalidate TT${drv}_WtrCl;
+  { TT${drv}_WtrCl = (TT${drv}_flags >> 2) & 1; Validate TT${drv}_WtrCl; }
+TT_YN_t TT${drv}_ActStp; Invalidate TT${drv}_ActStp;
+  { TT${drv}_ActStp = (TT${drv}_flags >> 3) & 1; Validate TT${drv}_ActStp; }
+TT_ClOp_t TT${drv}_VentVlv; Invalidate TT${drv}_VentVlv;
+  { TT${drv}_VentVlv = (TT${drv}_flags >> 4) & 1; Validate TT${drv}_VentVlv; }
+TT_VentOp_t TT${drv}_VentOp; Invalidate TT${drv}_VentOp;
+  { TT${drv}_VentOp = (TT${drv}_flags >> 5) & 1; Validate TT${drv}_VentOp; }
+TT_Resp_t TT${drv}_Resp; Invalidate TT${drv}_Resp;
+  { TT${drv}_Resp = (TT${drv}_flags >> 7) & 1; Validate TT${drv}_Resp; }
+EOF
+  }
+}
+
+close($CNV) || warn "Error closing TwisTorr_conv.tmc\n";
+
+#   TwisTorr.tbl
+open(my $TBL, ">", "TwisTorr.tbl") || die "Unable to write TwisTorr.tbl";
+print $TBL <<'EOF';
+TwisTorr {
+  HBox { +-; Title: TwisTorr; -+ };
+EOF
+
+print $TBL '  ""', map("   >$_<", grep $drive{$_}, @drives), ";\n";
+sub tbl_row {
+  my ($lbl, $fld, $unit) = @_;
+  print $TBL $lbl ? "  $lbl:" : '  ""';
+  for my $drv (@drives) {
+    if ($drive{$drv}) {
+      print $TBL "  (TT${drv}_$fld)";
+    }
+  }
+  print $TBL $unit ? "  $unit" : "", ";\n";
+}
+tbl_row('', 'Start,5');
+tbl_row('Speed', 'Speed,4');
+tbl_row('WtrCl', 'WtrCl,3');
+tbl_row('ActStp', 'ActStp,3');
+tbl_row('Vent', 'VentVlv,6');
+tbl_row('VentOp', 'VentOp,4');
+tbl_row('I','I,6','mA');
+tbl_row('V','V,3','V');
+tbl_row('W','W,3','W');
+tbl_row('T','T,3','C');
+tbl_row('Drive','drvf,5','Hz');
+tbl_row('Speed','spd,5', 'Hz');
+tbl_row('Status','Status,8');
+tbl_row('Res','Resp,4');
+tbl_row('Errors','ErrStat,3');
+
+print $TBL <<'EOF';
+  Stale:  (TT_stale,3);
+}
+EOF
+
+close($TBL) || warn "Error closing TwisTorr.tbl\n";
+
+#   TwisTorr.genui
+open(my $GENUI, ">", "TwisTorr.genui") || die "Unable to write TwisTorr.genui";
+print $GENUI <<'EOF';
+EOF
+close($GENUI) || warn "Error closing TwisTorr.genui\n";
+
+__END__
