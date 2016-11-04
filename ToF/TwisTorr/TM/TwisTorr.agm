@@ -9,16 +9,16 @@ cmdbase = TwisTorr.cmd:
 extbase = TwisTorr_conv.tmc:
 genuibase = TwisTorr.genui:
 - : TwisTorr.cfg:TwisTorr.cfg.in
-%%
-TwisTorr.tmc TwisTorr_col.tmc TwisTorr.cmd TwisTorr_conv.tmc TwisTorr.genui TwisTorr.tbl : @MODDIR@/TwisTorr_gen TwisTorr.cfg
-	@MODDIR@/TwisTorr_gen TwisTorr.cfg
 
 DISTRIB = @MODDIR@/../TwisTorr
 CPPFLAGS = -I @MODDIR@/..
 %%
+TwisTorr.tmc TwisTorr_col.tmc TwisTorr.cmd TwisTorr_conv.tmc TwisTorr.genui TwisTorr.tbl : @MODDIR@/TwisTorr_gen TwisTorr.cfg
+	@MODDIR@/TwisTorr_gen TwisTorr.cfg
+
 .PHONY : clean-TwisTorr
 @MODDIR@/../TwisTorr :
-cd @MODDIR@/.. && make
+	cd @MODDIR@/.. && make
 clean-dist : clean-TwisTorr
 clean-TwisTorr :
-cd @MODDIR@/.. && make clean
+	cd @MODDIR@/.. && make clean

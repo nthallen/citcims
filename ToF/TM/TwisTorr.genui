@@ -1,0 +1,51 @@
+  1 TTA_I   TwisTorr I
+  1 TTA_T   TwisTorr T
+  1 TTA_V   TwisTorr V
+  1 TTA_W   TwisTorr W
+  1 TTA_drvf TwisTorr Speed
+  1 TTA_spd TwisTorr Speed %.2lf
+  1 TTA_Status TwisTorr Status %.0lf
+# 1 TTA_flags
+  1 TTA_Start:TTA_flags:0 TwisTorr Aflags %.0lf
+  1 TTA_Speed:TTA_flags:1 TwisTorr Aflags %.0lf
+  1 TTA_WtrCl:TTA_flags:2 TwisTorr Aflags %.0lf
+  1 TTA_ActStp:TTA_flags:3 TwisTorr Aflags %.0lf
+  1 TTA_VentVlv:TTA_flags:4 TwisTorr Aflags %.0lf
+  1 TTA_VentOp:TTA_flags:5 TwisTorr Aflags %.0lf
+  1 TTA_Resp:TTA_flags:7 TwisTorr Aflags %.0lf
+  1 TTA_NoConn:TTA_ErrStat:0 TT_Errors TTA %.0lf
+  1 TTA_PumpOT:TTA_ErrStat:1 TT_Errors TTA %.0lf
+  1 TTA_CtrlOT:TTA_ErrStat:2 TT_Errors TTA %.0lf
+  1 TTA_PwrFail:TTA_ErrStat:3 TT_Errors TTA %.0lf
+  1 TTA_AuxFail:TTA_ErrStat:4 TT_Errors TTA %.0lf
+  1 TTA_OverV:TTA_ErrStat:5 TT_Errors TTA %.0lf
+  1 TTA_Short:TTA_ErrStat:6 TT_Errors TTA %.0lf
+  1 TTA_OverLoad:TTA_ErrStat:7 TT_Errors TTA %.0lf
+  1 TTA_LowBatt:TTA_ErrStat:9 TT_Errors TTA %.0lf
+  1 TTA_BadTime:TTA_ErrStat:10 TT_Errors TTA %.0lf
+  1 TTB_I   TwisTorr I
+  1 TTB_T   TwisTorr T
+  1 TTB_V   TwisTorr V
+  1 TTB_W   TwisTorr W
+  1 TTB_drvf TwisTorr Speed
+  1 TTB_spd TwisTorr Speed %.2lf
+  1 TTB_Status TwisTorr Status %.0lf
+# 1 TTB_flags
+  1 TTB_Start:TTB_flags:0 TwisTorr Bflags %.0lf
+  1 TTB_Speed:TTB_flags:1 TwisTorr Bflags %.0lf
+  1 TTB_WtrCl:TTB_flags:2 TwisTorr Bflags %.0lf
+  1 TTB_ActStp:TTB_flags:3 TwisTorr Bflags %.0lf
+  1 TTB_VentVlv:TTB_flags:4 TwisTorr Bflags %.0lf
+  1 TTB_VentOp:TTB_flags:5 TwisTorr Bflags %.0lf
+  1 TTB_Resp:TTB_flags:7 TwisTorr Bflags %.0lf
+  1 TTB_NoConn:TTB_ErrStat:0 TT_Errors TTB %.0lf
+  1 TTB_PumpOT:TTB_ErrStat:1 TT_Errors TTB %.0lf
+  1 TTB_CtrlOT:TTB_ErrStat:2 TT_Errors TTB %.0lf
+  1 TTB_PwrFail:TTB_ErrStat:3 TT_Errors TTB %.0lf
+  1 TTB_AuxFail:TTB_ErrStat:4 TT_Errors TTB %.0lf
+  1 TTB_OverV:TTB_ErrStat:5 TT_Errors TTB %.0lf
+  1 TTB_Short:TTB_ErrStat:6 TT_Errors TTB %.0lf
+  1 TTB_OverLoad:TTB_ErrStat:7 TT_Errors TTB %.0lf
+  1 TTB_LowBatt:TTB_ErrStat:9 TT_Errors TTB %.0lf
+  1 TTB_BadTime:TTB_ErrStat:10 TT_Errors TTB %.0lf
+  1 TT_stale TwisTorr Stale

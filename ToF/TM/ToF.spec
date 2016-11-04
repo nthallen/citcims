@@ -51,7 +51,7 @@ UserPktsdisp : UserPkts.tbl
 UserPktsext : ../IWG1/TM/UserPkts2.cdf
 
 ToFBdisp : ../Edwards_nXDS/TM/nXDS_conv.tmc ../GPS/TM/gpsd_conv.tmc ToFB.tbl
-TwisTorrdisp : TwisTorr_conv.tmc TwisTorr.tbl
+TwisTorrdisp : TwisTorr_conv.tmc TwisTorr_Pumps.tbl
 
 ToFext : ToF.cdf
 

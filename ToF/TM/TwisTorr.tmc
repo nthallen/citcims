@@ -1,0 +1,82 @@
+%{
+  #include "TwisTorr.h"
+  #define TTselect(x,y) TwisTorr.drive[x].y
+  const char *TT_Status_text(signed short stat) {
+    const char *rv = "********";
+    switch (stat) {
+      case 0: rv = "    Stop"; break;
+      case 1: rv = "WtIntlck"; break;
+      case 2: rv = "Starting"; break;
+      case 3: rv = "AutoTune"; break;
+      case 4: rv = " Braking"; break;
+      case 5: rv = "  Normal"; break;
+      case 6: rv = "    Fail"; break;
+      default: break;
+    }
+    return rv;
+  };
+%}
+TM "Receive" TwisTorr 1;
+
+TM typedef signed short TT_Amps { text "%6.3f"; }
+TM typedef signed short TT_Volts { text "%3d"; }
+TM typedef signed short TT_Watts { text "%3d"; }
+TM typedef signed short TT_Hz { text "%5d"; }
+TM typedef signed short TT_Celcius { text "%3d"; }
+TM typedef signed short TT_Status_t { text "%8d" TT_Status_text(); }
+TM typedef unsigned char TT_flag_t { text "%02x"; }
+TM typedef unsigned char TT_stale_t { text "%3u"; }
+TM typedef unsigned short TT_ErrStat_t { text "%03x"; }
+
+TM 1 Hz TT_stale_t TT_stale;
+
+TM 1 Hz TT_Amps TTA_I;
+TM 1 Hz TT_Volts TTA_V;
+TM 1 Hz TT_Watts TTA_W;
+TM 1 Hz TT_Hz TTA_drvf;
+TM 1 Hz TT_Hz TTA_spd;
+TM 1 Hz TT_Celcius TTA_T;
+TM 1 Hz TT_Status_t TTA_Status;
+TM 1 Hz TT_flag_t TTA_flags;
+TM 1 Hz TT_ErrStat_t TTA_ErrStat;
+
+TM 1 Hz TT_Amps TTB_I;
+TM 1 Hz TT_Volts TTB_V;
+TM 1 Hz TT_Watts TTB_W;
+TM 1 Hz TT_Hz TTB_drvf;
+TM 1 Hz TT_Hz TTB_spd;
+TM 1 Hz TT_Celcius TTB_T;
+TM 1 Hz TT_Status_t TTB_Status;
+TM 1 Hz TT_flag_t TTB_flags;
+TM 1 Hz TT_ErrStat_t TTB_ErrStat;
+
+Group TwisTorr_grp (
+    TTA_I, TTA_V, TTA_W, TTA_drvf, TTA_spd,
+    TTA_T, TTA_Status, TTA_flags, TTA_ErrStat,
+    TTB_I, TTB_V, TTB_W, TTB_drvf, TTB_spd,
+    TTB_T, TTB_Status, TTB_flags, TTB_ErrStat,
+    TT_stale) {
+
+  TTA_I = TTselect(0,pump_current);
+  TTA_V = TTselect(0,pump_voltage);
+  TTA_W = TTselect(0,pump_power);
+  TTA_drvf = TTselect(0,driving_freq);
+  TTA_spd = TTselect(0,rotation_speed);
+  TTA_T = TTselect(0,pump_temperature);
+  TTA_Status = TTselect(0,pump_status);
+  TTA_flags = TTselect(0,flags);
+  TTA_ErrStat = TTselect(0,error_status);
+
+  TTB_I = TTselect(1,pump_current);
+  TTB_V = TTselect(1,pump_voltage);
+  TTB_W = TTselect(1,pump_power);
+  TTB_drvf = TTselect(1,driving_freq);
+  TTB_spd = TTselect(1,rotation_speed);
+  TTB_T = TTselect(1,pump_temperature);
+  TTB_Status = TTselect(1,pump_status);
+  TTB_flags = TTselect(1,flags);
+  TTB_ErrStat = TTselect(1,error_status);
+  
+  TT_stale = TwisTorr_obj->stale(255);
+  TwisTorr_obj->synch();
+}

@@ -1,0 +1,10 @@
+Input "TwisTorr.tbl";
+
+{ HBox { |+; {
+      [TwisTorr];
+      +-+;
+      { MFCtr: (MFCtr,5) (flttime,9) }
+    }; |+
+  };
+  -;
+}
