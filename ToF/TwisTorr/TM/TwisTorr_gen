@@ -254,7 +254,39 @@ close($TBL) || warn "Error closing TwisTorr.tbl\n";
 
 #   TwisTorr.genui
 open(my $GENUI, ">", "TwisTorr.genui") || die "Unable to write TwisTorr.genui";
+  for my $drv (@drives) {
+    if ($drive{$drv}) {
+      print $GENUI <<EOF;
+  1 TT${drv}_I   TwisTorr I
+  1 TT${drv}_T   TwisTorr T
+  1 TT${drv}_V   TwisTorr V
+  1 TT${drv}_W   TwisTorr W
+  1 TT${drv}_drvf TwisTorr Speed
+  1 TT${drv}_spd TwisTorr Speed %.2lf
+  1 TT${drv}_Status TwisTorr Status %.0lf
+# 1 TT${drv}_flags
+  1 TT${drv}_Start:TT${drv}_flags:0 TwisTorr ${drv}flags %.0lf
+  1 TT${drv}_Speed:TT${drv}_flags:1 TwisTorr ${drv}flags %.0lf
+  1 TT${drv}_WtrCl:TT${drv}_flags:2 TwisTorr ${drv}flags %.0lf
+  1 TT${drv}_ActStp:TT${drv}_flags:3 TwisTorr ${drv}flags %.0lf
+  1 TT${drv}_VentVlv:TT${drv}_flags:4 TwisTorr ${drv}flags %.0lf
+  1 TT${drv}_VentOp:TT${drv}_flags:5 TwisTorr ${drv}flags %.0lf
+  1 TT${drv}_Resp:TT${drv}_flags:7 TwisTorr ${drv}flags %.0lf
+  1 TT${drv}_NoConn:TT${drv}_ErrStat:0 TT_Errors TT${drv} %.0lf
+  1 TT${drv}_PumpOT:TT${drv}_ErrStat:1 TT_Errors TT${drv} %.0lf
+  1 TT${drv}_CtrlOT:TT${drv}_ErrStat:2 TT_Errors TT${drv} %.0lf
+  1 TT${drv}_PwrFail:TT${drv}_ErrStat:3 TT_Errors TT${drv} %.0lf
+  1 TT${drv}_AuxFail:TT${drv}_ErrStat:4 TT_Errors TT${drv} %.0lf
+  1 TT${drv}_OverV:TT${drv}_ErrStat:5 TT_Errors TT${drv} %.0lf
+  1 TT${drv}_Short:TT${drv}_ErrStat:6 TT_Errors TT${drv} %.0lf
+  1 TT${drv}_OverLoad:TT${drv}_ErrStat:7 TT_Errors TT${drv} %.0lf
+  1 TT${drv}_LowBatt:TT${drv}_ErrStat:9 TT_Errors TT${drv} %.0lf
+  1 TT${drv}_BadTime:TT${drv}_ErrStat:10 TT_Errors TT${drv} %.0lf
+EOF
+    }
+  }
 print $GENUI <<'EOF';
+  1 TT_stale TwisTorr Stale
 EOF
 close($GENUI) || warn "Error closing TwisTorr.genui\n";
 
