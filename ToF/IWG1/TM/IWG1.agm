@@ -32,7 +32,7 @@ mode (default,UserPkts,UserPkts2) {
     tmcbase = UserPkts2.tmc
     colbase = UserPkts2_col.tmc
     - : UserPkts.tbl:UserPkts2.tbl.in
-    - : UserPkts2.genui:UserPkts2.genui.in
+    - : UserPkts.genui:UserPkts2.genui.in
     # Move the real build targets into .spec file for now
     # IWG1disp : IWG1.tbl UserPkts.tbl
     # UserPktsext : UserPkts.genui

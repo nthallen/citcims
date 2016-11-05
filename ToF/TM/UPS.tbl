@@ -1,0 +1,24 @@
+UPS {
+  HBox{ +-; Title: "UPS"; -+ };
+  Mode: (UPS_Mode,1);
+  V_in: (UPS_V_in,6) V;
+  F_in: (UPS_F_in,6) Hz;
+  V_out: (UPS_V_out,6) V;
+  F_out: (UPS_F_out,6) Hz;
+  I_out: (UPS_I_out,6) A;
+  Load:  (UPS_LoadPct,3) "%";
+  VBatP: (UPS_VBatP,6) V;
+  VBatn: (UPS_VBatn,6) V;
+  VBat:  (UPS_VBat,6) V;
+  VBusP: (UPS_VBusP,6) V;
+  VBusN: (UPS_VBusN,6) V;
+  Tmax: (UPS_Tmax,6) C;
+  Pc:    (UPS_Piece,3);
+  Grp:   (UPS_Group,3);
+  Cap:   (UPS_Capacity,3) "%";
+  Rem:   (UPS_Remain_Time,3) min;
+  Status: (UPS_Status,4);
+  Warn:  (UPS_Warn,4);
+  Resp:  (UPS_Response,2);
+  Stale: (UPS_Stale,3);
+}

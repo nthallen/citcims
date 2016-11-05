@@ -9,7 +9,7 @@
 # Invoking: appgen_module Sonic X mode=disable Hz=8
 # Invoking: appgen_module Zeno X mode=disable
 # Invoking: appgen_module TwisTorr X drives=AB
-# Makefile Generated Thu Nov 03 21:22:09 EDT 2016
+# Makefile Generated Sat Nov 05 15:38:24 EDT 2016
 MNC=ToF
 SPECFILE=ToF.spec
 PCMFILE=ToF.pcm
@@ -20,8 +20,8 @@ SRC+=/usr/local/share/huarp/flttime.tmc SWData.tmc SWData.h
 SRC+=../Horiba/TM/Horiba.tmc IonGauge.tmc ../Edwards_nXDS/TM/nXDS.tmc
 SRC+=OMS.tmc UPS.tmc ../GPS/TM/gpsd.tmc ../IWG1/TM/IWG1.tmc
 SRC+=../IWG1/TM/UserPkts2.tmc ../Zaber/TM/zaber.tmc TwisTorr.tmc
-SRC+=IWG1.tbl UserPkts.tbl AthenaII_conv.tmc Hercules_conv.tmc
-SRC+=../Horiba/TM/Horiba_conv.tmc ToF.tbl ../IWG1/TM/UserPkts2.cdf
+SRC+=AthenaII_conv.tmc Hercules_conv.tmc ../Horiba/TM/Horiba_conv.tmc
+SRC+=ToF.tbl IWG1.tbl UserPkts.tbl UserPkts.genui
 SRC+=../Edwards_nXDS/TM/nXDS_conv.tmc ../GPS/TM/gpsd_conv.tmc
 SRC+=ToFB.tbl TwisTorr_conv.tmc TwisTorr_Pumps.tbl ToF.cdf
 SRC+=ToFajson.cdf tpfilt.tmc ToF.tma ToF.sws Inlet.tma turbo.tma
@@ -44,47 +44,43 @@ SRC+=../GPS/TM/gpsd.genui ../IWG1/TM/IWG1.genui
 SRC+=../Zaber/TM/zaber.genui TwisTorr.genui ToF.pcm
 TOOL=ToF.spec Makefile
 SCRIPT=interact runfile.AII runfile.AIIa
-OBJ=address.h IWG1tbl.tmc IWG1disp.cc IWG1dispoui.c IWG1dispoui.o
-OBJ+=IWG1disp.o IWG1tblnc.tmc IWG1dispnc.cc IWG1dispncoui.c
-OBJ+=IWG1dispncoui.o IWG1dispnc.o UserPktstbl.tmc UPdisp.cc
-OBJ+=UPdispoui.c UPdispoui.o UPdisp.o UserPktstblnc.tmc UPdispnc.cc
-OBJ+=UPdispncoui.c UPdispncoui.o UPdispnc.o ToFtbl.tmc ToFdisp.cc
-OBJ+=ToFdispoui.c ToFdispoui.o ToFdisp.o ToFtblnc.tmc ToFdispnc.cc
-OBJ+=ToFdispncoui.c ToFdispncoui.o ToFdispnc.o UserPktsdisp.cc
-OBJ+=UserPktsdispoui.c UserPktsdispoui.o UserPktsdisp.o
-OBJ+=UserPktsdispnc.cc UserPktsdispncoui.c UserPktsdispncoui.o
-OBJ+=UserPktsdispnc.o UserPktsextcdf.oui UserPkts2cdf.tmc
-OBJ+=UserPktsext.cc UserPktsextoui.c UserPktsextoui.o UserPktsext.o
-OBJ+=ToFBtbl.tmc ToFBdisp.cc ToFBdispoui.c ToFBdispoui.o ToFBdisp.o
-OBJ+=ToFBtblnc.tmc ToFBdispnc.cc ToFBdispncoui.c ToFBdispncoui.o
-OBJ+=ToFBdispnc.o TwisTorr_Pumpstbl.tmc TwisTorrdisp.cc
-OBJ+=TwisTorrdispoui.c TwisTorrdispoui.o TwisTorrdisp.o
-OBJ+=TwisTorr_Pumpstblnc.tmc TwisTorrdispnc.cc TwisTorrdispncoui.c
-OBJ+=TwisTorrdispncoui.o TwisTorrdispnc.o ToFextcdf.oui ToFcdf.tmc
-OBJ+=ToFext.cc ToFextoui.c ToFextoui.o ToFext.o ToFjsonextcdf.oui
-OBJ+=ToFajsoncdf.tmc ToFjsonext.cc ToFjsonextoui.c ToFjsonextoui.o
-OBJ+=ToFjsonext.o ToFsws.tma ToFalgoa.tmc ToFalgo.cc ToFalgooui.c
-OBJ+=ToFalgooui.o ToFalgo.o doit.dep ToFcmd.cc ToFcmd.dat ToFclt.o
-OBJ+=ToFcltoui.c ToFcltoui.o ToFcltnc.o ToFcltncoui.c ToFcltncoui.o
-OBJ+=ToFsrvr.o ToFsrvroui.c ToFsrvroui.o ToFcol.cc tm.dac ToFcoloui.c
+OBJ=address.h ToFtbl.tmc ToFdisp.cc ToFdispoui.c ToFdispoui.o
+OBJ+=ToFdisp.o ToFtblnc.tmc ToFdispnc.cc ToFdispncoui.c
+OBJ+=ToFdispncoui.o ToFdispnc.o IWG1tbl.tmc UserPktstbl.tmc
+OBJ+=IWG1disp.cc IWG1dispoui.c IWG1dispoui.o IWG1disp.o IWG1tblnc.tmc
+OBJ+=UserPktstblnc.tmc IWG1dispnc.cc IWG1dispncoui.c IWG1dispncoui.o
+OBJ+=IWG1dispnc.o UserPktsext.cdf UserPktsextcdf.oui
+OBJ+=UserPktsextcdf.tmc UserPktsext.cc UserPktsextoui.c
+OBJ+=UserPktsextoui.o UserPktsext.o ToFBtbl.tmc ToFBdisp.cc
+OBJ+=ToFBdispoui.c ToFBdispoui.o ToFBdisp.o ToFBtblnc.tmc
+OBJ+=ToFBdispnc.cc ToFBdispncoui.c ToFBdispncoui.o ToFBdispnc.o
+OBJ+=TwisTorr_Pumpstbl.tmc TwisTorrdisp.cc TwisTorrdispoui.c
+OBJ+=TwisTorrdispoui.o TwisTorrdisp.o TwisTorr_Pumpstblnc.tmc
+OBJ+=TwisTorrdispnc.cc TwisTorrdispncoui.c TwisTorrdispncoui.o
+OBJ+=TwisTorrdispnc.o ToFextcdf.oui ToFcdf.tmc ToFext.cc ToFextoui.c
+OBJ+=ToFextoui.o ToFext.o ToFjsonextcdf.oui ToFajsoncdf.tmc
+OBJ+=ToFjsonext.cc ToFjsonextoui.c ToFjsonextoui.o ToFjsonext.o
+OBJ+=ToFsws.tma ToFalgoa.tmc ToFalgo.cc ToFalgooui.c ToFalgooui.o
+OBJ+=ToFalgo.o doit.dep ToFcmd.cc ToFcmd.dat ToFclt.o ToFcltoui.c
+OBJ+=ToFcltoui.o ToFcltnc.o ToFcltncoui.c ToFcltncoui.o ToFsrvr.o
+OBJ+=ToFsrvroui.c ToFsrvroui.o ToFcol.cc tm.dac ToFcoloui.c
 OBJ+=ToFcoloui.o ToFcol.o dsdaq.o ToFengext.cdf ToFengextcdf.oui
 OBJ+=ToFengextcdf.tmc ToFengext.cc ToFengextoui.c ToFengextoui.o
-OBJ+=ToFengext.o IWG1tbl.tmc.dep IWG1tblnc.tmc.dep
-OBJ+=UserPktstbl.tmc.dep UserPktstblnc.tmc.dep ToFtbl.tmc.dep
-OBJ+=ToFtblnc.tmc.dep ToFBtbl.tmc.dep ToFBtblnc.tmc.dep
-OBJ+=TwisTorr_Pumpstbl.tmc.dep TwisTorr_Pumpstblnc.tmc.dep
-TGT=IWG1disp IWG1dispnc UPdisp UPdispnc ToFdisp ToFdispnc
-TGT+=UserPktsdisp UserPktsdispnc UserPktsext ToFBdisp ToFBdispnc
-TGT+=TwisTorrdisp TwisTorrdispnc ToFext ToFjsonext ToFalgo doit
-TGT+=ToFclt ToFcltnc ToFsrvr ToFcol ToFengext
+OBJ+=ToFengext.o ToFtbl.tmc.dep ToFtblnc.tmc.dep IWG1tbl.tmc.dep
+OBJ+=UserPktstbl.tmc.dep IWG1tblnc.tmc.dep UserPktstblnc.tmc.dep
+OBJ+=ToFBtbl.tmc.dep ToFBtblnc.tmc.dep TwisTorr_Pumpstbl.tmc.dep
+OBJ+=TwisTorr_Pumpstblnc.tmc.dep
+TGT=ToFdisp ToFdispnc IWG1disp IWG1dispnc UserPktsext ToFBdisp
+TGT+=ToFBdispnc TwisTorrdisp TwisTorrdispnc ToFext ToFjsonext ToFalgo
+TGT+=doit ToFclt ToFcltnc ToFsrvr ToFcol ToFengext
 DISTRIB=../Horiba/TM/../horiba ../IonGauge/TM/../IonGauge
 DISTRIB+=../Edwards_nXDS/TM/../nXDS ../UPS/TM/../ups
 DISTRIB+=../GPS/TM/../gpsd_client ../IWG1/TM/../IWG1
-DISTRIB+=../IWG1/TM/../UserPkts2 UserPktsdisp UserPktsext
-DISTRIB+=../Zaber/TM/../zaber ../TwisTorr/TM/../TwisTorr
-DISTRIB+=../DSDaq/AthenaII ../DSDaq/Hercules ToF.pcm tm.dac
+DISTRIB+=../IWG1/TM/../UserPkts2 ../Zaber/TM/../zaber
+DISTRIB+=../TwisTorr/TM/../TwisTorr ../DSDaq/AthenaII
+DISTRIB+=../DSDaq/Hercules ToF.pcm tm.dac
 IDISTRIB=Experiment.config VERSION doit
-SRCDIST=IWG1.tbl UserPkts.tbl ToF.tbl ToFB.tbl TwisTorr_Pumps.tbl
+SRCDIST=ToF.tbl IWG1.tbl UserPkts.tbl ToFB.tbl TwisTorr_Pumps.tbl
 SRCDIST+=ToF.tma Inlet.tma turbo.tma gasdeck.tma types.tmc
 SRCDIST+=AthenaII.tmc Hercules.tmc tdrift.tmc
 SRCDIST+=/usr/local/share/huarp/cpu_usage.tmc
@@ -130,21 +126,25 @@ SPECDEPBASE=../Horiba/TM/Horiba.agm ../IonGauge/TM/IonGauge.agm
 SPECDEPBASE+=../IonGauge/TM/IonGauge.tmc.in
 SPECDEPBASE+=../IonGauge/TM/IonGauge.genui.in
 SPECDEPBASE+=../Edwards_nXDS/TM/nXDS.agm
+SPECDEPBASE+=../Edwards_nXDS/TM/nXDS.tbl.in
 SPECDEPBASE+=/usr/local/share/huarp/OMS.agm
 SPECDEPBASE+=/usr/local/share/huarp/OMS.tmc.in
 SPECDEPBASE+=/usr/local/share/huarp/OMS.genui.in ../UPS/TM/UPS.agm
-SPECDEPBASE+=../UPS/TM/UPS.tmc.in ../GPS/TM/gpsd.agm
-SPECDEPBASE+=../IWG1/TM/IWG1.agm ../IWG1/TM/IWG1.tbl.src
-SPECDEPBASE+=../IWG1/TM/UserPkts2.tbl.src ../Zaber/TM/Zaber.agm
+SPECDEPBASE+=../UPS/TM/UPS.tmc.in ../UPS/TM/UPS.tbl.in
+SPECDEPBASE+=../GPS/TM/gpsd.agm ../GPS/TM/gpsd.tbl.in
+SPECDEPBASE+=../IWG1/TM/IWG1.agm ../IWG1/TM/IWG1.tbl.in
+SPECDEPBASE+=../IWG1/TM/UserPkts2.tbl.in
+SPECDEPBASE+=../IWG1/TM/UserPkts2.genui.in ../Zaber/TM/Zaber.agm
 SPECDEPBASE+=../Sonic/TM/Sonic.agm ../Zeno/TM/Zeno.agm
 SPECDEPBASE+=../TwisTorr/TM/TwisTorr.agm
 SPECDEPBASE+=../TwisTorr/TM/TwisTorr.cfg.in
-SPECTGTBASE=IonGauge.tmc IonGauge.genui OMS.tmc OMS.genui UPS.tmc
-SPECTGTBASE+=IWG1.tbl UserPkts.tbl TwisTorr.cfg
+SPECTGTBASE=IonGauge.tmc IonGauge.genui nXDS.tbl OMS.tmc OMS.genui
+SPECTGTBASE+=UPS.tmc UPS.tbl gpsd.tbl IWG1.tbl UserPkts.tbl
+SPECTGTBASE+=UserPkts.genui TwisTorr.cfg
 AG_CPPFLAGS=-I ../Horiba/TM/.. -I ../IonGauge/TM/.. -I
 AG_CPPFLAGS+=../Edwards_nXDS/TM/.. -I ../UPS/TM/.. -I ../GPS/TM/.. -I
 AG_CPPFLAGS+=../IWG1/TM/.. -I ../Zaber/TM/.. -I ../TwisTorr/TM/..
-PHTGT=IWG1tbl.tmc UserPktstbl.tmc ToFtbl.tmc ToFBtbl.tmc
+PHTGT=ToFtbl.tmc IWG1tbl.tmc UserPktstbl.tmc ToFBtbl.tmc
 PHTGT+=TwisTorr_Pumpstbl.tmc
 SOURCE=$(SRC) $(TOOL) $(SCRIPT)
 OBJECT=$(OBJ) *.err
@@ -178,30 +178,18 @@ ifeq ($(WPHOTON),YES)
 	  cmp -s $$tgt /usr/local/share/huarp/nulltbl.tmc && echo Remaking $$tgt && rm -f $$tgt; \
 	done; true
 endif
-IWG1disp : IWG1disp.o IWG1dispoui.o
-	$(LINK.normCXX) IWG1disp.o IWG1dispoui.o -ldisp -ltmph -lph -ltmpp -ltm -lnort
-	$(OUIUSE) IWG1dispoui.c
-IWG1dispnc : IWG1dispnc.o IWG1dispncoui.o
-	$(LINK.normCXX) IWG1dispnc.o IWG1dispncoui.o -ldispnc -ltmnc -lncurses -ltmpp -ltm -lnort
-	$(OUIUSE) IWG1dispncoui.c
-UPdisp : UPdisp.o UPdispoui.o
-	$(LINK.normCXX) UPdisp.o UPdispoui.o -ldisp -ltmph -lph -ltmpp -ltm -lnort
-	$(OUIUSE) UPdispoui.c
-UPdispnc : UPdispnc.o UPdispncoui.o
-	$(LINK.normCXX) UPdispnc.o UPdispncoui.o -ldispnc -ltmnc -lncurses -ltmpp -ltm -lnort
-	$(OUIUSE) UPdispncoui.c
 ToFdisp : ToFdisp.o ToFdispoui.o
 	$(LINK.normCXX) ToFdisp.o ToFdispoui.o -ldisp -ltmph -lph -ltmpp -ltm -lnort
 	$(OUIUSE) ToFdispoui.c
 ToFdispnc : ToFdispnc.o ToFdispncoui.o
 	$(LINK.normCXX) ToFdispnc.o ToFdispncoui.o -ldispnc -ltmnc -lncurses -ltmpp -ltm -lnort
 	$(OUIUSE) ToFdispncoui.c
-UserPktsdisp : UserPktsdisp.o UserPktsdispoui.o
-	$(LINK.normCXX) UserPktsdisp.o UserPktsdispoui.o -ldisp -ltmph -lph -ltmpp -ltm -lnort
-	$(OUIUSE) UserPktsdispoui.c
-UserPktsdispnc : UserPktsdispnc.o UserPktsdispncoui.o
-	$(LINK.normCXX) UserPktsdispnc.o UserPktsdispncoui.o -ldispnc -ltmnc -lncurses -ltmpp -ltm -lnort
-	$(OUIUSE) UserPktsdispncoui.c
+IWG1disp : IWG1disp.o IWG1dispoui.o
+	$(LINK.normCXX) IWG1disp.o IWG1dispoui.o -ldisp -ltmph -lph -ltmpp -ltm -lnort
+	$(OUIUSE) IWG1dispoui.c
+IWG1dispnc : IWG1dispnc.o IWG1dispncoui.o
+	$(LINK.normCXX) IWG1dispnc.o IWG1dispncoui.o -ldispnc -ltmnc -lncurses -ltmpp -ltm -lnort
+	$(OUIUSE) IWG1dispncoui.c
 UserPktsext : UserPktsext.o UserPktsextoui.o
 	$(LINK.normCXX) UserPktsext.o UserPktsextoui.o -ltmpp -ltm -lnort
 	$(OUIUSE) UserPktsextoui.c
@@ -245,72 +233,50 @@ ToFcol : ToFcol.o dsdaq.o ToFcoloui.o
 ToFengext : ToFengext.o ToFengextoui.o
 	$(LINK.normCXX) ToFengext.o ToFengextoui.o -ltmpp -ltm -lnort
 	$(OUIUSE) ToFengextoui.c
-IWG1tbl.tmc : IWG1.tbl
--include IWG1tbl.tmc.dep
-IWG1disp.cc : types.tmc AthenaII.tmc Hercules.tmc tdrift.tmc /usr/local/share/huarp/cpu_usage.tmc /usr/local/share/huarp/tmdf.tmc /usr/local/share/huarp/flttime.tmc SWData.tmc ../Horiba/TM/Horiba.tmc IonGauge.tmc ../Edwards_nXDS/TM/nXDS.tmc OMS.tmc UPS.tmc ../GPS/TM/gpsd.tmc ../IWG1/TM/IWG1.tmc ../IWG1/TM/UserPkts2.tmc ../Zaber/TM/zaber.tmc TwisTorr.tmc IWG1tbl.tmc VERSION
-	$(TMC) types.tmc AthenaII.tmc Hercules.tmc tdrift.tmc /usr/local/share/huarp/cpu_usage.tmc /usr/local/share/huarp/tmdf.tmc /usr/local/share/huarp/flttime.tmc SWData.tmc ../Horiba/TM/Horiba.tmc IonGauge.tmc ../Edwards_nXDS/TM/nXDS.tmc OMS.tmc UPS.tmc ../GPS/TM/gpsd.tmc ../IWG1/TM/IWG1.tmc ../IWG1/TM/UserPkts2.tmc ../Zaber/TM/zaber.tmc TwisTorr.tmc IWG1tbl.tmc
-IWG1dispoui.c : $(OUIDIR)/dc.oui $(OUIDIR)/msg.oui
-	$(OUI) $(OUIDIR)/dc.oui $(OUIDIR)/msg.oui
-IWG1dispoui.o : IWG1dispoui.c SWData.h
-IWG1disp.o : IWG1disp.cc SWData.h
-IWG1tblnc.tmc : IWG1.tbl
--include IWG1tblnc.tmc.dep
-IWG1dispnc.cc : types.tmc AthenaII.tmc Hercules.tmc tdrift.tmc /usr/local/share/huarp/cpu_usage.tmc /usr/local/share/huarp/tmdf.tmc /usr/local/share/huarp/flttime.tmc SWData.tmc ../Horiba/TM/Horiba.tmc IonGauge.tmc ../Edwards_nXDS/TM/nXDS.tmc OMS.tmc UPS.tmc ../GPS/TM/gpsd.tmc ../IWG1/TM/IWG1.tmc ../IWG1/TM/UserPkts2.tmc ../Zaber/TM/zaber.tmc TwisTorr.tmc IWG1tblnc.tmc VERSION
-	$(TMC) types.tmc AthenaII.tmc Hercules.tmc tdrift.tmc /usr/local/share/huarp/cpu_usage.tmc /usr/local/share/huarp/tmdf.tmc /usr/local/share/huarp/flttime.tmc SWData.tmc ../Horiba/TM/Horiba.tmc IonGauge.tmc ../Edwards_nXDS/TM/nXDS.tmc OMS.tmc UPS.tmc ../GPS/TM/gpsd.tmc ../IWG1/TM/IWG1.tmc ../IWG1/TM/UserPkts2.tmc ../Zaber/TM/zaber.tmc TwisTorr.tmc IWG1tblnc.tmc
-IWG1dispncoui.c : $(OUIDIR)/nctable.oui $(OUIDIR)/dc.oui $(OUIDIR)/msg.oui
-	$(OUI) $(OUIDIR)/nctable.oui $(OUIDIR)/dc.oui $(OUIDIR)/msg.oui
-IWG1dispncoui.o : IWG1dispncoui.c SWData.h
-IWG1dispnc.o : IWG1dispnc.cc SWData.h
-UserPktstbl.tmc : UserPkts.tbl
--include UserPktstbl.tmc.dep
-UPdisp.cc : types.tmc AthenaII.tmc Hercules.tmc tdrift.tmc /usr/local/share/huarp/cpu_usage.tmc /usr/local/share/huarp/tmdf.tmc /usr/local/share/huarp/flttime.tmc SWData.tmc ../Horiba/TM/Horiba.tmc IonGauge.tmc ../Edwards_nXDS/TM/nXDS.tmc OMS.tmc UPS.tmc ../GPS/TM/gpsd.tmc ../IWG1/TM/IWG1.tmc ../IWG1/TM/UserPkts2.tmc ../Zaber/TM/zaber.tmc TwisTorr.tmc UserPktstbl.tmc VERSION
-	$(TMC) types.tmc AthenaII.tmc Hercules.tmc tdrift.tmc /usr/local/share/huarp/cpu_usage.tmc /usr/local/share/huarp/tmdf.tmc /usr/local/share/huarp/flttime.tmc SWData.tmc ../Horiba/TM/Horiba.tmc IonGauge.tmc ../Edwards_nXDS/TM/nXDS.tmc OMS.tmc UPS.tmc ../GPS/TM/gpsd.tmc ../IWG1/TM/IWG1.tmc ../IWG1/TM/UserPkts2.tmc ../Zaber/TM/zaber.tmc TwisTorr.tmc UserPktstbl.tmc
-UPdispoui.c : $(OUIDIR)/dc.oui $(OUIDIR)/msg.oui
-	$(OUI) $(OUIDIR)/dc.oui $(OUIDIR)/msg.oui
-UPdispoui.o : UPdispoui.c SWData.h
-UPdisp.o : UPdisp.cc SWData.h
-UserPktstblnc.tmc : UserPkts.tbl
--include UserPktstblnc.tmc.dep
-UPdispnc.cc : types.tmc AthenaII.tmc Hercules.tmc tdrift.tmc /usr/local/share/huarp/cpu_usage.tmc /usr/local/share/huarp/tmdf.tmc /usr/local/share/huarp/flttime.tmc SWData.tmc ../Horiba/TM/Horiba.tmc IonGauge.tmc ../Edwards_nXDS/TM/nXDS.tmc OMS.tmc UPS.tmc ../GPS/TM/gpsd.tmc ../IWG1/TM/IWG1.tmc ../IWG1/TM/UserPkts2.tmc ../Zaber/TM/zaber.tmc TwisTorr.tmc UserPktstblnc.tmc VERSION
-	$(TMC) types.tmc AthenaII.tmc Hercules.tmc tdrift.tmc /usr/local/share/huarp/cpu_usage.tmc /usr/local/share/huarp/tmdf.tmc /usr/local/share/huarp/flttime.tmc SWData.tmc ../Horiba/TM/Horiba.tmc IonGauge.tmc ../Edwards_nXDS/TM/nXDS.tmc OMS.tmc UPS.tmc ../GPS/TM/gpsd.tmc ../IWG1/TM/IWG1.tmc ../IWG1/TM/UserPkts2.tmc ../Zaber/TM/zaber.tmc TwisTorr.tmc UserPktstblnc.tmc
-UPdispncoui.c : $(OUIDIR)/nctable.oui $(OUIDIR)/dc.oui $(OUIDIR)/msg.oui
-	$(OUI) $(OUIDIR)/nctable.oui $(OUIDIR)/dc.oui $(OUIDIR)/msg.oui
-UPdispncoui.o : UPdispncoui.c SWData.h
-UPdispnc.o : UPdispnc.cc SWData.h
 ToFtbl.tmc : ToF.tbl
 -include ToFtbl.tmc.dep
-ToFdisp.cc : types.tmc AthenaII.tmc Hercules.tmc tdrift.tmc /usr/local/share/huarp/cpu_usage.tmc /usr/local/share/huarp/tmdf.tmc /usr/local/share/huarp/flttime.tmc SWData.tmc ../Horiba/TM/Horiba.tmc IonGauge.tmc ../Edwards_nXDS/TM/nXDS.tmc OMS.tmc UPS.tmc ../GPS/TM/gpsd.tmc ../IWG1/TM/IWG1.tmc ../IWG1/TM/UserPkts2.tmc ../Zaber/TM/zaber.tmc TwisTorr.tmc AthenaII_conv.tmc Hercules_conv.tmc ../Horiba/TM/Horiba_conv.tmc ToFtbl.tmc IWG1tbl.tmc VERSION
-	$(TMC) types.tmc AthenaII.tmc Hercules.tmc tdrift.tmc /usr/local/share/huarp/cpu_usage.tmc /usr/local/share/huarp/tmdf.tmc /usr/local/share/huarp/flttime.tmc SWData.tmc ../Horiba/TM/Horiba.tmc IonGauge.tmc ../Edwards_nXDS/TM/nXDS.tmc OMS.tmc UPS.tmc ../GPS/TM/gpsd.tmc ../IWG1/TM/IWG1.tmc ../IWG1/TM/UserPkts2.tmc ../Zaber/TM/zaber.tmc TwisTorr.tmc AthenaII_conv.tmc Hercules_conv.tmc ../Horiba/TM/Horiba_conv.tmc ToFtbl.tmc IWG1tbl.tmc
+ToFdisp.cc : types.tmc AthenaII.tmc Hercules.tmc tdrift.tmc /usr/local/share/huarp/cpu_usage.tmc /usr/local/share/huarp/tmdf.tmc /usr/local/share/huarp/flttime.tmc SWData.tmc ../Horiba/TM/Horiba.tmc IonGauge.tmc ../Edwards_nXDS/TM/nXDS.tmc OMS.tmc UPS.tmc ../GPS/TM/gpsd.tmc ../IWG1/TM/IWG1.tmc ../IWG1/TM/UserPkts2.tmc ../Zaber/TM/zaber.tmc TwisTorr.tmc AthenaII_conv.tmc Hercules_conv.tmc ../Horiba/TM/Horiba_conv.tmc ToFtbl.tmc VERSION
+	$(TMC) types.tmc AthenaII.tmc Hercules.tmc tdrift.tmc /usr/local/share/huarp/cpu_usage.tmc /usr/local/share/huarp/tmdf.tmc /usr/local/share/huarp/flttime.tmc SWData.tmc ../Horiba/TM/Horiba.tmc IonGauge.tmc ../Edwards_nXDS/TM/nXDS.tmc OMS.tmc UPS.tmc ../GPS/TM/gpsd.tmc ../IWG1/TM/IWG1.tmc ../IWG1/TM/UserPkts2.tmc ../Zaber/TM/zaber.tmc TwisTorr.tmc AthenaII_conv.tmc Hercules_conv.tmc ../Horiba/TM/Horiba_conv.tmc ToFtbl.tmc
 ToFdispoui.c : $(OUIDIR)/dc.oui $(OUIDIR)/msg.oui
 	$(OUI) $(OUIDIR)/dc.oui $(OUIDIR)/msg.oui
 ToFdispoui.o : ToFdispoui.c SWData.h
 ToFdisp.o : ToFdisp.cc SWData.h
 ToFtblnc.tmc : ToF.tbl
 -include ToFtblnc.tmc.dep
-ToFdispnc.cc : types.tmc AthenaII.tmc Hercules.tmc tdrift.tmc /usr/local/share/huarp/cpu_usage.tmc /usr/local/share/huarp/tmdf.tmc /usr/local/share/huarp/flttime.tmc SWData.tmc ../Horiba/TM/Horiba.tmc IonGauge.tmc ../Edwards_nXDS/TM/nXDS.tmc OMS.tmc UPS.tmc ../GPS/TM/gpsd.tmc ../IWG1/TM/IWG1.tmc ../IWG1/TM/UserPkts2.tmc ../Zaber/TM/zaber.tmc TwisTorr.tmc AthenaII_conv.tmc Hercules_conv.tmc ../Horiba/TM/Horiba_conv.tmc ToFtblnc.tmc IWG1tblnc.tmc VERSION
-	$(TMC) types.tmc AthenaII.tmc Hercules.tmc tdrift.tmc /usr/local/share/huarp/cpu_usage.tmc /usr/local/share/huarp/tmdf.tmc /usr/local/share/huarp/flttime.tmc SWData.tmc ../Horiba/TM/Horiba.tmc IonGauge.tmc ../Edwards_nXDS/TM/nXDS.tmc OMS.tmc UPS.tmc ../GPS/TM/gpsd.tmc ../IWG1/TM/IWG1.tmc ../IWG1/TM/UserPkts2.tmc ../Zaber/TM/zaber.tmc TwisTorr.tmc AthenaII_conv.tmc Hercules_conv.tmc ../Horiba/TM/Horiba_conv.tmc ToFtblnc.tmc IWG1tblnc.tmc
+ToFdispnc.cc : types.tmc AthenaII.tmc Hercules.tmc tdrift.tmc /usr/local/share/huarp/cpu_usage.tmc /usr/local/share/huarp/tmdf.tmc /usr/local/share/huarp/flttime.tmc SWData.tmc ../Horiba/TM/Horiba.tmc IonGauge.tmc ../Edwards_nXDS/TM/nXDS.tmc OMS.tmc UPS.tmc ../GPS/TM/gpsd.tmc ../IWG1/TM/IWG1.tmc ../IWG1/TM/UserPkts2.tmc ../Zaber/TM/zaber.tmc TwisTorr.tmc AthenaII_conv.tmc Hercules_conv.tmc ../Horiba/TM/Horiba_conv.tmc ToFtblnc.tmc VERSION
+	$(TMC) types.tmc AthenaII.tmc Hercules.tmc tdrift.tmc /usr/local/share/huarp/cpu_usage.tmc /usr/local/share/huarp/tmdf.tmc /usr/local/share/huarp/flttime.tmc SWData.tmc ../Horiba/TM/Horiba.tmc IonGauge.tmc ../Edwards_nXDS/TM/nXDS.tmc OMS.tmc UPS.tmc ../GPS/TM/gpsd.tmc ../IWG1/TM/IWG1.tmc ../IWG1/TM/UserPkts2.tmc ../Zaber/TM/zaber.tmc TwisTorr.tmc AthenaII_conv.tmc Hercules_conv.tmc ../Horiba/TM/Horiba_conv.tmc ToFtblnc.tmc
 ToFdispncoui.c : $(OUIDIR)/nctable.oui $(OUIDIR)/dc.oui $(OUIDIR)/msg.oui
 	$(OUI) $(OUIDIR)/nctable.oui $(OUIDIR)/dc.oui $(OUIDIR)/msg.oui
 ToFdispncoui.o : ToFdispncoui.c SWData.h
 ToFdispnc.o : ToFdispnc.cc SWData.h
-UserPktsdisp.cc : types.tmc AthenaII.tmc Hercules.tmc tdrift.tmc /usr/local/share/huarp/cpu_usage.tmc /usr/local/share/huarp/tmdf.tmc /usr/local/share/huarp/flttime.tmc SWData.tmc ../Horiba/TM/Horiba.tmc IonGauge.tmc ../Edwards_nXDS/TM/nXDS.tmc OMS.tmc UPS.tmc ../GPS/TM/gpsd.tmc ../IWG1/TM/IWG1.tmc ../IWG1/TM/UserPkts2.tmc ../Zaber/TM/zaber.tmc TwisTorr.tmc UserPktstbl.tmc VERSION
-	$(TMC) types.tmc AthenaII.tmc Hercules.tmc tdrift.tmc /usr/local/share/huarp/cpu_usage.tmc /usr/local/share/huarp/tmdf.tmc /usr/local/share/huarp/flttime.tmc SWData.tmc ../Horiba/TM/Horiba.tmc IonGauge.tmc ../Edwards_nXDS/TM/nXDS.tmc OMS.tmc UPS.tmc ../GPS/TM/gpsd.tmc ../IWG1/TM/IWG1.tmc ../IWG1/TM/UserPkts2.tmc ../Zaber/TM/zaber.tmc TwisTorr.tmc UserPktstbl.tmc
-UserPktsdispoui.c : $(OUIDIR)/dc.oui $(OUIDIR)/msg.oui
+IWG1tbl.tmc : IWG1.tbl
+-include IWG1tbl.tmc.dep
+UserPktstbl.tmc : UserPkts.tbl
+-include UserPktstbl.tmc.dep
+IWG1disp.cc : types.tmc AthenaII.tmc Hercules.tmc tdrift.tmc /usr/local/share/huarp/cpu_usage.tmc /usr/local/share/huarp/tmdf.tmc /usr/local/share/huarp/flttime.tmc SWData.tmc ../Horiba/TM/Horiba.tmc IonGauge.tmc ../Edwards_nXDS/TM/nXDS.tmc OMS.tmc UPS.tmc ../GPS/TM/gpsd.tmc ../IWG1/TM/IWG1.tmc ../IWG1/TM/UserPkts2.tmc ../Zaber/TM/zaber.tmc TwisTorr.tmc IWG1tbl.tmc UserPktstbl.tmc VERSION
+	$(TMC) types.tmc AthenaII.tmc Hercules.tmc tdrift.tmc /usr/local/share/huarp/cpu_usage.tmc /usr/local/share/huarp/tmdf.tmc /usr/local/share/huarp/flttime.tmc SWData.tmc ../Horiba/TM/Horiba.tmc IonGauge.tmc ../Edwards_nXDS/TM/nXDS.tmc OMS.tmc UPS.tmc ../GPS/TM/gpsd.tmc ../IWG1/TM/IWG1.tmc ../IWG1/TM/UserPkts2.tmc ../Zaber/TM/zaber.tmc TwisTorr.tmc IWG1tbl.tmc UserPktstbl.tmc
+IWG1dispoui.c : $(OUIDIR)/dc.oui $(OUIDIR)/msg.oui
 	$(OUI) $(OUIDIR)/dc.oui $(OUIDIR)/msg.oui
-UserPktsdispoui.o : UserPktsdispoui.c SWData.h
-UserPktsdisp.o : UserPktsdisp.cc SWData.h
-UserPktsdispnc.cc : types.tmc AthenaII.tmc Hercules.tmc tdrift.tmc /usr/local/share/huarp/cpu_usage.tmc /usr/local/share/huarp/tmdf.tmc /usr/local/share/huarp/flttime.tmc SWData.tmc ../Horiba/TM/Horiba.tmc IonGauge.tmc ../Edwards_nXDS/TM/nXDS.tmc OMS.tmc UPS.tmc ../GPS/TM/gpsd.tmc ../IWG1/TM/IWG1.tmc ../IWG1/TM/UserPkts2.tmc ../Zaber/TM/zaber.tmc TwisTorr.tmc UserPktstblnc.tmc VERSION
-	$(TMC) types.tmc AthenaII.tmc Hercules.tmc tdrift.tmc /usr/local/share/huarp/cpu_usage.tmc /usr/local/share/huarp/tmdf.tmc /usr/local/share/huarp/flttime.tmc SWData.tmc ../Horiba/TM/Horiba.tmc IonGauge.tmc ../Edwards_nXDS/TM/nXDS.tmc OMS.tmc UPS.tmc ../GPS/TM/gpsd.tmc ../IWG1/TM/IWG1.tmc ../IWG1/TM/UserPkts2.tmc ../Zaber/TM/zaber.tmc TwisTorr.tmc UserPktstblnc.tmc
-UserPktsdispncoui.c : $(OUIDIR)/nctable.oui $(OUIDIR)/dc.oui $(OUIDIR)/msg.oui
+IWG1dispoui.o : IWG1dispoui.c SWData.h
+IWG1disp.o : IWG1disp.cc SWData.h
+IWG1tblnc.tmc : IWG1.tbl
+-include IWG1tblnc.tmc.dep
+UserPktstblnc.tmc : UserPkts.tbl
+-include UserPktstblnc.tmc.dep
+IWG1dispnc.cc : types.tmc AthenaII.tmc Hercules.tmc tdrift.tmc /usr/local/share/huarp/cpu_usage.tmc /usr/local/share/huarp/tmdf.tmc /usr/local/share/huarp/flttime.tmc SWData.tmc ../Horiba/TM/Horiba.tmc IonGauge.tmc ../Edwards_nXDS/TM/nXDS.tmc OMS.tmc UPS.tmc ../GPS/TM/gpsd.tmc ../IWG1/TM/IWG1.tmc ../IWG1/TM/UserPkts2.tmc ../Zaber/TM/zaber.tmc TwisTorr.tmc IWG1tblnc.tmc UserPktstblnc.tmc VERSION
+	$(TMC) types.tmc AthenaII.tmc Hercules.tmc tdrift.tmc /usr/local/share/huarp/cpu_usage.tmc /usr/local/share/huarp/tmdf.tmc /usr/local/share/huarp/flttime.tmc SWData.tmc ../Horiba/TM/Horiba.tmc IonGauge.tmc ../Edwards_nXDS/TM/nXDS.tmc OMS.tmc UPS.tmc ../GPS/TM/gpsd.tmc ../IWG1/TM/IWG1.tmc ../IWG1/TM/UserPkts2.tmc ../Zaber/TM/zaber.tmc TwisTorr.tmc IWG1tblnc.tmc UserPktstblnc.tmc
+IWG1dispncoui.c : $(OUIDIR)/nctable.oui $(OUIDIR)/dc.oui $(OUIDIR)/msg.oui
 	$(OUI) $(OUIDIR)/nctable.oui $(OUIDIR)/dc.oui $(OUIDIR)/msg.oui
-UserPktsdispncoui.o : UserPktsdispncoui.c SWData.h
-UserPktsdispnc.o : UserPktsdispnc.cc SWData.h
-UserPktsextcdf.oui : ../IWG1/TM/UserPkts2.cdf
-	$(EDF2OUI) ../IWG1/TM/UserPkts2.cdf
-UserPkts2cdf.tmc : ../IWG1/TM/UserPkts2.cdf
-	$(EDF2EXT) ../IWG1/TM/UserPkts2.cdf
-UserPktsext.cc : types.tmc AthenaII.tmc Hercules.tmc tdrift.tmc /usr/local/share/huarp/cpu_usage.tmc /usr/local/share/huarp/tmdf.tmc /usr/local/share/huarp/flttime.tmc SWData.tmc ../Horiba/TM/Horiba.tmc IonGauge.tmc ../Edwards_nXDS/TM/nXDS.tmc OMS.tmc UPS.tmc ../GPS/TM/gpsd.tmc ../IWG1/TM/IWG1.tmc ../IWG1/TM/UserPkts2.tmc ../Zaber/TM/zaber.tmc TwisTorr.tmc UserPkts2cdf.tmc VERSION
-	$(TMC) types.tmc AthenaII.tmc Hercules.tmc tdrift.tmc /usr/local/share/huarp/cpu_usage.tmc /usr/local/share/huarp/tmdf.tmc /usr/local/share/huarp/flttime.tmc SWData.tmc ../Horiba/TM/Horiba.tmc IonGauge.tmc ../Edwards_nXDS/TM/nXDS.tmc OMS.tmc UPS.tmc ../GPS/TM/gpsd.tmc ../IWG1/TM/IWG1.tmc ../IWG1/TM/UserPkts2.tmc ../Zaber/TM/zaber.tmc TwisTorr.tmc UserPkts2cdf.tmc
+IWG1dispncoui.o : IWG1dispncoui.c SWData.h
+IWG1dispnc.o : IWG1dispnc.cc SWData.h
+UserPktsext.cdf : UserPkts.genui
+	$(GENUI2CSV) UserPkts.genui
+UserPktsextcdf.oui : UserPktsext.cdf
+	$(EDF2OUI) UserPktsext.cdf
+UserPktsextcdf.tmc : UserPktsext.cdf
+	$(EDF2EXT) UserPktsext.cdf
+UserPktsext.cc : types.tmc AthenaII.tmc Hercules.tmc tdrift.tmc /usr/local/share/huarp/cpu_usage.tmc /usr/local/share/huarp/tmdf.tmc /usr/local/share/huarp/flttime.tmc SWData.tmc ../Horiba/TM/Horiba.tmc IonGauge.tmc ../Edwards_nXDS/TM/nXDS.tmc OMS.tmc UPS.tmc ../GPS/TM/gpsd.tmc ../IWG1/TM/IWG1.tmc ../IWG1/TM/UserPkts2.tmc ../Zaber/TM/zaber.tmc TwisTorr.tmc UserPktsextcdf.tmc VERSION
+	$(TMC) types.tmc AthenaII.tmc Hercules.tmc tdrift.tmc /usr/local/share/huarp/cpu_usage.tmc /usr/local/share/huarp/tmdf.tmc /usr/local/share/huarp/flttime.tmc SWData.tmc ../Horiba/TM/Horiba.tmc IonGauge.tmc ../Edwards_nXDS/TM/nXDS.tmc OMS.tmc UPS.tmc ../GPS/TM/gpsd.tmc ../IWG1/TM/IWG1.tmc ../IWG1/TM/UserPkts2.tmc ../Zaber/TM/zaber.tmc TwisTorr.tmc UserPktsextcdf.tmc
 UserPktsextoui.c : UserPktsextcdf.oui $(OUIDIR)/dc.oui $(OUIDIR)/msg.oui
 	$(OUI) UserPktsextcdf.oui $(OUIDIR)/dc.oui $(OUIDIR)/msg.oui
 UserPktsextoui.o : UserPktsextoui.c SWData.h
@@ -489,9 +455,9 @@ TwisTorr.tmc TwisTorr_col.tmc TwisTorr.cmd TwisTorr_conv.tmc TwisTorr.genui Twis
 clean-dist : clean-TwisTorr
 clean-TwisTorr :
 	cd ../TwisTorr/TM/.. && make clean
-ToFBbase=../Edwards_nXDS/TM/nXDS.tbl ../GPS/TM/gpsd.tbl ../UPS/TM/UPS.tbl ToFB.end.tbl
-ToFB.tbl : $(ToFBbase)
-	cat $(ToFBbase) >ToFB.tbl
+# ToFBbase= ../GPS/TM/gpsd.tbl ../UPS/TM/UPS.tbl ToFB.end.tbl
+#ToFB.tbl : $(ToFBbase)
+#	cat $(ToFBbase) >ToFB.tbl
 COLFLAGS=-Haddress.h
 CPPFLAGS += -I ../DSDaq
 CXXFLAGS = -Wall -g
@@ -501,5 +467,4 @@ address.h : ToFcol.cc
 .PHONY : clean-ToF
 clean-dist : clean-ToF
 clean-ToF :
-	cd ../IonGauge && make clean
 	cd ../DSDaq && make clean

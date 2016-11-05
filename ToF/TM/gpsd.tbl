@@ -1,0 +1,39 @@
+gpsd1 {
+  HBox {
+    { Satellites:;
+      Visible: HBox{(satellites_visible,3); (gpsd_sats_set,1)};
+      Used:    HBox{(satellites_used,3); (gpsd_dop_set,1)};
+    }; |; {
+      Mode:    HBox{ (gpsd_mode,3); (gpsd_mode_set,1)};
+    }
+  };
+  
+  {HBox{ (gpsd_time,21); (gpsd_time_set,1) }
+      HBox{(gpsd_ept,6);(gpsd_time_err_set,1)} sec };
+  Lat:   >HBox{(gpsd_lat,9);(gpsd_latlon_set,1)}
+            >HBox{(gpsd_epy,5);(gpsd_h_err_set,1)} deg;
+  Lon:   >HBox{(gpsd_lon,9);(gpsd_latlon_set,1)}
+            >HBox{(gpsd_epx,5);(gpsd_h_err_set,1)} deg;
+  Alt:   >HBox{(gpsd_alt,7);(gpsd_alt_set,1)}
+            >HBox{(gpsd_epv,5);(gpsd_v_err_set,1)} m;
+  Track: >HBox{(gpsd_track,9);(gpsd_track_set,1)}
+            >HBox{(gpsd_epd,9);(gpsd_track_err_set,1)} deg;
+  Speed: >HBox{(gpsd_speed,6);(gpsd_speed_set,1)}
+            >HBox{(gpsd_eps,6);(gpsd_speed_err_set,1)} "m/s";
+  Climb: >HBox{(gpsd_climb,6);(gpsd_climb_set,1)}
+            >HBox{(gpsd_epc,6);(gpsd_climb_err_set,1)} "m/s";
+}
+
+gpsd2 {
+  ""             "sec"            "nsec";
+  real:    (gpsd_real_sec,9)  (gpsd_real_nsec,9);
+  clock:  (gpsd_clock_sec,9) (gpsd_clock_nsec,9);
+  TOFF:    (gpsd_toff_set,1);
+  PPS:      (gpsd_pps_set,1);
+  Stale:      (gpsd_stale,3);
+}
+
+gpsd {
+  HBox { +-; Title: "GPSD"; -+ };
+  HBox { [gpsd1]; +|+; [gpsd2] };
+}

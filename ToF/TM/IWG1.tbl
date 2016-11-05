@@ -42,7 +42,7 @@ Col2 {
   MFCtr: (MFCtr,5);
 }
 
-{
+ {
   HBox { -; Title: IWG1; - };
   HBox { +|+; [Col1]; |; [Col2]; +|+ };
   -;

@@ -1,0 +1,15 @@
+nXDS {
+  HBox { +-; Title: nXDS; -+ };
+  ""            >A<   >B<;
+  Power:       (nX0_Power,3) (nX1_Power,3);
+  V802:        (nX0V802,4)   (nX0V802,4);
+  I:           (nX0MtrI,6)   (nX1MtrI,6) A;
+  V:           (nX0LinkV,5)  (nX1LinkV,5) V;
+  W:           (nX0MtrW,5)   (nX1MtrW,5) W;
+  Freq:        (nX0MtrF,3)   (nX1MtrF,3) Hz;
+  Ctrl:        (nX0CtrlrT,3) (nX1CtrlrT,3) C;
+  Speed:       (nX0Speed,7)  (nX1Speed,7);
+  ""           (nX0Above,7)  (nX1Above,7);
+  Fault:       (nX0Fault,7)  (nX1Fault,7);
+  (nX_stale,3) (nX0Resp,4)   (nX1Resp,4);
+}

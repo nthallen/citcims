@@ -128,4 +128,4 @@ UserPkts {
   }
 }
 
-@UserPkgsTblName@{ [UserPkts] }
+@UserPktsTblName@ { [UserPkts] }

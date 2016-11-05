@@ -1,5 +1,5 @@
 display ToFdisp
-display UserPktsdisp
+display IWG1disp
 display ToFBdisp
 client ToFclt
 memo
