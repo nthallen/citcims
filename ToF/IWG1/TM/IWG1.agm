@@ -1,23 +1,28 @@
-ModuleDef IWG1 {
+ModuleDef IWG1 [ IWG1TblName= UserPktsTblName= ] {
   IWG1 Module receives standard parameters from NASA Aircraft
+  mode UserPkts: Use old definition for UserPkts
+  mode UserPkts2: Packet definitions as of early 2016
+  Can set IWG1TblName and/or UserPktsTblName in order
+  to embed those tables into another pages.
 }
 
 mode (default,UserPkts,UserPkts2) {
   tmcbase = IWG1.tmc
   colbase = IWG1_col.tmc
   genuibase = IWG1.genui
-  IWG1disp : IWG1.tbl:IWG1.tbl.src
+  - : IWG1.tbl:IWG1.tbl.in
   DISTRIB = @MODDIR@/../IWG1
   CPPFLAGS = -I @MODDIR@/..
 
   mode (UserPkts) {
     tmcbase = UserPkts.tmc
     colbase = UserPkts_col.tmc
-    # genuibase = UserPkts.genui
+    - : UserPkts.genui:UserPkts.genui.in
+    - : UserPkts.tbl:UserPkts.tbl.in
     # Move the real build targets into .spec file for now
-    UPdisp : UserPkts.tbl:UserPkts.tbl.src
-    # UserPktsext : UserPkts.cdf
-    DISTRIB = @MODDIR@/../UserPkts UserPktsdisp UserPktsext
+    # IWG1disp : IWG1.tbl UserPkts.tbl
+    # UserPktsext : UserPkts.genui
+    DISTRIB = @MODDIR@/../UserPkts
     %%
 @MODDIR@/../UserPkts :
 	cd @MODDIR@/.. && make UserPkts
@@ -26,11 +31,12 @@ mode (default,UserPkts,UserPkts2) {
   mode (UserPkts2) {
     tmcbase = UserPkts2.tmc
     colbase = UserPkts2_col.tmc
-    # genuibase = UserPkts2.genui
+    - : UserPkts.tbl:UserPkts2.tbl.in
+    - : UserPkts2.genui:UserPkts2.genui.in
     # Move the real build targets into .spec file for now
-    UPdisp : UserPkts.tbl:UserPkts2.tbl.src
-    # UserPktsext : UserPkts2.cdf
-    DISTRIB = @MODDIR@/../UserPkts2 UserPktsdisp UserPktsext
+    # IWG1disp : IWG1.tbl UserPkts.tbl
+    # UserPktsext : UserPkts.genui
+    DISTRIB = @MODDIR@/../UserPkts2
     %%
 @MODDIR@/../UserPkts2 :
 	cd @MODDIR@/.. && make UserPkts2

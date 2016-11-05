@@ -1,4 +1,4 @@
-nXDS {
+@nXDSTblName@ {
   HBox { +-; Title: nXDS; -+ };
   ""            >A<   >B<;
   Power:       (nX0_Power,3) (nX1_Power,3);

@@ -104,7 +104,7 @@ Status {
   MFCtr: (MFCtr,5);
 }
 
-{
+UserPkts {
   HBox {
     |;
     {
@@ -127,3 +127,5 @@ Status {
     }
   }
 }
+
+@UserPkgsTblName@{ [UserPkts] }

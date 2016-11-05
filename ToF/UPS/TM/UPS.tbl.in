@@ -1,4 +1,4 @@
-UPS {
+@UPSTblName@ {
   HBox{ +-; Title: "UPS"; -+ };
   Mode: (UPS_Mode,1);
   V_in: (UPS_V_in,6) V;

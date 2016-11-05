@@ -1,12 +1,16 @@
-ModuleDef gpsd {
+ModuleDef gpsd [ gpsdTblName=gpsd ] {
   Module gpsd collects data from the gpsd program, which reads it
   from a GPS device connected to a serial port.
+  
+  Generate gpsd.tbl defines [gpsd] by default for inclusion in
+  another screen. Defining gpsdTblName= makes it standalone.
 }
 
 mode (default) {
   tmcbase = gpsd.tmc
   colbase = gpsd_col.tmc
   genuibase = gpsd.genui
+  - : gpsd.tbl:gpsd.tbl.in
   DISTRIB = @MODDIR@/../gpsd_client
   CPPFLAGS = -I @MODDIR@/..
   %%

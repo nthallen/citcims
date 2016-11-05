@@ -1,6 +1,10 @@
-ModuleDef UPS [ RN= ] {
+ModuleDef UPS [ RN= UPSTblName=UPS ] {
   UPS Module supports RS-232 communication with
   Orion Power Systems DC3000RT Uninterruptable power supply
+
+  Generate UPS.tbl defines [UPS] by default for inclusion in
+  another screen. Defining UPSTblName= makes it standalone.
+
 }
 
 mode (default) {
@@ -8,6 +12,7 @@ mode (default) {
   colbase = UPS_col.tmc
   cmdbase = UPS.cmd
   genuibase = UPS.genui
+  - : UPS.tbl:UPS.tbl.in
   DISTRIB = @MODDIR@/../ups
   CPPFLAGS = -I @MODDIR@/..
   %%
@@ -23,5 +28,6 @@ mode (remote) [ RN=2 ] {
   tmcbase = UPS.tmc:UPS.tmc.in
   colbase = UPS_col.tmc
   genuibase = UPS.genui
+  - : UPS.tbl:UPS.tbl.in
   CPPFLAGS = -I @MODDIR@/..
 }

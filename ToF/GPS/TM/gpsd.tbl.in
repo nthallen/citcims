@@ -33,7 +33,7 @@ gpsd2 {
   Stale:      (gpsd_stale,3);
 }
 
-gpsd {
+@gpsdTblName@ {
   HBox { +-; Title: "GPSD"; -+ };
   HBox { [gpsd1]; +|+; [gpsd2] };
 }

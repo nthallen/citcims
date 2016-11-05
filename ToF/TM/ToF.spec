@@ -42,13 +42,13 @@ TGTDIR = $(TGTNODE)/home/tof
 OBJ = address.h
 
 ToFdisp : AthenaII_conv.tmc Hercules_conv.tmc ../Horiba/TM/Horiba_conv.tmc \
-  ToF.tbl IWG1.tbl
+  ToF.tbl
 #ToFdisp : AthenaII_conv.tmc Hercules_conv.tmc ../Horiba/TM/Horiba_conv.tmc \
 #  ToF.tbl  IWG1.tbl ../Sonic/TM/sonic.tbl
 #ToFdisp : AthenaII_conv.tmc Hercules_conv.tmc ../Horiba/TM/Horiba_conv.tmc \
 #   ToFz.tbl  ../Sonic/TM/sonic.tbl
-UserPktsdisp : UserPkts.tbl
-UserPktsext : ../IWG1/TM/UserPkts2.cdf
+IWG1disp : IWG1.tbl UserPkts.tbl
+UserPktsext : UserPkts.genui
 
 ToFBdisp : ../Edwards_nXDS/TM/nXDS_conv.tmc ../GPS/TM/gpsd_conv.tmc ToFB.tbl
 TwisTorrdisp : TwisTorr_conv.tmc TwisTorr_Pumps.tbl
@@ -64,9 +64,9 @@ ToFalgo : tpfilt.tmc ToF.tma ToF.sws Inlet.tma turbo.tma gasdeck.tma
 doit : ToF.doit
 #doit : ToFz.doit
 %%
-ToFBbase=../Edwards_nXDS/TM/nXDS.tbl ../GPS/TM/gpsd.tbl ../UPS/TM/UPS.tbl ToFB.end.tbl
-ToFB.tbl : $(ToFBbase)
-	cat $(ToFBbase) >ToFB.tbl
+# ToFBbase= ../GPS/TM/gpsd.tbl ../UPS/TM/UPS.tbl ToFB.end.tbl
+#ToFB.tbl : $(ToFBbase)
+#	cat $(ToFBbase) >ToFB.tbl
 COLFLAGS=-Haddress.h
 CPPFLAGS += -I ../DSDaq
 CXXFLAGS = -Wall -g
@@ -76,5 +76,4 @@ address.h : ToFcol.cc
 .PHONY : clean-ToF
 clean-dist : clean-ToF
 clean-ToF :
-	cd ../IonGauge && make clean
 	cd ../DSDaq && make clean

@@ -1,0 +1,40 @@
+HEADER ATOM User Packets
+MNEMONIC UP
+HOMEDIR ToF_Data_Dir
+  1 AVOCET_CO2 Science CO2
+  1 AVOCET_TDrift Status TDrift
+  1 AVOCET_stale Status Stale
+  1 DACOM_TDrift Status TDrift
+  1 DACOM_CO Science CO
+  1 DACOM_Methane Science CH4
+  1 DACOM_stale Status Stale
+  1 DLH_TDrift Status TDrift
+  1 DLH_WaterVapor Science H2O
+  1 DLH_stale Status Stale
+  1 LARGE_TDrift Status TDrift
+  1 LARGE_ColdCN Science CN
+  1 LARGE_HotCN Science CN
+  1 LARGE_Dry_Scattering Science CNDS
+  1 LARGE_stale Status Stale
+  1 MMS_TDrift Status TDrift
+  1 MMS_TotalPressure Met Pressure
+  1 MMS_StaticPressure Met Pressure
+  1 MMS_Pitch Met Attitude
+  1 MMS_Roll Met Attitude
+  1 MMS_Heading Met Attitude
+  1 MMS_Vns Met Velocity
+  1 MMS_Vew Met Velocity
+  1 MMS_Vup Met Velocity
+  1 MMS_Az Met Az
+  1 MMS_stale Status Stale
+  1 NOAA_HSP2_TDrift Status TDrift
+  1 NOAA_HSP2_IncParticleCount
+  1 NOAA_HSP2_stale Status Stale
+  1 NOAA_SP2_TDrift Status TDrift
+  1 NOAA_SP2_IncParticleCount
+  1 NOAA_SP2_stale Status Stale
+  1 NOyO3_TDrift Status TDrift
+  1 NOyO3_NO Science NO
+  1 NOyO3_NOy Science NOy
+  1 NOyO3_O3 Science O3
+  1 NOyO3_stale Status TDrift
