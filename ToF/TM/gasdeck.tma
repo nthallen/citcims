@@ -28,7 +28,7 @@ State Flows_ON_Z_N2 {
      depending on (Inlet_PControl_real) { Validate Inlet_Close; }
      depending on (ambz_PControl_real) { Validate ambz_idle; }
   +1 hold until valid (Inlet_Closed);
-     > Set ambient zero flow 300 sccm
+     > Set ambient zero flow 450 sccm
      > ambient zero valve off 
      > ambient zero on
      depending on (Auto_cal_idle) {
@@ -38,7 +38,7 @@ State Flows_ON_Z_N2 {
      > Set dilution flow 1620 sccm
      +3 Validate N2z_PControl_real;
      > Set fluorine flow 0.2 sccm
-  +1 > Set ambient zero flow 300 sccm
+  +1 > Set ambient zero flow 450 sccm
   +1 Validate GD_Wait;
 }
 
@@ -79,7 +79,7 @@ State Flows_ON_CAL_N2 {
      depending on (ambz_PControl_real) { Validate ambz_idle; }
    +1 hold until valid (Inlet_Closed);
    +1 hold until valid (Inlet_Closed);
-      > Set ambient zero flow 300 sccm
+      > Set ambient zero flow 450 sccm
       > ambient zero valve off
       > ambient zero on
       > Set ion source flow 380 sccm
@@ -290,7 +290,7 @@ State Flows_ON_ME {
      depending on (ambz_PControl_real) { Validate ambz_idle; }
      depending on (N2z_PControl_real) { Validate N2z_idle; }
      > SW Flow State Transitioning
-     > Set ambient zero flow 300 sccm
+     > Set ambient zero flow 450 sccm
      > ambient zero valve off
      > ambient zero off
      > Set ion source flow 380 sccm
@@ -305,7 +305,7 @@ State Flows_ON_ME_CAL {
      depending on (ambz_PControl_real) { Validate ambz_idle; }
      depending on (N2z_PControl_real) { Validate N2z_idle; }
      > SW Flow State Transitioning
-     > Set ambient zero flow 300 sccm
+     > Set ambient zero flow 450 sccm
      > ambient zero valve off
      > ambient zero off
      > Set ion source flow 380 sccm
