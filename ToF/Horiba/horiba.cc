@@ -11,7 +11,7 @@ const char *horiba_path = "/net/athenaII_a/dev/ser3";
 
 int main(int argc, char **argv) {
   oui_init_options(argc, argv);
-  nl_error( 0, "Starting V12.04.18b" );
+  nl_error( 0, "Starting V13.0" );
   { Selector S;
     HoribaCmd HC;
     horiba_tm_t TMdata;
@@ -58,7 +58,7 @@ void HoribaQuery::format(unsigned short addr, short *resultp, double rscale,
   query.append(&buf[0], nc);
   if (bcc == '@')
     query.append("\003\003\003", 3);
-  else if (bcc == '*')
+  else if (bcc == '*' || bcc == '.')
     query.append("\003\003\003\003\003\003\003\003\003", 9);
 }
 
@@ -165,7 +165,19 @@ int HoribaSer::ProcessData(int flag) {
   }
   if (state == HS_WaitResp) {
     if (flag & (Selector::Sel_Read | Selector::Sel_Timeout)) {
-      if (parse_response()) return 1;
+      switch (parse_response()) {
+        case HP_Die: return 1;
+        case HP_Wait:
+          if (TO.Expired()) {
+            report_err("Timeout: Query was: '%s'",
+              ascii_escape(CurQuery->query));
+            break;
+          } else return 0;
+        case HP_OK:
+          break;
+        default:
+          nl_error(4, "Invalid return code from parse_response()");
+      }
       if (CurQuery && CurQuery->result) {
         if (++qn == Qlist.size())
           qn = 0;
@@ -182,6 +194,7 @@ int HoribaSer::ProcessData(int flag) {
   }
   if (CurQuery == 0) {
     state = HS_Idle;
+    TO.Clear();
     return 0;
   }
   nbw = write(fd, CurQuery->query.c_str(), CurQuery->query.length());
@@ -198,23 +211,59 @@ int HoribaSer::ProcessData(int flag) {
   return 0;
 }
 
-int HoribaSer::parse_response() {
-  if (fillbuf()) return 1; // Die on read error
+/**
+ * Search for string in the input, discarding
+ * characters from the front of the buffer as
+ * necessary. The string is assumed to begin with
+ * a unique synch character ('@') not located
+ * elsewhere in the string, so we can
+ * search forward from the first unmatched
+ * character in the input buffer.
+ * @param str The string
+ * @return 0 if entire string is found, 1 if the end of input is
+ *   reached without matching the string. If a partial match is
+ *   found, cp will point to the beginning of the partial match
+ */
+int HoribaSer::str_not_found(const char *str_in, int len) {
+  unsigned int start_cp = cp;
+  const unsigned char *str = (const unsigned char *)str_in;
+  unsigned int i = 0;
+  while (i < len && cp < nc) {
+    while (cp < nc && buf[cp] != str[0])
+      ++cp;
+    if (cp < nc) {
+      start_cp = cp++;
+      for (i = 1; i < len && cp < nc; ++i) {
+        if (str[i] != buf[cp])
+          break;
+        ++cp;
+      }
+    }
+  }
+  if (i >= len) {
+    if (start_cp > 0) {
+      nl_error(2, "Unexpected input before string: '%s'",
+        ascii_escape(buf, start_cp));
+      consume(start_cp);
+    }
+    return 0;
+  } else return 1;
+}
+
+/**
+ * @return HP_OK means we are done with this query, good or bad.
+ *   HP_WAIT means we have not received what we're looking for.
+ *   HP_DIE means a serious error occurred and the driver should terminate.
+ */
+Horiba_Parse_Resp HoribaSer::parse_response() {
+  cp = 0;
+  if (fillbuf()) return HP_Die; // Die on read error
   if (CurQuery == 0) {
     report_err("Unexpected input");
-    return 0;
+    return HP_OK;
   }
-  if (nc < CurQuery->query.length()) {
-    report_err("Did not see complete echo. Query was: '%s'",
-      ascii_escape(CurQuery->query));
-    return 0;
-  } else if (not_str(CurQuery->query)) {
-    return 0;
-  }
-  if (cp >= nc) {
-    report_err("Timeout: Query was: '%s'",
-      ascii_escape(CurQuery->query));
-    return 0;
+  if (str_not_found(CurQuery->query.c_str(), CurQuery->query.length())) {
+    return HP_WAIT;
   }
   // I expect either ACK for a command response or
   // STX <float>,[A-Z] ETX BCC for a value request
@@ -223,13 +272,13 @@ int HoribaSer::parse_response() {
     report_err( "NAK on %d response: Query was: '%s'",
       CurQuery->result ? "Data" : "Command",
       ascii_escape(CurQuery->query));
-    return 0;
+    return HP_OK;
   }
   if (CurQuery->result) {
     float val;
     unsigned int cp0 = cp;
     if (not_str("\002", 1) || not_float(val))
-      return 0;
+      return HP_OK;
     if (cp+1 < nc && buf[cp] == ',' && buf[cp+1] >= 'A' &&
         buf[cp+1] <= 'Z') {
       if (CurQuery->unit != buf[cp+1]) {
@@ -238,7 +287,7 @@ int HoribaSer::parse_response() {
       }
       cp += 2;
     }
-    if (not_str("\003", 1)) return 0;
+    if (not_str("\003", 1)) return HP_OK;
     if (bcc_ok(cp0)) {
       *(CurQuery->result) = (short)floor(val/CurQuery->scale + 0.5);
       TMdata->HoribaS |= CurQuery->mask;
@@ -248,7 +297,7 @@ int HoribaSer::parse_response() {
   } else {
     unsigned int cp0 = cp;
     if (not_str("\002OK\003",4)) {
-      return 0;
+      return HP_OK;
     }
     if (bcc_ok(cp0)) {
       TMdata->HoribaS |= HORIBA_CMD_S;
@@ -256,7 +305,7 @@ int HoribaSer::parse_response() {
       consume(cp);
     }
   }
-  return 0;
+  return HP_OK;
 }
 
 /**

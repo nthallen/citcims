@@ -40,8 +40,10 @@ class HoribaSer : public Ser_Sel {
     int ProcessData(int flag);
     Timeout *GetTimeout();
   private:
-    int parse_response();
+    enum Horiba_Parse_Resp { HP_Die, HP_Wait, HP_OK };
+    Horiba_Parse_Resp parse_response();
     int bcc_ok(unsigned int from);
+    int str_not_found(const char *str);
     HoribaCmd *Cmd;
     Timeout TO;
     horiba_tm_t *TMdata;
