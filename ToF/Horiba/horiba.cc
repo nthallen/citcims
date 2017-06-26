@@ -227,7 +227,7 @@ int HoribaSer::ProcessData(int flag) {
 int HoribaSer::str_not_found(const char *str_in, int len) {
   unsigned int start_cp = cp;
   const unsigned char *str = (const unsigned char *)str_in;
-  unsigned int i = 0;
+  int i = 0;
   while (i < len && cp < nc) {
     while (cp < nc && buf[cp] != str[0])
       ++cp;
@@ -243,7 +243,7 @@ int HoribaSer::str_not_found(const char *str_in, int len) {
   if (i >= len) {
     if (start_cp > 0) {
       nl_error(2, "Unexpected input before string: '%s'",
-        ascii_escape(buf, start_cp));
+        ascii_escape((const char *)buf, start_cp));
       consume(start_cp);
     }
     return 0;
@@ -252,10 +252,10 @@ int HoribaSer::str_not_found(const char *str_in, int len) {
 
 /**
  * @return HP_OK means we are done with this query, good or bad.
- *   HP_WAIT means we have not received what we're looking for.
- *   HP_DIE means a serious error occurred and the driver should terminate.
+ *   HP_Wait means we have not received what we're looking for.
+ *   HP_Die means a serious error occurred and the driver should terminate.
  */
-Horiba_Parse_Resp HoribaSer::parse_response() {
+HoribaSer::Horiba_Parse_Resp HoribaSer::parse_response() {
   cp = 0;
   if (fillbuf()) return HP_Die; // Die on read error
   if (CurQuery == 0) {
@@ -263,7 +263,7 @@ Horiba_Parse_Resp HoribaSer::parse_response() {
     return HP_OK;
   }
   if (str_not_found(CurQuery->query.c_str(), CurQuery->query.length())) {
-    return HP_WAIT;
+    return HP_Wait;
   }
   // I expect either ACK for a command response or
   // STX <float>,[A-Z] ETX BCC for a value request
