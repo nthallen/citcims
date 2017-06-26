@@ -1,5 +1,5 @@
 # Invoking: appgen_module Horiba X mode=default
-# Invoking: appgen_module IonGauge X mode=default
+# Invoking: appgen_module IonGauge X mode=default Hz=1
 # Invoking: appgen_module nXDS X mode=default
 # Invoking: appgen_module OMS X mode=Y OMS1=Insl Group=Inlet
 # Invoking: appgen_module UPS X mode=default
@@ -8,7 +8,7 @@
 # Invoking: appgen_module Zaber X mode=default
 # Invoking: appgen_module Sonic X mode=disable Hz=8
 # Invoking: appgen_module Zeno X mode=disable
-# Makefile Generated Wed Apr 27 22:48:54 PDT 2016
+# Makefile Generated Mon Jun 26 16:20:23 PDT 2017
 MNC=ToF
 SPECFILE=ToF.spec
 PCMFILE=ToF.pcm

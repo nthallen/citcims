@@ -23,7 +23,7 @@ swsbase = ToF.sws
 genuibase = ToF.genui
 
 Module Horiba mode=default
-Module IonGauge mode=default
+Module IonGauge mode=default Hz=1
 Module nXDS mode=default
 Module OMS mode=Y OMS1=Insl Group=Inlet
 Module UPS mode=default
@@ -61,6 +61,18 @@ ToFalgo : tpfilt.tmc ToF.tma ToF.sws Inlet.tma turbo.tma gasdeck.tma
 # Inlet.tma
 doit : ToF.doit
 #doit : ToFz.doit
+
+IGNORE = Inlet16115.tma
+IGNORE = Inlet_160513.tma
+IGNORE = Inlet_160802_newambzflows.tma
+IGNORE = Inlet_160804_noprescontr.tma
+IGNORE = Inlet_170320.tma
+IGNORE = Inlet_labnov2016.tma
+IGNORE = Inlet_prescontr_160804.tma
+IGNORE = gasdeck_160802_forhottertemp.tma
+IGNORE = gasdeck_160804_noprescontr.tma
+IGNORE = gasdeck_prescontr_160804.tma
+
 %%
 ToFBbase=../Edwards_nXDS/TM/nXDS.tbl ../GPS/TM/gpsd.tbl ../UPS/TM/UPS.tbl ToFB.end.tbl
 ToFB.tbl : $(ToFBbase)

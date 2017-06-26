@@ -160,6 +160,26 @@ State data_loop {
                 +2 hold until valid ( Collect_Idle );
                 Validate data_AM;
                 +2 hold until valid ( Collect_Idle );
+		Validate zero_AM;
+		+2 hold until valid ( Collect_Idle );
+		Validate data_AM;
+		+2 hold until valid ( Collect_Idle );
+		Validate zero_AM;
+		+2 hold until valid ( Collect_Idle );
+                Validate data_AM;
+                +2 hold until valid ( Collect_Idle );
+                Validate zero_AM;
+                +2 hold until valid ( Collect_Idle );
+                Validate data_AM;
+                +2 hold until valid ( Collect_Idle );
+                Validate zero_AM;
+                +2 hold until valid ( Collect_Idle );
+                Validate data_AM;
+                +2 hold until valid ( Collect_Idle );
+                Validate zero_AM;
+                +2 hold until valid ( Collect_Idle );
+		Validate data_AM;
+		+2 hold until valid ( Collect_Idle );
 		Validate data_loop;
 
 }
@@ -254,6 +274,6 @@ State data_AM {
 	Validate Flows_ON_ME;
 	+1 hold until valid ( GD_Wait );
 	> Set oct amp 0.80 volts
-	+900 Validate Collect_idle;
+	+600 Validate Collect_idle;
 
 }

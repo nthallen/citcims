@@ -1,4 +1,4 @@
-  8 Hex_P IonGauge P
-  8 ToF_P IonGauge P
-  8 IG_stale IonGauge Stale
-  8 IG_stat IonGauge Stat
+  1 Hex_P IonGauge P
+  1 ToF_P IonGauge P
+  1 IG_stale IonGauge Stale
+  1 IG_stat IonGauge Stat

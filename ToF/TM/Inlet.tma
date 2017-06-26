@@ -1,3 +1,5 @@
+# test
+
 Partition
 # Partition 11:  Inlet pressure control
 
@@ -361,7 +363,7 @@ State N2z_PControl_real {
         N2z_set( N2z_sp );
       } else if ( FT_P3 > 1.006*FT_SP3 &&
 		  FT_P3 <= 1.015*FT_SP3 &&
-		  N2z_sp > 0) {
+	N2z_sp > 0) {
         N2z_sp -= In3_St4;
         N2z_set( N2z_sp );
       }
@@ -373,7 +375,7 @@ State N2z_PControl_real {
 Partition
 
 %{
-int z = 15;
+int z = 31;
 int loop_i;
 int ambi;
 int dfi;
@@ -409,7 +411,7 @@ State Loop_step_dc {
 
 	{
 	dfi = 1025;
-	ambi = 650;
+	ambi = 1000;
 
 	 if ( ++loop_i > 33 ) {
 		Validate Loop_idle;
@@ -417,7 +419,6 @@ State Loop_step_dc {
 		 int stp, stp2;
 		 stp = dfi + ( loop_i - 1 )*z*.9;
 		 stp2 = ambi - ( loop_i - 1 )*z;
-		 ci_sendfcmd(0,"set dilution flow %d sccm\n",stp);
 		 ci_sendfcmd(0,"set ambient zero flow %d sccm\n",stp2);
 		}
 	}
@@ -467,14 +468,13 @@ State Loop_step_unc {
 	{
 
 	dfi = 1530;
-	ambi = 170;
+	ambi = 0;
 	if ( ++loop_i > 33 ) {
 		Validate Loop_idle;
 		} else {
 		  int stp, stp2;
 		  stp = dfi - ( loop_i - 1 )*z*.95;
 		  stp2 = ambi + ( loop_i -1 )*z;
-		  ci_sendfcmd(0,"set dilution flow %d sccm\n",stp);
 		  ci_sendfcmd(0,"set ambient zero flow %d sccm\n",stp2);
 		}
 	}
@@ -485,7 +485,7 @@ Partition
 
 State Auto_cal_idle { }
 
-State Auto_cal_run_orif { 
+State Auto_cal_run { 
 
  Validate Loop_init_sdc;
  +1 hold until valid ( Loop_idle );
@@ -496,7 +496,7 @@ State Auto_cal_run_orif {
 }
 
 
-State Auto_cal_run { 
+State Auto_cal_run_DC8 { 
 	
 	> Set oct amp 0 volts
 	Validate Flows_ON_Z_AM;
