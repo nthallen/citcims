@@ -302,7 +302,7 @@ HoribaSer::Horiba_Parse_Resp HoribaSer::parse_response() {
         consume(nc);
         return HP_OK;
       }
-      return HP_WAIT;
+      return HP_Wait;
     }
     if (bcc_ok(cp0)) {
       TMdata->HoribaS |= HORIBA_CMD_S;
