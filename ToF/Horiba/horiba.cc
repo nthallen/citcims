@@ -11,7 +11,7 @@ const char *horiba_path = "/net/athenaII_a/dev/ser3";
 
 int main(int argc, char **argv) {
   oui_init_options(argc, argv);
-  nl_error( 0, "Starting V13.0.2" );
+  nl_error( 0, "Starting V13.0.3" );
   { Selector S;
     HoribaCmd HC;
     horiba_tm_t TMdata;
@@ -298,7 +298,11 @@ HoribaSer::Horiba_Parse_Resp HoribaSer::parse_response() {
   } else {
     unsigned int cp0 = cp;
     if (not_str("\002OK\003",4)) {
-      return HP_OK;
+      if (cp < nc) {
+        consume(nc);
+        return HP_OK;
+      }
+      return HP_WAIT;
     }
     if (bcc_ok(cp0)) {
       TMdata->HoribaS |= HORIBA_CMD_S;
