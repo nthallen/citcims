@@ -11,7 +11,7 @@ const char *horiba_path = "/net/athenaII_a/dev/ser3";
 
 int main(int argc, char **argv) {
   oui_init_options(argc, argv);
-  nl_error( 0, "Starting V13.0" );
+  nl_error( 0, "Starting V13.0.1" );
   { Selector S;
     HoribaCmd HC;
     horiba_tm_t TMdata;
