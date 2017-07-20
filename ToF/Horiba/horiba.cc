@@ -11,7 +11,7 @@ const char *horiba_path = "/net/athenaII_a/dev/ser3";
 
 int main(int argc, char **argv) {
   oui_init_options(argc, argv);
-  nl_error( 0, "Starting V13.0.1" );
+  nl_error( 0, "Starting V13.0.2" );
   { Selector S;
     HoribaCmd HC;
     horiba_tm_t TMdata;
@@ -206,7 +206,7 @@ int HoribaSer::ProcessData(int flag) {
     report_err("Incomplete write: expected %d, wrote %d",
       CurQuery->query.length(), nbw);
   }
-  TO.Set(0, CurQuery->result ? 70 : 150);
+  TO.Set(0, CurQuery->result ? 70 : 250);
   state = HS_WaitResp;
   return 0;
 }
@@ -270,7 +270,7 @@ HoribaSer::Horiba_Parse_Resp HoribaSer::parse_response() {
   // STX <float>,[A-Z] ETX BCC for a value request
   // NACK for error
   if (buf[cp] == 21) {
-    report_err( "NAK on %d response: Query was: '%s'",
+    report_err( "NAK on %s response: Query was: '%s'",
       CurQuery->result ? "Data" : "Command",
       ascii_escape(CurQuery->query));
     return HP_OK;
