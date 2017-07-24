@@ -29,6 +29,7 @@ class HoribaCmd : public Ser_Sel {
     ~HoribaCmd();
     int ProcessData(int flag);
     HoribaQuery *query();
+    void query_complete();
   private:
     HoribaQuery HCquery;
 };

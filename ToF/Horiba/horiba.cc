@@ -11,7 +11,7 @@ const char *horiba_path = "/net/athenaII_a/dev/ser3";
 
 int main(int argc, char **argv) {
   oui_init_options(argc, argv);
-  nl_error( 0, "Starting V13.0.6" );
+  nl_error( 0, "Starting V13.0.7" );
   { Selector S;
     HoribaCmd HC;
     horiba_tm_t TMdata;
@@ -112,8 +112,11 @@ HoribaQuery *HoribaCmd::query() {
     nl_error( 2, "HoribaCmd::query() called when flags != 0" );
     return NULL;
   }
-  flags = Selector::Sel_Read; // listen again
   return &HCquery;
+}
+
+void HoribaCmd::query_complete() {
+  flags = Selector::Sel_Read; // listen again
 }
 
 /* Buf Size arbitrarily set to 50 for now */
@@ -177,12 +180,16 @@ int HoribaSer::ProcessData(int flag) {
       default:
         nl_error(4, "Invalid return code from parse_response()");
     }
-    if (CurQuery && CurQuery->result) {
-      if (++qn == Qlist.size())
-        qn = 0;
-      --nq;
+    if (CurQuery) {
+      if (CurQuery->result) {
+        if (++qn == Qlist.size())
+          qn = 0;
+        --nq;
+      } else {
+        Cmd->query_complete();
+      }
+      CurQuery = 0;
     }
-    CurQuery = 0;
   }
   if (CurQuery)
     return 0;
