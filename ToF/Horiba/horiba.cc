@@ -11,7 +11,7 @@ const char *horiba_path = "/net/athenaII_a/dev/ser3";
 
 int main(int argc, char **argv) {
   oui_init_options(argc, argv);
-  nl_error( 0, "Starting V13.0.7" );
+  nl_error( 0, "Starting V13.0.8" );
   { Selector S;
     HoribaCmd HC;
     horiba_tm_t TMdata;
@@ -196,7 +196,8 @@ int HoribaSer::ProcessData(int flag) {
   if (cmdq) {
     CurQuery = Cmd->query();
     cmdq = 0;
-  } else if (nq) {
+  }
+  if ((CurQuery == 0) && nq) {
     CurQuery = &Qlist[qn];
   }
   if (CurQuery == 0) {
@@ -213,7 +214,12 @@ int HoribaSer::ProcessData(int flag) {
     report_err("Incomplete write: expected %d, wrote %d",
       CurQuery->query.length(), nbw);
   }
-  TO.Set(0, CurQuery->result ? 70 : 1500);
+  if (CurQuery->result) {
+    TO.Set(0, 70);
+  } else {
+    nl_error(-2, "Set command timeout");
+    TO.Set(1, 500);
+  }
   state = HS_WaitResp;
   return 0;
 }
