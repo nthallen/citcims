@@ -245,7 +245,7 @@ int HoribaSer::str_not_found(const char *str_in, int len) {
       nl_error(2, "Unexpected input '%s' before string ...",
         ascii_escape((const char *)buf, start_cp));
       nl_error(2, "... Found expected '%s'",
-        ascii_escape(ascii_escape(str_in, len));
+        ascii_escape(ascii_escape(str_in, len)));
       consume(start_cp);
       cp = i;
     }
