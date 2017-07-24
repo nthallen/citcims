@@ -11,7 +11,7 @@ const char *horiba_path = "/net/athenaII_a/dev/ser3";
 
 int main(int argc, char **argv) {
   oui_init_options(argc, argv);
-  nl_error( 0, "Starting V13.0.3" );
+  nl_error( 0, "Starting V13.0.4" );
   { Selector S;
     HoribaCmd HC;
     horiba_tm_t TMdata;
@@ -206,7 +206,7 @@ int HoribaSer::ProcessData(int flag) {
     report_err("Incomplete write: expected %d, wrote %d",
       CurQuery->query.length(), nbw);
   }
-  TO.Set(0, CurQuery->result ? 70 : 250);
+  TO.Set(0, CurQuery->result ? 70 : 1050);
   state = HS_WaitResp;
   return 0;
 }
@@ -242,8 +242,10 @@ int HoribaSer::str_not_found(const char *str_in, int len) {
   }
   if (i >= len) {
     if (start_cp > 0) {
-      nl_error(2, "Unexpected input before string: '%s'",
+      nl_error(2, "Unexpected input '%s' before string ...",
         ascii_escape((const char *)buf, start_cp));
+      nl_error(2, "... Found expected '%s'",
+        ascii_escape(ascii_escape(str_in, len));
       consume(start_cp);
       cp = i;
     }
@@ -261,6 +263,7 @@ HoribaSer::Horiba_Parse_Resp HoribaSer::parse_response() {
   if (fillbuf()) return HP_Die; // Die on read error
   if (CurQuery == 0) {
     report_err("Unexpected input");
+    consume(nc);
     return HP_OK;
   }
   if (str_not_found(CurQuery->query.c_str(), CurQuery->query.length())) {
@@ -269,17 +272,23 @@ HoribaSer::Horiba_Parse_Resp HoribaSer::parse_response() {
   // I expect either ACK for a command response or
   // STX <float>,[A-Z] ETX BCC for a value request
   // NACK for error
-  if (buf[cp] == 21) {
+  if (cp < nc && buf[cp] == 21) {
     report_err( "NAK on %s response: Query was: '%s'",
       CurQuery->result ? "Data" : "Command",
       ascii_escape(CurQuery->query));
+    consume(nc);
     return HP_OK;
   }
   if (CurQuery->result) {
     float val;
     unsigned int cp0 = cp;
-    if (not_str("\002", 1) || not_float(val))
-      return HP_OK;
+    if (not_str("\002", 1) || not_float(val)) {
+      if (cp < nc) {
+        consume(nc);
+        return HP_OK;
+      }
+      return HP_Wait;
+    }
     if (cp+1 < nc && buf[cp] == ',' && buf[cp+1] >= 'A' &&
         buf[cp+1] <= 'Z') {
       if (CurQuery->unit != buf[cp+1]) {
@@ -288,7 +297,13 @@ HoribaSer::Horiba_Parse_Resp HoribaSer::parse_response() {
       }
       cp += 2;
     }
-    if (not_str("\003", 1)) return HP_OK;
+    if (not_str("\003", 1)) {
+      if (cp < nc) {
+        consume(nc);
+        return HP_OK;
+      }
+      return HP_Wait;
+    }
     if (bcc_ok(cp0)) {
       *(CurQuery->result) = (short)floor(val/CurQuery->scale + 0.5);
       TMdata->HoribaS |= CurQuery->mask;
