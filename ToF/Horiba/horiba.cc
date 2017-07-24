@@ -11,7 +11,7 @@ const char *horiba_path = "/net/athenaII_a/dev/ser3";
 
 int main(int argc, char **argv) {
   oui_init_options(argc, argv);
-  nl_error( 0, "Starting V13.0.5" );
+  nl_error( 0, "Starting V13.0.6" );
   { Selector S;
     HoribaCmd HC;
     horiba_tm_t TMdata;
@@ -99,7 +99,7 @@ int HoribaCmd::ProcessData(int flag) {
     report_err("Invalid address %d in HoribaCmd", addr);
     return 0;
   }
-  HCquery.format( addr, 0, 1.0, 0, 'B', "AFC%.2lf,B", value );
+  HCquery.format( addr, 0, 1.0, HORIBA_CMD_S << (addr-1), 'B', "AFC%.2lf,B", value );
   flags = 0; // Don't listen for more commands
   Stor->set_gflag(1);
   report_ok();
@@ -163,29 +163,29 @@ int HoribaSer::ProcessData(int flag) {
   if (flag & Selector::gflag(1)) { // Command Received
     cmdq = 1;
   }
-  if (state == HS_WaitResp) {
-    if (flag & (Selector::Sel_Read | Selector::Sel_Timeout)) {
-      switch (parse_response()) {
-        case HP_Die: return 1;
-        case HP_Wait:
-          if (TO.Expired()) {
-            report_err("Timeout: Query was: '%s'",
-              ascii_escape(CurQuery->query));
-            break;
-          } else return 0;
-        case HP_OK:
+  if (flag & (Selector::Sel_Read | Selector::Sel_Timeout)) {
+    switch (parse_response()) {
+      case HP_Die: return 1;
+      case HP_Wait:
+        if (TO.Expired()) {
+          report_err("Timeout: Query was: '%s'",
+            ascii_escape(CurQuery->query));
           break;
-        default:
-          nl_error(4, "Invalid return code from parse_response()");
-      }
-      if (CurQuery && CurQuery->result) {
-        if (++qn == Qlist.size())
-          qn = 0;
-        --nq;
-      }
-    } else return 0;
+        } else return 0;
+      case HP_OK:
+        break;
+      default:
+        nl_error(4, "Invalid return code from parse_response()");
+    }
+    if (CurQuery && CurQuery->result) {
+      if (++qn == Qlist.size())
+        qn = 0;
+      --nq;
+    }
+    CurQuery = 0;
   }
-  CurQuery = 0;
+  if (CurQuery)
+    return 0;
   if (cmdq) {
     CurQuery = Cmd->query();
     cmdq = 0;
@@ -206,7 +206,7 @@ int HoribaSer::ProcessData(int flag) {
     report_err("Incomplete write: expected %d, wrote %d",
       CurQuery->query.length(), nbw);
   }
-  TO.Set(0, CurQuery->result ? 70 : 1050);
+  TO.Set(0, CurQuery->result ? 70 : 1500);
   state = HS_WaitResp;
   return 0;
 }
@@ -320,7 +320,7 @@ HoribaSer::Horiba_Parse_Resp HoribaSer::parse_response() {
       return HP_Wait;
     }
     if (bcc_ok(cp0)) {
-      TMdata->HoribaS |= HORIBA_CMD_S;
+      TMdata->HoribaS |= CurQuery->mask;
       report_ok();
       consume(cp);
     }
