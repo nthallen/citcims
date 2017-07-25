@@ -14,7 +14,7 @@
   1 IonSrcFlow_S:HoribaS:3 Horiba Status
   1 FFlow_S:HoribaS:5 Horiba Status
   1 HoribaP_S:HoribaS:7 Horiba Status
-  1 IonCmd_S:HoribaS:8 Horiba Status
-  1 DilCmd_S:HoribaS:9 Horiba Status
+  1 DilCmd_S:HoribaS:8 Horiba Status
+  1 IonCmd_S:HoribaS:9 Horiba Status
   1 FlCmd_S:HoribaS:10 Horiba Status
   1 Horiba_Stale Horiba Stale

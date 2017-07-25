@@ -11,7 +11,7 @@ const char *horiba_path = "/net/athenaII_a/dev/ser3";
 
 int main(int argc, char **argv) {
   oui_init_options(argc, argv);
-  nl_error( 0, "Starting V13.0.8" );
+  nl_error( 0, "Starting V13.0.9" );
   { Selector S;
     HoribaCmd HC;
     horiba_tm_t TMdata;
@@ -123,7 +123,7 @@ void HoribaCmd::query_complete() {
 HoribaSer::HoribaSer(const char *ser_dev, horiba_tm_t *data, HoribaCmd *HCmd)
   : Ser_Sel( ser_dev, O_RDWR|O_NONBLOCK, 100 ) {
   Cmd = HCmd;
-  setup(38400, 7, 'o', 1, 45, 1 ); // Let's go with the timeout
+  setup(38400, 7, 'o', 1, 1, 1 ); // Let's go with the timeout
   flags |= Selector::gflag(0) | Selector::gflag(1) | Selector::Sel_Timeout;
   TMdata = data;
   TMdata->DilFlowSP = 0;
@@ -217,8 +217,8 @@ int HoribaSer::ProcessData(int flag) {
   if (CurQuery->result) {
     TO.Set(0, 70);
   } else {
-    nl_error(-2, "Set command timeout");
-    TO.Set(1, 500);
+    // nl_error(-2, "Set command timeout");
+    TO.Set(1, 0);
   }
   state = HS_WaitResp;
   return 0;
