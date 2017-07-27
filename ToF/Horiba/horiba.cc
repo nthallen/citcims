@@ -152,6 +152,7 @@ HoribaSer::HoribaSer(const char *ser_dev, horiba_tm_t *data, HoribaCmd *HCmd)
   do {
     nc = cp = 0;
   } while (fillbuf() == 0 && nc > 0);
+  cur_min = 1;
   init_termios();
 }
 
@@ -413,8 +414,7 @@ void HoribaSer::init_termios() {
  * parameter, but it may be redundant, since we have the overriding
  * Selector timeout working for us.
  */
-void TwisTorr::update_termios() {
-  int cur_min = CurQuery ? cur_min : 1;
+void HoribaSer::update_termios() {
   if (cur_min < 1) cur_min = 1;
   if (cur_min != termios_s.c_cc[VMIN]) {
     termios_s.c_cc[VMIN] = cur_min;
