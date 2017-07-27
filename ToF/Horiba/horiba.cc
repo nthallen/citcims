@@ -11,7 +11,7 @@ const char *horiba_path = "/net/athenaII_a/dev/ser3";
 
 int main(int argc, char **argv) {
   oui_init_options(argc, argv);
-  nl_error( 0, "Starting V13.0.11" );
+  nl_error( 0, "Starting V13.0.12" );
   { Selector S;
     HoribaCmd HC;
     horiba_tm_t TMdata;
@@ -152,6 +152,7 @@ HoribaSer::HoribaSer(const char *ser_dev, horiba_tm_t *data, HoribaCmd *HCmd)
   do {
     nc = cp = 0;
   } while (fillbuf() == 0 && nc > 0);
+  init_termios();
 }
 
 HoribaSer::~HoribaSer() {
@@ -174,7 +175,10 @@ int HoribaSer::ProcessData(int flag) {
           report_err("Timeout: Query was: '%s'",
             ascii_escape(CurQuery->query));
           break;
-        } else return 0;
+        } else {
+          update_termios();
+          return 0;
+        }
       case HP_OK:
         break;
       default:
@@ -191,8 +195,10 @@ int HoribaSer::ProcessData(int flag) {
       CurQuery = 0;
     }
   }
-  if (CurQuery)
+  if (CurQuery) {
+    update_termios();
     return 0;
+  }
   if (cmdq) {
     CurQuery = Cmd->query();
     cmdq = 0;
@@ -203,6 +209,7 @@ int HoribaSer::ProcessData(int flag) {
   if (CurQuery == 0) {
     state = HS_Idle;
     TO.Clear();
+    update_termios();
     return 0;
   }
   nbw = write(fd, CurQuery->query.c_str(), CurQuery->query.length());
@@ -221,6 +228,8 @@ int HoribaSer::ProcessData(int flag) {
     TO.Set(1, 0);
   }
   state = HS_WaitResp;
+  cur_min = CurQuery->query.length()+5;
+  update_termios();
   return 0;
 }
 
@@ -253,6 +262,7 @@ int HoribaSer::str_not_found(const char *str_in, int len) {
       }
     }
   }
+  cur_min = len+5-i;
   if (i >= len) {
     if (start_cp > 0) {
       nl_error(2, "Unexpected input '%s' before string ...",
@@ -300,8 +310,10 @@ HoribaSer::Horiba_Parse_Resp HoribaSer::parse_response() {
         consume(nc);
         return HP_OK;
       }
+      cur_min -= cp - cp0;
       return HP_Wait;
     }
+    cur_min = 1;
     if (cp+1 < nc && buf[cp] == ',' && buf[cp+1] >= 'A' &&
         buf[cp+1] <= 'Z') {
       if (CurQuery->unit != buf[cp+1]) {
@@ -331,8 +343,10 @@ HoribaSer::Horiba_Parse_Resp HoribaSer::parse_response() {
         consume(nc);
         return HP_OK;
       }
+      cur_min -= cp-cp0;
       return HP_Wait;
     }
+    cur_min = 1;
     if (cp >= nc) return HP_Wait;
     if (bcc_ok(cp0)) {
       TMdata->HoribaS |= CurQuery->mask;
@@ -381,4 +395,31 @@ int HoribaSer::bcc_ok(unsigned int from) {
 
 Timeout *HoribaSer::GetTimeout() {
   return state == HS_Idle ? 0 : &TO;
+}
+
+void HoribaSer::init_termios() {
+  if (tcgetattr(fd, &termios_s)) {
+    nl_error(2, "Error from tcgetattr: %s", strerror(errno));
+  }
+}
+
+/**
+ * Adapted from TwisTorr. Adjusts the VMIN termios value
+ * based on the specific command. This version is incomplete.
+ * It adjusts for the request size so we can skip over the RS485 echo,
+ * but it does not anticipate any more than the minimal response
+ * of 6 characters. We could add command-specific response size
+ * as noted in the comments. We could also adjust the VTIME
+ * parameter, but it may be redundant, since we have the overriding
+ * Selector timeout working for us.
+ */
+void TwisTorr::update_termios() {
+  int cur_min = CurQuery ? cur_min : 1;
+  if (cur_min < 1) cur_min = 1;
+  if (cur_min != termios_s.c_cc[VMIN]) {
+    termios_s.c_cc[VMIN] = cur_min;
+    if (tcsetattr(fd, TCSANOW, &termios_s)) {
+      nl_error(2, "Error from tcsetattr: %s", strerror(errno));
+    }
+  }
 }
