@@ -35,6 +35,7 @@ Module Zeno mode=disable
 Module TwisTorr drives=AB
 
 SCRIPT = interact runfile.AII runfile.AIIa
+SCRIPT = mv_ext.sh
 DISTRIB = ../DSDaq/AthenaII
 DISTRIB = ../DSDaq/Hercules
 TGTDIR = $(TGTNODE)/home/tof
@@ -64,6 +65,7 @@ ToFalgo : tpfilt.tmc ToF.tma ToF.sws Inlet.tma turbo.tma gasdeck.tma
 doit : ToF.doit
 #doit : ToFz.doit
 
+IGNORE = Makefile
 IGNORE = Inlet16115.tma
 IGNORE = Inlet_160513.tma
 IGNORE = Inlet_160802_newambzflows.tma
