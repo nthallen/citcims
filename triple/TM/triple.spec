@@ -43,6 +43,7 @@ mediumext : medium.cdf
 triplejsonext : triplejson.cdf
 # triplelander : triplelander.c triplelander.oui
 
+IGNORE = Makefile
 IGNORE = SWStat_backup.cmd
 IGNORE = SWStat_new.cmd
 IGNORE = files.tar

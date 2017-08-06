@@ -1,6 +1,12 @@
 Input "UPS.tbl";
-{ HBox { |+; {
-    [UPS];
+Input "nXDS.tbl";
+
+{ HBox { |+;
+  [UPS]; |+;
+  {
+    [nXDS];
+    +-+;
+    VGlue 0+1;
     (flttime,9);
     MFCtr: (MFCtr,5);
   }; |+ };
