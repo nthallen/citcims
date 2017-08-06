@@ -9,7 +9,7 @@
 # Invoking: appgen_module Sonic X mode=disable Hz=8
 # Invoking: appgen_module Zeno X mode=disable
 # Invoking: appgen_module TwisTorr X drives=AB
-# Makefile Generated Mon Jun 26 16:42:29 PDT 2017
+# Makefile Generated Sun Aug 06 09:34:08 PDT 2017
 MNC=ToF
 SPECFILE=ToF.spec
 PCMFILE=ToF.pcm
@@ -460,9 +460,6 @@ TwisTorr.tmc TwisTorr_col.tmc TwisTorr.cmd TwisTorr_conv.tmc TwisTorr.genui Twis
 clean-dist : clean-TwisTorr
 clean-TwisTorr :
 	cd ../TwisTorr/TM/.. && make clean
-# ToFBbase= ../GPS/TM/gpsd.tbl ../UPS/TM/UPS.tbl ToFB.end.tbl
-#ToFB.tbl : $(ToFBbase)
-#	cat $(ToFBbase) >ToFB.tbl
 COLFLAGS=-Haddress.h
 CPPFLAGS += -I ../DSDaq
 CXXFLAGS = -Wall -g

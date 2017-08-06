@@ -22,11 +22,3 @@ UPS {
   Resp:  (UPS_Response,2);
   Stale: (UPS_Stale,3);
 }
-
-{ HBox { |+; {
-    [UPS];
-    (flttime,9);
-    MFCtr: (MFCtr,5);
-  }; |+ };
-  -;
-}

@@ -76,9 +76,6 @@ IGNORE = gasdeck_160804_noprescontr.tma
 IGNORE = gasdeck_prescontr_160804.tma
 
 %%
-# ToFBbase= ../GPS/TM/gpsd.tbl ../UPS/TM/UPS.tbl ToFB.end.tbl
-#ToFB.tbl : $(ToFBbase)
-#	cat $(ToFBbase) >ToFB.tbl
 COLFLAGS=-Haddress.h
 CPPFLAGS += -I ../DSDaq
 CXXFLAGS = -Wall -g

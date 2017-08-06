@@ -89,8 +89,8 @@
 %}
 
 &herc_da <int>
-  : Scrub MFC { $0 = 1; }
-  : Dilute MFC { $0 = 0; }
+  : Scrub MFC { $0 = 0; }
+  : Dilute MFC { $0 = 1; }
   : IonSource MFC { $0 = 2; }
   : Reagent MFC { $0 = 3; }
   ;

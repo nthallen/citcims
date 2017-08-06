@@ -24,7 +24,7 @@ State zaber_close {
 }
 
 State zaber_open {
-      > zaber move drive 2 absolute 59500
+      > zaber move drive 2 absolute 67500
   +1  Validate zaber_monitor;
 }
 
@@ -99,7 +99,7 @@ State Inlet_PControl_real {
     FT_SP=26.3;
 
     if ( FT_P < 0.988*FT_SP ) { 
-      if (FT_P < FT_SP*0.97 && Inlet_Dir == 1 && Insl_Step1 < 62000 ) {
+      if (FT_P < FT_SP*0.98 && Inlet_Dir == 1 && Insl_Step1 < 62000 ) {
         ci_sendfcmd (0, "zaber move drive 1 relative %ld\n",histor_1);	
         Insl_Step1+=histor_1;
         Inlet_Dir=0;
@@ -120,7 +120,7 @@ State Inlet_PControl_real {
             Insl_Step1+=In_St4;
       }
     } else if (FT_P > 1.012*FT_SP) {
-      if ( FT_P > FT_SP*1.03 && Inlet_Dir == 0 && Insl_Step1 > 0) {
+      if ( FT_P > FT_SP*1.02 && Inlet_Dir == 0 && Insl_Step1 > 0) {
         ci_sendfcmd (0, "zaber move drive 1 relative %ld\n", -histor_1);
         Insl_Step1-=histor_1;
         Inlet_Dir=1;
@@ -195,19 +195,35 @@ State flows_n2_zero {
   +1 hold until valid (Inlet_hold);
      > zaber command drive 1 1 0 
   +1 > ScrubAir Valve Close
-     > Set dilute MFC 745
+     > Set dilute MFC 763
      > Set Ionsource MFC 1640
      { msg(0,"validating flows_idle");}
   +1 Validate flows_idle;
 }
 
+State flows_n2_mhp {
+#dry zero with label
+	depending on (Inlet_PControl_real) { Validate Inlet_Idle; }
++1	hold until valid (Inlet_hold);
+	> zaber command drive 1 1 0
++1	> ScrubAir Valve Close
+	> Set dilute MFC 743
+	> Set Ionsource MFC 1640
+	Validate cal_MHP;
++1	hold until valid (cal_idle);
++1	Validate flows_idle;
+}	
+
+
+
 State flows_amb_zero {
-     Validate cal_out;
+# no label or normal cal 
+    Validate cal_out;
   +1 hold until valid (cal_idle);
      depending on (Inlet_PControl_real) { Validate Inlet_Idle; }
   +1 hold until valid (Inlet_hold);
      > zaber command drive 1 1 0
-     > Set dilute MFC 573 
+     > Set dilute MFC 581
      > Set Ionsource MFC 1640
      Validate scrub_in; #change back to scrub_in w/ single
   +1 hold until valid (scrub_idle);
@@ -223,7 +239,7 @@ State flows_n2_cal {
      > zaber command drive 1 1 0
   +1 > ScrubAir Valve Close
      ### (no amb z air please)
-     > Set dilute MFC 680
+     > Set dilute MFC 703 
      > Set Ionsource MFC 1640
      Validate cal_in;
   +1 hold until valid (cal_idle);
@@ -235,11 +251,23 @@ State flows_amb_cal {
      depending on (Inlet_PControl_real) { Validate Inlet_Idle; }
   +1 hold until valid (Inlet_hold);
      > zaber command drive 1 1 0 
-     > Set dilute MFC 505 
+     > Set dilute MFC 521 
      > Set ionsource MFC 1640
      Validate cal_in;
   +1 hold until valid (cal_idle);
      Validate scrub_in;  #change back for op w/ single
+  +1 hold until valid (scrub_idle);
+  +1 Validate flows_idle;
+}
+
+State flows_amb_norm {
+  +1 hold until valid (Inlet_hold);
+     > zaber command drive 1 1 0
+     > Set dilute MFC 535
+     > Set ionsource MFC 1640
+     Validate cal_norm;
+  +1 hold until valid (cal_idle);
+     Validate scrub_in;
   +1 hold until valid (scrub_idle);
   +1 Validate flows_idle;
 }
@@ -283,7 +311,7 @@ State flows_measure {
   +1 hold until valid (cal_idle);
   +1 > ScrubAir Valve Close
        ### (no amb z air please)
-     > Set dilute MFC 573 
+     > Set dilute MFC 581 
      > Set Ionsource MFC 1640
      Validate Inlet_PControl;
      hold until ( convert(Pressure100T) > 24 );
@@ -314,15 +342,19 @@ State cal_off {
 }
 
 State cal_in {
+     > Labelled Cal scrub bypass
+     > Normal Cal scrub bypass
      > Labelled Cal bypass into system
      > Normal Cal bypass into system
-  +1 Validate cal_idle;
+    +1 Validate cal_idle;
 }
 
 State cal_out {
      > Labelled Cal bypass bypass
      > Normal Cal bypass bypass
-  +1 Validate cal_idle;
+     > Labelled Cal scrub on
+     > Normal Cal scrub on
+    +1 Validate cal_idle;
 }
 
 State cal_dither {
@@ -341,6 +373,14 @@ State cal_MHP {
   +1 > Labelled Cal bypass into system
   +2 > Labelled Cal Scrub bypass
   +1 Validate cal_idle;	
+}
+
+State cal_norm {
+	> Normal Cal bypass into system
+	> Normal Cal scrub bypass
+	+1 > Labelled Cal bypass bypass 
+	+1 > Labelled Cal scrub on
+	+1 Validate cal_idle;
 }
 
 Partition

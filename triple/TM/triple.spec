@@ -36,12 +36,27 @@ Module ../../ToF/UPS/TM/UPS mode=remote
 
 triplealgo : dstat_conv.tmc triple.tma hrdwr.tma
 tripledisp : dstat_conv.tmc ../../ToF/Edwards_nXDS/TM/nXDS_conv.tmc \
-  triple.tbl triple2.tbl IWG1.tbl UPS.tbl
+  triple.tbl triple2.tbl IWG1.tbl UPSwin.tbl
 tripledoit : triple.doit
 fastext : fast.cdf
 mediumext : medium.cdf
 triplejsonext : triplejson.cdf
 # triplelander : triplelander.c triplelander.oui
+
+IGNORE = SWStat_backup.cmd
+IGNORE = SWStat_new.cmd
+IGNORE = files.tar
+IGNORE = herc_new.cmd
+IGNORE = herc_old.cmd
+IGNORE = herc_old.tmc
+IGNORE = hrdwr_160402_old.tma
+IGNORE = hrdwr_160804.tma
+IGNORE = hrdwr_170119.tma
+IGNORE = hrdwr_SEAC.tma
+IGNORE = triple_160402_old.tma
+IGNORE = triple_BEFOREAUTOCALCHANGES_160501.tma
+IGNORE = triple_SEAC.tma
+IGNORE = triple_new.tma
 %%
 COLFLAGS='-Haddress.h'
 CPPFLAGS+= -I ../DSDaq

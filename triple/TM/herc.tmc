@@ -79,7 +79,7 @@ TM typedef unsigned short HERC_DA {
   collect x = Herc.read(x.address);
 }
 
-TM 1 Hz HERC_DA ScrubMFCset; Address ScrubMFCset 0x2001;
-TM 1 Hz HERC_DA DiluteMFCset; Address DiluteMFCset 0x2000;
+TM 1 Hz HERC_DA ScrubMFCset; Address ScrubMFCset 0x2000;
+TM 1 Hz HERC_DA DiluteMFCset; Address DiluteMFCset 0x2001;
 TM 1 Hz HERC_DA IonSourceMFCset; Address IonSourceMFCset 0x2002;
 TM 1 Hz HERC_DA ReagentMFCset; Address ReagentMFCset 0x2003;

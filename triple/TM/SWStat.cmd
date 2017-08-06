@@ -32,9 +32,9 @@
   : Telemetry Logging Resume * {}
   : &SWTM * { if_SWData.Turf(); }
   : ToF ambient flow on * {
-        send_to_tof( "Set ambient zero flow 550 sccm\n" ); }
+        send_to_tof( "Set ambient zero flow 515 sccm\n" ); }
   : ToF ambient flow off * {
-        send_to_tof( "Set ambient zero flow 300 sccm\n" ); }
+        send_to_tof( "Set ambient zero flow 450 sccm\n" ); }
   : ToF command %s (Enter command to send to ToF) * {
         send_to_tof( strcat($3, "\n")); }
   ;
@@ -61,10 +61,10 @@
   : Dither Drycal { $0 = SWS_DITHER_DRYCAL; }
   : Dither Ambcal { $0 = SWS_DITHER_AMBCAL; }
   : Dither Zero { $0 = SWS_DITHER_ZERO; }
-  : SitOn Neg Data { $0 = SWS_SITON_NEG_DATA; }
-  : SitOn Neg Zero { $0 = SWS_SITON_NEG_ZERO; }
+  : SitOn Neg DatawMHP { $0 = SWS_SITON_NEG_DATAwMHP; }
+  : SitOn Neg DryZero { $0 = SWS_SITON_NEG_DRYZERO; }
   : SitOn Neg DryCal { $0 = SWS_SITON_NEG_DRYCAL; }
-  : SitOn Neg AmbCal { $0 = SWS_SITON_NEG_AMBCAL; }
+  : SitOn Neg AmbZero { $0 = SWS_SITON_NEG_AMBZERO; }
   : SitOn Pos AmbCal { $0 = SWS_SITON_POS_AMBCAL; }
   : Init Continue { $0 = SWS_INIT_CONTINUE; }
   : Auto Cal Start { $0 = SWS_AUTOCALTRIPLE_START; }

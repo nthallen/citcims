@@ -77,7 +77,7 @@ State Init_continue {
 #  +1 validate NegDryCalScan;
 #   { msg(0,"NegDryCalScan before dither three");}	
 #  +1 hold until valid ( collect_idle);
-   +5 validate dither_three;
+   +5 validate dither_one;
 # pol_neg is just for chamber runs
 #  +1 validate pol_neg;
 #   { msg(0, "I got to the end of initcontinue"); }
@@ -155,7 +155,10 @@ State SW_Stat_Wait {
       case SWS_INIT_CONTINUE: Validate Init_continue; break;
       case SWS_AUTOCALTRIPLE_START: Validate autocal_start; break;
       case SWS_AUTOCALTRIPLE_STOP: Validate autocal_stop; break;
-
+      case SWS_SITON_NEG_DATAwMHP: Validate NegDataHop_wMHP; break;
+      case SWS_SITON_NEG_DRYZERO: Validate NegDryZeroHop; break;
+      case SWS_SITON_NEG_DRYCAL: Validate NegDryCalHop; break;
+      case SWS_SITON_NEG_AMBZERO: Validate NegAmbZeroHop; break;	
 
 	 }
     if (reset_it) Validate SW_Stat_Reset;
@@ -619,12 +622,36 @@ State NegDryCalHop {
 +1 	hold until valid (hopping);
 	{msg(0,"In Neg DryCal Hop");}
 +120 > DiluteMFC open on
-+60	Validate hop_finish; #change back to 60 after test
+	Validate hop_finish; #change back to 60 after test
 +1  hold until valid (hop_scan_idle);
 	> DiluteMFC open off
+        Validate Cal_off;
+	hold until valid (cal_idle);
 	{msg(0,"had it with Neg DryCal Hop");}
 	Validate collect_idle;
 }
+
+State NegDryZeroHop_wMHP {
+	Validate Pol_Negative;
++1	hold until valid (Pol_idle);
+	Validate flows_n2_mhp;
++1	hold until valid (flows_idle);
+	Validate cal_MHP;
++1	hold until valid (cal_idle);
++1	Validate Neg_HV_on;
++1	hold until valid (Neg_HV_monitor);
+	Validate hop_start;
++1 	hold until valid (hopping);
+	{msg(0,"In NegZeroHop with MHP");}
++120 >	DiluteMFC open on
++60	Validate hop_finish;
++1	hold until valid (hop_scan_idle);
+	> DiluteMFC open off
+	{msg(0,"done with NegZeroHopwMHP");}
+
+	Validate collect_idle;
+}
+
 
 State NegCalHopEnd {
 	Validate Cal_off;
@@ -833,7 +860,7 @@ State dither_two {
 	Validate dither_zero;
 }
 
-State dither_three {
+State dither_one {
 	> Telemetry Logging Resume
 	> 1200 Enable A off
 	> 1200 Enable B off
@@ -843,56 +870,10 @@ State dither_three {
 +10	{ msg(0,"Still beginning First NegDryCal MassCenter");}
 +1	hold until valid (collect_idle);
  
-	Validate NegDataHop_wMHP;
-	{ msg(0,"Entering First Neg Data Hop"); }
-+1	{ msg(0,"Still beginning First Neg Data Hop"); }
-+1 	hold until valid (collect_idle);
-
 	Validate NegDryZeroHop;
 	{ msg(0,"Entering First DryZ Hop"); }
 +1 	hold until valid (collect_idle);
-
-	Validate NegCalHop;
-	{ msg(0,"Entering First Cal Hop"); }
-+1 	hold until valid (collect_idle);	
-
-	Validate NegDataHop_wMHP;
-	{ msg(0,"Entering Second Neg Data Hop"); }
-+10	{ msg(0,"Still beginning Second Neg Data Hop"); }
-+1 	hold until valid (collect_idle);
-
-	Validate NegAmbZeroHop;
-	{ msg(0,"Entering First Z (amb) Hop"); }
-+1 	hold until valid (collect_idle);
-
-	Validate NegDataHop_wMHP;
-	{ msg(0,"Entering Third Neg Data Hop"); }
-+10	{ msg(0,"Still beginning Third Neg Data Hop"); }
-+1 	hold until valid (collect_idle);
-
-	Validate NegDryZeroHop;
-	{ msg(0,"Entering second DryZ Hop"); }
-+1 	hold until valid (collect_idle);
-
-	Validate NegDataHop_wMHP;
-	{ msg(0,"Entering fourth Neg Data Hop"); }
-+10	{ msg(0,"Still beginning Third Neg Data Hop"); }
-+1 	hold until valid (collect_idle);
-
-	Validate NegAmbZeroHop;
-	{ msg(0,"Entering second Z (amb) Hop"); }
-+1 	hold until valid (collect_idle);
-
-	Validate NegDataHop_wMHP;
-	{ msg(0,"Entering fifth Neg Data Hop"); }
-+10	{ msg(0,"Still beginning Fourth Neg Data Hop"); }
-+1 	hold until valid (collect_idle);
-
-	Validate NegDryZeroHop;
-	{ msg(0,"Entering third DryZ Hop"); }
-+1 	hold until valid (collect_idle);
-
-	Validate dither_one;
+	Validate dither_three;
 }
 
 
@@ -928,39 +909,120 @@ State dither_zero {
 	Validate dither_one;
 }
 
-State dither_one {
+State dither_three {
 	> Telemetry Logging Resume
 	> 1200 Enable A off
 	> 1200 Enable B off
 	
 	Validate NegDataHop_wMHP;
-	{ msg(0,"Entering Fifth Neg Data Hop"); }
-+10	{ msg(0,"Still beginning Fifth Neg Data Hop"); }
+	{ msg(0,"Entering first Neg Data Hop"); }
++10	{ msg(0,"Still beginning first Neg Data Hop"); }
 +1 	hold until valid (collect_idle);
 	
 	Validate NegAmbZeroHop;
-	{ msg(0,"Entering Third Z (amb) Hop"); }
+	{ msg(0,"Entering first amb Zero Hop"); }
 +1 	hold until valid (collect_idle);
 
 	Validate NegDataHop_wMHP;
-	{ msg(0,"Entering Sixth Neg Data Hop"); }
-+10	{ msg(0,"Still beginning Sixth Neg Data Hop"); }
+	{ msg(0,"Entering second Neg Data Hop"); }
++10	{ msg(0,"Still beginning second Neg Data Hop"); }
 +1 	hold until valid (collect_idle);
 
 	Validate NegAmbZeroHop;
-	{ msg(0,"Entering Fourth Z (amb) Hop"); }
+	{ msg(0,"Entering second amb Zero Hop"); }
 +1 	hold until valid (collect_idle);
 
 	Validate NegDataHop_wMHP;
-	{ msg(0,"Entering Seventh Neg Data Hop"); }
+	{ msg(0,"Entering third Neg Data Hop"); }
 +10	{ msg(0,"Still beginning Seventh Neg Data Hop"); }
 +1 	hold until valid (collect_idle);
 
-	Validate NegDryZeroHop;
-	{ msg(0,"Entering Third DryZ Hop"); }
+        Validate NegAmbZeroHop;
+	{ msg(0,"Entering third amb Zero Hop"); }
++1	hold until valid (collect_idle);
+
+#start dryzero and cal
+
+	Validate NegDryZeroHop_wMHP;
+	{ msg(0,"Entering first dry NegZeroHop"); }
++1	hold until valid (collect_idle);	
+
+	Validate NegCalHop;
+	{ msg(0,"Entering First Cal Hop"); }
++1	hold until valid (collect_idle);
+
+	
+	Validate NegDataHop_wMHP;
+	{ msg(0,"Entering fourth Neg Data Hop"); }
++10	{ msg(0,"Still beginning fourth Neg Data Hop"); }
++1 	hold until valid (collect_idle);
+	
+	Validate NegAmbZeroHop;
+	{ msg(0,"Entering fourth dry Zero Hop"); }
 +1 	hold until valid (collect_idle);
 
-validate dither_three;
+	Validate NegDataHop_wMHP;
+	{ msg(0,"Entering fifth Neg Data Hop"); }
++10	{ msg(0,"Still beginning fifth Neg Data Hop"); }
++1 	hold until valid (collect_idle);
+
+	Validate NegAmbZeroHop;
+	{ msg(0,"Entering fifth dry Zero Hop"); }
++1 	hold until valid (collect_idle);
+
+	Validate NegDataHop_wMHP;
+	{ msg(0,"Entering sixth Neg Data Hop"); }
++10	{ msg(0,"Still beginning sixth Neg Data Hop"); }
++1 	hold until valid (collect_idle);
+
+        Validate NegAmbZeroHop;
+	{ msg(0,"Entering sixth dry Zero Hop"); }
++1	hold until valid (collect_idle);
+
+
+	Validate NegDryZeroHop;
+	{ msg(0,"Entering second NegDryZ"); }
++1 	hold until valid (collect_idle);
+
+
+	Validate NegDataHop_wMHP;
+	{ msg(0,"Entering seventh Neg Data Hop"); }
++10	{ msg(0,"Still beginning first Neg Data Hop"); }
++1 	hold until valid (collect_idle);
+	
+	Validate NegAmbZeroHop;
+	{ msg(0,"Entering seventh Zero Hop"); }
++1 	hold until valid (collect_idle);
+
+	Validate NegDataHop_wMHP;
+	{ msg(0,"Entering eighth Neg Data Hop"); }
++10	{ msg(0,"Still beginning second Neg Data Hop"); }
++1 	hold until valid (collect_idle);
+
+	Validate NegAmbZeroHop;
+	{ msg(0,"Entering eighth Zero Hop"); }
++1 	hold until valid (collect_idle);
+
+	Validate NegDataHop_wMHP;
+	{ msg(0,"Entering ninth Neg Data Hop"); }
++10	{ msg(0,"Still beginning Seventh Neg Data Hop"); }
++1 	hold until valid (collect_idle);
+
+        Validate NegAmbZeroHop;
+	{ msg(0,"Entering ninth Zero Hop"); }
++1	hold until valid (collect_idle);
+
+#start dry zero and cal
+
+	Validate NegDryZeroHop_wMHP;
+	{ msg(0,"Entering third NegDryZero wMHP"); }
++1	hold until valid (collect_idle);	
+
+	Validate NegCalHop;
+	{ msg(0,"Entering second Cal Hop"); }
++1	hold until valid (collect_idle);
+
+validate dither_one;
 
 ## in case triple is doing a scan...
 ##+1  hold until ( (!D1200B) || !(H_DIO_D&2) );
@@ -1083,9 +1145,9 @@ State autocal_start {
  +1 hold until valid ( loop_idle );
  +120 Validate loop_init_up_nocal;
  +1 hold until valid ( loop_idle );
- +120  Validate flows_amb_cal;
+ +120  Validate flows_amb_norm;
  +1 hold until valid (flows_idle);
- +1   Validate cal_on;
+ +1   Validate cal_norm;
  +1 hold until valid (cal_idle);
  +360 Validate loop_init_down_cal;
  +1 hold until valid (loop_idle);
@@ -1112,7 +1174,7 @@ Partition
 %{
 int z = 24;
 int loop_j;
-int ambi;
+int ambi; 
 int dfi;
 %}
 
@@ -1146,14 +1208,14 @@ State loop_init_up_cal {
 
 State loop_up_nocal {
     {
-    dfi = 735;
-    ambi = 150;
+    dfi = 715;
+    ambi = 175;
     
     if ( ++loop_j > 17) {
         Validate loop_idle;
         } else {
         int stp, stp2;
-        stp = dfi - ( loop_j - 1 )*z*2048/5000*0.9;
+        stp = dfi - ( loop_j - 1 )*z*2048/5000*0.916;
         stp2 = ambi + ( loop_j - 1 )*z;
         ci_sendfcmd(0,"set dilute MFC %d\n",stp);
         ci_sendfcmd(0,"ToF command set ambient zero flow %d sccm\n",stp2);
@@ -1165,13 +1227,13 @@ State loop_up_nocal {
 
 State loop_up_cal {
    {
-   dfi = 670; 
-   ambi = 150;
-   if ( ++loop_j > 17 ) {
+  dfi = 675;
+  ambi = 175;
+  if ( ++loop_j > 17 ) {
       Validate loop_idle;
       } else {
       int stp, stp2;
-      stp = dfi - ( loop_j - 1 )*z*2048/5000*0.90;
+      stp = dfi - ( loop_j - 1 )*z*2048/5000*0.9160;
       stp2 = ambi + ( loop_j - 1 )*z;
       ci_sendfcmd(0,"set dilute MFC %d\n",stp);
       ci_sendfcmd(0,"ToF command set ambient zero flow %d sccm\n",stp2);
@@ -1183,14 +1245,14 @@ State loop_up_cal {
 
 State loop_down_nocal {
    {
-   dfi = 590;
+   dfi = 575;
    ambi = 534;
    
    if ( ++loop_j > 17 ) {
       Validate loop_idle;
       } else {
       int stp, stp2;
-      stp = dfi + ( loop_j - 1 )*z*2048/5000*0.9;
+      stp = dfi + ( loop_j - 1 )*z*2048/5000*0.916;
       stp2 = ambi - ( loop_j - 1 )*z;
       ci_sendfcmd(0,"set dilute MFC %d\n",stp);
       ci_sendfcmd(0,"ToF command set ambient zero flow %d sccm\n",stp2);
@@ -1201,14 +1263,14 @@ State loop_down_nocal {
 
 State loop_down_cal{
    {
-   dfi = 525;
+   dfi = 535;
    ambi = 534;
    
    if ( ++loop_j > 17 ) {
       Validate loop_idle;
       } else {
       int stp, stp2;
-      stp = dfi + ( loop_j - 1 )*z*2048/5000*0.9;
+      stp = dfi + ( loop_j - 1 )*z*2048/5000*0.916;
       stp2 = ambi - ( loop_j - 1 )*z;
       ci_sendfcmd(0,"set dilute MFC %d\n",stp);
       ci_sendfcmd(0,"ToF command set ambient zero flow %d sccm\n",stp2); 
