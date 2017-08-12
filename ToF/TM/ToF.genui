@@ -12,13 +12,13 @@ ROWS 18
   1 Tot_F_sp Flows Total
   
   1 T1 GasDeck Temp
-  1 T3 GasDeck Temp
-  1 T4 GasDeck Temp
+ 10 T3 GasDeck Temp
+ 10 T4 GasDeck Temp
   1 INTP GasDeck mbar
   1 CALP GasDeck mbar
   1 CalT GasDeck Temp
-  1 InH_P GasDeck mbar
-  1 InL_P GasDeck mbar
+ 10 InH_P GasDeck mbar
+ 10 InL_P GasDeck mbar
   1 PT_P GasDeck mbar
   1 GBH_P GasDeck psi
   1 GBL_P GasDeck psi
