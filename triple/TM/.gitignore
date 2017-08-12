@@ -79,6 +79,7 @@ tripletblnc.tmc.dep
 triple2tblnc.tmc.dep
 UPSwintblnc.tmc.dep
 *.err
+Makefile
 SWStat_backup.cmd
 SWStat_new.cmd
 files.tar

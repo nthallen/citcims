@@ -25,7 +25,7 @@ genuibase = ToF.genui
 Module Horiba mode=default
 Module IonGauge mode=default Hz=1
 Module nXDS mode=default
-Module OMS mode=Y OMS1=Insl Group=Inlet
+Module OMS mode=Y OMS1=Insl Group=Inlet Hz=5
 Module UPS mode=default
 Module gpsd mode=default
 Module IWG1 mode=UserPkts2

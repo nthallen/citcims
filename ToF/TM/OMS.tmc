@@ -1,5 +1,5 @@
 TM typedef signed long oms_step_t { text "%9ld"; }
-TM typedef unsigned char oms_stat_t { text "%4u" oms_stat_text(); }
+TM typedef unsigned char oms_stat_t { text "%5u" oms_stat_text(); }
 
 %{
   static const char *oms_stat_graph[] = {
@@ -25,15 +25,15 @@ TM typedef unsigned char oms_stat_t { text "%4u" oms_stat_text(); }
   }
 %}
 
-/* TM 4 Hz oms_step_t OMS_0_Step; */
- TM 4 Hz oms_step_t Insl_Step; 
-/* TM 4 Hz oms_step_t OMS_2_Step; */
-/* TM 4 Hz oms_step_t OMS_3_Step; */
-/* TM 4 Hz oms_stat_t OMS_0_Stat; */
- TM 4 Hz oms_stat_t Insl_Stat; 
-/* TM 4 Hz oms_stat_t OMS_2_Stat; */
-/* TM 4 Hz oms_stat_t @OMD3@_Stat; */
-TM 4 Hz UCHAR OMS_Stale;
+/* TM 5 Hz oms_step_t OMS_0_Step; */
+ TM 5 Hz oms_step_t Insl_Step; 
+/* TM 5 Hz oms_step_t OMS_2_Step; */
+/* TM 5 Hz oms_step_t OMS_3_Step; */
+/* TM 5 Hz oms_stat_t OMS_0_Stat; */
+ TM 5 Hz oms_stat_t Insl_Stat; 
+/* TM 5 Hz oms_stat_t OMS_2_Stat; */
+/* TM 5 Hz oms_stat_t @OMD3@_Stat; */
+TM 5 Hz UCHAR OMS_Stale;
 
 TM "Receive" OMS_status 1;
 
