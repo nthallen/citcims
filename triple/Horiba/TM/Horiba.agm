@@ -1,0 +1,28 @@
+Moduledef Horiba [ src= name=Horiba ] {
+  Horiba Module requires a src variable
+  Source file syntax documentation goes here.
+}
+
+mode (default,driver) {
+  tmcbase = @name@.tmc:
+  colbase = @name@_col.tmc:
+  cmdbase = @name@.cmd:
+  extbase = @name@_conv.tmc:
+  genuibase = @name@.genui:
+  SRC = @src@
+  %%
+@name@.tmc @name@_col.tmc @name@.cmd @name@_conv.tmc @name@.genui @name@.tbl : @src@ @MODDIR@/Horiba_gen
+	@MODDIR@/Horiba_gen @src@ name=@name@
+}
+
+mode (driver) {
+  DISTRIB = @MODDIR@/../horiba
+  CPPFLAGS = -I @MODDIR@/..
+  %%
+.PHONY : clean-Horiba
+@MODDIR@/../horiba :
+	cd @MODDIR@/.. && make
+clean-dist : clean-Horiba
+clean-Horiba :
+	cd @MODDIR@/.. && make clean
+}

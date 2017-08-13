@@ -1,0 +1,32 @@
+<package> Horiba
+<include> <stdlib.h>
+<include> "horiba_int.h"
+<include> msg
+<follow> msg
+
+<opts> "d:n:e"
+<sort>
+	-d <serial device>
+	-n <number of channels>
+	-e RS485 Hardware suppresses echo
+<unsort>
+The '-h' message header option will also change the name
+used for command and telemetry communications.
+
+<switch>
+  case 'd':
+    horiba_path = optarg;
+    break;
+  case 'e':
+    opt_echo = 0;
+    break;
+  case 'n':
+    horiba_channels = atoi(optarg);
+    break;
+  case 'h': // use msg header value for name
+    horiba_name = optarg;
+    break;
+
+<package> msghdr_default
+<var>
+  char *msg_hdr_default = "Horiba";
