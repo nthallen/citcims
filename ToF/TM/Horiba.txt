@@ -2,7 +2,7 @@
 Name Horiba
 Rate 1 Hz
 Port /net/tofathena/dev/ser3
-Data DilFlow      3 sccm %6.1lf "Dilution Flow"
+Data DilFlow      1 sccm %6.1lf "Dilution Flow"
 Data IonSrcFlow   2 sccm %5.1lf "Ion Source Flow" 
-Data FFlow        1 sccm %5.3lf "Fluorine Flow"
+Data FFlow        3 sccm %5.3lf "Fluorine Flow"
 Data HoribaP      4 mbar %6.1lf "" 30.
