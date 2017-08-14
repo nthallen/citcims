@@ -1,0 +1,48 @@
+FFlow {
+  FFlow:
+    >HBox{(FFlow_SP,5); (FFlow_SP_Stat,1)}
+    >HBox{(FFlow,5); (FFlow_Stat,1)}
+    sccm;
+}
+IonSrcFlow {
+  IonSrcFlow:
+    >HBox{(IonSrcFlow_SP,5); (IonSrcFlow_SP_Stat,1)}
+    >HBox{(IonSrcFlow,5); (IonSrcFlow_Stat,1)}
+    sccm;
+}
+DilFlow {
+  DilFlow:
+    >HBox{(DilFlow_SP,6); (DilFlow_SP_Stat,1)}
+    >HBox{(DilFlow,6); (DilFlow_Stat,1)}
+    sccm;
+}
+HoribaP {
+  HoribaP:
+    >HBox{(HoribaP_SP,6); (HoribaP_SP_Stat,1)}
+    >HBox{(HoribaP,6); (HoribaP_Stat,1)}
+    mbar;
+}
+Horiba_Status {
+  { Cmd: (Horiba_CS,2) HGlue 0+1 Stale: (Horiba_Stale,3) }
+}
+Horiba {
+  HBox { +-; Title: Horiba; -+ };
+  "" >Set< >Flow<;
+  FFlow:
+    >HBox{(FFlow_SP,5); (FFlow_SP_Stat,1)}
+    >HBox{(FFlow,5); (FFlow_Stat,1)}
+    sccm;
+  IonSrcFlow:
+    >HBox{(IonSrcFlow_SP,5); (IonSrcFlow_SP_Stat,1)}
+    >HBox{(IonSrcFlow,5); (IonSrcFlow_Stat,1)}
+    sccm;
+  DilFlow:
+    >HBox{(DilFlow_SP,6); (DilFlow_SP_Stat,1)}
+    >HBox{(DilFlow,6); (DilFlow_Stat,1)}
+    sccm;
+  HoribaP:
+    >HBox{(HoribaP_SP,6); (HoribaP_SP_Stat,1)}
+    >HBox{(HoribaP,6); (HoribaP_Stat,1)}
+    mbar;
+  { Cmd: (Horiba_CS,2) HGlue 0+1 Stale: (Horiba_Stale,3) }
+}

@@ -1,3 +1,5 @@
+Input "Horiba.tbl";
+
 IG {
   HBox{ +-; Title: "Ion Gauges"; -+ };
   Hex_P: (Hex_P,9) mbar;
@@ -14,19 +16,19 @@ Flows {
   ZF2_F:  (ZF2_F_sp,6)  (ZF2_F,6) sccm;
   Tot_F:  (Tot_F_sp,6)  (Tot_F,6) slm;
 }
-Horiba {
-  HBox{ +-; Title: "Horiba"; -+ };
-  ""       Set     Flow;
-  Dilution: >HBox{(DilFlowSP,5); (DilFlowSP_Stat,1)}
-            >HBox{(DilFlow,5); (DilFlow_Stat,1)} sccm;
-  IonSrc:   >HBox{(IonSrcFlowSP,5); (IonSrcFlowSP_Stat,1)}
-            >HBox{(IonSrcFlow,5); (IonSrcFlow_Stat,1)} sccm;
-  Fluorine: >HBox{(FFlowSP,5); (FFlowSP_Stat,1)}
-            >HBox{(FFlow,5); (FFlow_Stat,1)} sccm;
-  Pressure: >HBox{(HoribaPSP,6); (HoribaPSP_Stat,1)}
-            >HBox{(HoribaP,6); (HoribaP_Stat,1)} mbar;
-  { Cmd: (HCmd_Stat,2) HGlue 0+1 Stale: (Horiba_Stale,3) }
-}
+#Horiba {
+#  HBox{ +-; Title: "Horiba"; -+ };
+#  ""       Set     Flow;
+#  Dilution: >HBox{(DilFlowSP,5); (DilFlowSP_Stat,1)}
+#            >HBox{(DilFlow,5); (DilFlow_Stat,1)} sccm;
+#  IonSrc:   >HBox{(IonSrcFlowSP,5); (IonSrcFlowSP_Stat,1)}
+#            >HBox{(IonSrcFlow,5); (IonSrcFlow_Stat,1)} sccm;
+#  Fluorine: >HBox{(FFlowSP,5); (FFlowSP_Stat,1)}
+#            >HBox{(FFlow,5); (FFlow_Stat,1)} sccm;
+#  Pressure: >HBox{(HoribaPSP,6); (HoribaPSP_Stat,1)}
+#            >HBox{(HoribaP,6); (HoribaP_Stat,1)} mbar;
+#  { Cmd: (HCmd_Stat,2) HGlue 0+1 Stale: (Horiba_Stale,3) }
+#}
 
 GasV {
   HBox{ +-; Title: "Gas Deck"; -+ };

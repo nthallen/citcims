@@ -1,0 +1,35 @@
+%{
+  #include "horiba.h"
+  #define Horiba_BitStar_text(x) ((x)?" ":"*")
+  #define Horiba_CStext(x) ((x)?"OK":"--")
+%}
+TM typedef unsigned char Horiba_BitStar { text "%1d" Horiba_BitStar_text(); }
+TM typedef unsigned char Horiba_CS_t { text "%2d" Horiba_CStext(); }
+
+Horiba_BitStar FFlow_SP_Stat; Invalidate FFlow_SP_Stat;
+  { FFlow_SP_Stat = (HoribaS >> 0) & 1;
+    Validate FFlow_SP_Stat; }
+Horiba_BitStar FFlow_Stat; Invalidate FFlow_Stat;
+  { FFlow_Stat = (HoribaS >> 1) & 1;
+    Validate FFlow_Stat; }
+Horiba_BitStar IonSrcFlow_SP_Stat; Invalidate IonSrcFlow_SP_Stat;
+  { IonSrcFlow_SP_Stat = (HoribaS >> 2) & 1;
+    Validate IonSrcFlow_SP_Stat; }
+Horiba_BitStar IonSrcFlow_Stat; Invalidate IonSrcFlow_Stat;
+  { IonSrcFlow_Stat = (HoribaS >> 3) & 1;
+    Validate IonSrcFlow_Stat; }
+Horiba_BitStar DilFlow_SP_Stat; Invalidate DilFlow_SP_Stat;
+  { DilFlow_SP_Stat = (HoribaS >> 4) & 1;
+    Validate DilFlow_SP_Stat; }
+Horiba_BitStar DilFlow_Stat; Invalidate DilFlow_Stat;
+  { DilFlow_Stat = (HoribaS >> 5) & 1;
+    Validate DilFlow_Stat; }
+Horiba_BitStar HoribaP_SP_Stat; Invalidate HoribaP_SP_Stat;
+  { HoribaP_SP_Stat = (HoribaS >> 6) & 1;
+    Validate HoribaP_SP_Stat; }
+Horiba_BitStar HoribaP_Stat; Invalidate HoribaP_Stat;
+  { HoribaP_Stat = (HoribaS >> 7) & 1;
+    Validate HoribaP_Stat; }
+Horiba_CS_t Horiba_CS; Invalidate Horiba_CS;
+  { Horiba_CS = (HoribaS >> 10) & 1;
+    Validate Horiba_CS; }

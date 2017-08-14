@@ -11,12 +11,12 @@ json ToFeng_1 103
   9 CalT
   10 Dew_Point
   11 DilFlow
-  12 DilFlowSP
+  12 DilFlow_SP
   13 Disk
   14 Drift
   15 Dynamic_Press
   16 FFlow
-  17 FFlowSP
+  17 FFlow_SP
   18 FlySt
   19 Fly_Pos_RB
   20 Fly_Press_RB
@@ -29,7 +29,7 @@ json ToFeng_1 103
   27 Herc_DS_D
   28 Herc_DS_E
   29 HoribaP
-  30 HoribaPSP
+  30 HoribaP_SP
   31 HoribaS
   32 Horiba_Stale
   33 INTP
@@ -41,7 +41,7 @@ json ToFeng_1 103
   39 InPset
   40 Indicated_Airspeed
   41 IonSrcFlow
-  42 IonSrcFlowSP
+  42 IonSrcFlow_SP
   43 Lat
   44 Lon
   45 MFC_S1
