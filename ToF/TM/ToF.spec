@@ -22,7 +22,7 @@ colbase = ../DSDaq/dsdaq.cc
 swsbase = ToF.sws
 genuibase = ToF.genui
 
-Module Horiba mode=default
+Module Horiba mode=driver src=Horiba.txt
 Module IonGauge mode=default Hz=1
 Module nXDS mode=default
 Module OMS mode=Y OMS1=Insl Group=Inlet Hz=5

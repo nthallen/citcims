@@ -1,25 +1,27 @@
 #ifndef HORIBA_INT_H_INCLUDED
 #define HORIBA_INT_H_INCLUDED
 
+#include <termios.h>
 #include "horiba.h"
 
 extern const char *horiba_path;
+extern const char *horiba_name;
+extern int horiba_channels;
+extern int opt_echo;
 
 #ifdef __cplusplus
 
 #include <string>
 #include <vector>
-#include <termios.h>
 #include "SerSelector.h"
 
 class HoribaQuery {
   public:
     HoribaQuery();
-    void format(unsigned short addr, short *resultp, double rscale,
+    void format(unsigned short addr, float *resultp,
         unsigned short smask, unsigned char sunit, const char *cmd, ...);
     std::string query;
-    short *result;
-    double scale;
+    float *result;
     unsigned short mask;
     unsigned char unit;
 };

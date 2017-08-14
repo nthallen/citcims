@@ -8,15 +8,18 @@
 #include "nl_assert.h"
 
 const char *horiba_path = "/net/athenaII_a/dev/ser3";
+const char *horiba_name = "Horiba";
+int horiba_channels = 4;
+int opt_echo = 1;
 
 int main(int argc, char **argv) {
   oui_init_options(argc, argv);
-  nl_error( 0, "Starting V13.0.12" );
+  nl_error( 0, "Starting V14.0" );
   { Selector S;
     HoribaCmd HC;
     horiba_tm_t TMdata;
     HoribaSer Hrba(horiba_path, &TMdata, &HC);
-    TM_Selectee TM( "Horiba", &TMdata, sizeof(TMdata) );
+    TM_Selectee TM(horiba_name, &TMdata, sizeof(TMdata));
     S.add_child(&HC);
     S.add_child(&Hrba);
     S.add_child(&TM);
@@ -27,18 +30,17 @@ int main(int argc, char **argv) {
 
 HoribaQuery::HoribaQuery() {
   result = 0;
-  scale = 1.0;
+  // scale = 1.0;
   mask = 0;
 }
 
-void HoribaQuery::format(unsigned short addr, short *resultp, double rscale,
+void HoribaQuery::format(unsigned short addr, float *resultp,
         unsigned short smask, unsigned char sunit, const char *cmd, ...) {
   char buf[30];
   int nc, bcc, i;
   va_list arg;
 
   result = resultp;
-  scale = rscale;
   mask = smask;
   unit = sunit;
   query.clear();
@@ -60,6 +62,7 @@ void HoribaQuery::format(unsigned short addr, short *resultp, double rscale,
     query.append("\003\003\003", 3);
   else if (bcc == '*' || bcc == '.')
     query.append("\003\003\003\003\003\003\003\003\003", 9);
+  nl_error(-2, "Query formatted: '%s'", ascii_escape(query));
 }
 
 /**
@@ -67,8 +70,14 @@ void HoribaQuery::format(unsigned short addr, short *resultp, double rscale,
  * just want access to all the parsing and error reporting functions.
  * I won't call setup(), which is the only device-specific function.
  */
-HoribaCmd::HoribaCmd()
-  : Ser_Sel( tm_dev_name("cmd/Horiba"), O_RDONLY|O_NONBLOCK, 50 ) {
+HoribaCmd::HoribaCmd() : Ser_Sel() {
+  char shortname[40];
+  int nc;
+  nc = snprintf(shortname, 40, "cmd/%s", horiba_name);
+  if (nc >= 40) {
+    nl_error(3, "Specified name '%s' is too long", horiba_name);
+  }
+  init( tm_dev_name(shortname), O_RDONLY|O_NONBLOCK, 50 );
 }
 
 HoribaCmd::~HoribaCmd() {
@@ -95,11 +104,11 @@ int HoribaCmd::ProcessData(int flag) {
       not_str("\n", 1) ) {
     return 0;
   }
-  if (addr < 1 || addr > 3) {
+  if (addr < 1 || addr > horiba_channels) {
     report_err("Invalid address %d in HoribaCmd", addr);
     return 0;
   }
-  HCquery.format( addr, 0, 1.0, HORIBA_CMD_S << (addr-1), 'B', "AFC%.2lf,B", value );
+  HCquery.format( addr, 0, HORIBA_CMD_S << (addr-1), 'B', "AFC%.2lf,B", value );
   flags = 0; // Don't listen for more commands
   Stor->set_gflag(1);
   report_ok();
@@ -112,6 +121,7 @@ HoribaQuery *HoribaCmd::query() {
     nl_error( 2, "HoribaCmd::query() called when flags != 0" );
     return NULL;
   }
+  // flags = Selector::Sel_Read; // listen again
   return &HCquery;
 }
 
@@ -123,28 +133,20 @@ void HoribaCmd::query_complete() {
 HoribaSer::HoribaSer(const char *ser_dev, horiba_tm_t *data, HoribaCmd *HCmd)
   : Ser_Sel( ser_dev, O_RDWR|O_NONBLOCK, 100 ) {
   Cmd = HCmd;
-  setup(38400, 7, 'o', 1, 1, 1 ); // Let's go with the timeout
+  setup(38400, 7, 'o', 1, 45, 1 ); // Let's go with the timeout
   flags |= Selector::gflag(0) | Selector::gflag(1) | Selector::Sel_Timeout;
   TMdata = data;
-  TMdata->DilFlowSP = 0;
-  TMdata->DilFlow = 0;
-  TMdata->IonSrcFlowSP = 0;
-  TMdata->IonSrcFlow = 0;
-  TMdata->FFlowSP = 0;
-  TMdata->FFlow = 0;
-  TMdata->HoribaPSP = 0;
-  TMdata->HoribaP = 0;
+  for (int i = 0; i < HORIBA_MAX_CHANNELS; ++i) {
+    TMdata->channel[i].SP = 0.;
+    TMdata->channel[i].RB = 0.;
+  }
   TMdata->HoribaS = 0;
   // Initialize queries 
-  Qlist.resize(8);
-  Qlist[0].format(1, &TMdata->DilFlowSP, 0.001, DILFLOWSP_S, 'B', "RFC");
-  Qlist[1].format(2, &TMdata->IonSrcFlowSP, 0.1, IONSRCFLOWSP_S, 'B', "RFC");
-  Qlist[2].format(3, &TMdata->FFlowSP, 0.01, FFLOWSP_S, 'B', "RFC");
-  Qlist[3].format(51, &TMdata->HoribaPSP, 100./30000., HORIBAPSP_S, 'B', "RFC");
-  Qlist[4].format(1, &TMdata->DilFlow, 0.001, DILFLOW_S, 'B', "RFV");
-  Qlist[5].format(2, &TMdata->IonSrcFlow, 0.1, IONSRCFLOW_S, 'B', "RFV");
-  Qlist[6].format(3, &TMdata->FFlow, 0.01, FFLOW_S, 'B', "RFV");
-  Qlist[7].format(51, &TMdata->HoribaP, 100./30000., HORIBAP_S, 'B', "RFV");
+  Qlist.resize(horiba_channels*2);
+  for (int i = 1; i <= horiba_channels; ++i) {
+    Qlist[2*i-2].format(i, &TMdata->channel[i-1].SP, 1<<(2*i-2), 'B', "RFC");
+    Qlist[2*i-1].format(i, &TMdata->channel[i-1].RB, 1<<(2*i-1), 'B', "RFV");
+  }
   CurQuery = 0;
   nq = qn = 0;
   cmdq = 0;
@@ -229,7 +231,7 @@ int HoribaSer::ProcessData(int flag) {
     TO.Set(1, 0);
   }
   state = HS_WaitResp;
-  cur_min = CurQuery->query.length()+5;
+  cur_min = opt_echo ? CurQuery->query.length()+5 : 5;
   update_termios();
   return 0;
 }
@@ -290,7 +292,8 @@ HoribaSer::Horiba_Parse_Resp HoribaSer::parse_response() {
     consume(nc);
     return HP_OK;
   }
-  if (str_not_found(CurQuery->query.c_str(), CurQuery->query.length())) {
+  if (opt_echo &&
+      str_not_found(CurQuery->query.c_str(), CurQuery->query.length())) {
     return HP_Wait;
   }
   // I expect either ACK for a command response or
@@ -332,7 +335,7 @@ HoribaSer::Horiba_Parse_Resp HoribaSer::parse_response() {
     }
     if (cp >= nc) return HP_Wait;
     if (bcc_ok(cp0)) {
-      *(CurQuery->result) = (short)floor(val/CurQuery->scale + 0.5);
+      *(CurQuery->result) = val;
       TMdata->HoribaS |= CurQuery->mask;
       report_ok();
       consume(cp);
