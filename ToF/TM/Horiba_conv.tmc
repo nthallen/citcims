@@ -30,6 +30,3 @@ Horiba_BitStar HoribaP_SP_Stat; Invalidate HoribaP_SP_Stat;
 Horiba_BitStar HoribaP_Stat; Invalidate HoribaP_Stat;
   { HoribaP_Stat = (HoribaS >> 7) & 1;
     Validate HoribaP_Stat; }
-Horiba_CS_t Horiba_CS; Invalidate Horiba_CS;
-  { Horiba_CS = (HoribaS >> 10) & 1;
-    Validate Horiba_CS; }

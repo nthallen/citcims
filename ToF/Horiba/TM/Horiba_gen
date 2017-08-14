@@ -83,7 +83,8 @@ open(my $cmd, ">", "$Name.cmd") ||
   die "$srcfile: Unable to write output file $Name.cmd\n";
 # Open the rest here also
 
-my ($typedef, $datadef, $coldef, @grpmem, $tbldef, $convdef, $cmddef);
+my ($typedef, $datadef, $coldef, @grpmem, $tbldef, $convdef, $cmddef,
+    @status_genui);
 for (my $i = 1; $i <= $HORIBA_MAX_CHANNELS; ++$i) {
   if ($Channel{$i}) {
     my $offset = $i-1;
@@ -122,8 +123,10 @@ for (my $i = 1; $i <= $HORIBA_MAX_CHANNELS; ++$i) {
 
     my $SPbit = 2*$offset;
     my $RBbit = $SPbit+1;
+    my $Cmdbit = 2*$HORIBA_MAX_CHANNELS + $offset;
     my $SPvar = "${datum}_SP_Stat";
     my $RBvar = "${datum}_Stat";
+    my $Cmdvar = "${datum}_Cmd_Stat";
     $convdef .=
       "${Name}_BitStar $SPvar; Invalidate $SPvar;\n" .
       "  { $SPvar = (${Name}S >> $SPbit) & 1;\n" .
@@ -131,10 +134,14 @@ for (my $i = 1; $i <= $HORIBA_MAX_CHANNELS; ++$i) {
       "${Name}_BitStar $RBvar; Invalidate $RBvar;\n" .
       "  { $RBvar = (${Name}S >> $RBbit) & 1;\n" .
       "    Validate $RBvar; }\n";
+      "${Name}_BitStar $Cmdvar; Invalidate $Cmdvar;\n" .
+      "  { $Cmdvar = (${Name}S >> $Cmdbit) & 1;\n" .
+      "    Validate $Cmdvar; }\n";
 
-    print $genui
+    push @status_genui,
       "  $Rate $SPvar:${Name}S:$SPbit $Name Status %5.0lf\n",
-      "  $Rate $RBvar:${Name}S:$RBbit $Name Status %5.0lf\n";
+      "  $Rate $RBvar:${Name}S:$RBbit $Name Status %5.0lf\n",
+      "  $Rate $Cmdvar:${Name}S:$Cmdbit $Name Status %5.0lf\n";
 
     my $text = $D->{text};
     if (length($text) > 0) {
@@ -151,6 +158,8 @@ for (my $i = 1; $i <= $HORIBA_MAX_CHANNELS; ++$i) {
     }
   }
 }
+
+print $genui @status_genui;
 
 print $tmc
   "%{\n" .
@@ -181,17 +190,18 @@ print $genui
   "  $Rate ${Name}_Stale $Name Stale\n";
 
 print $tbl
-  "${Name}_Status {\n" .
-  "  { Cmd: (${Name}_CS,2) HGlue 0+1 Stale: (${Name}_Stale,3) }\n" .
-  "}\n" .
+  #"${Name}_Status {\n" .
+  #"  { Cmd: (${Name}_CS,2) HGlue 0+1 Stale: (${Name}_Stale,3) }\n" .
+  #"}\n" .
   "$Name {\n" .
   "  HBox { +-; Title: $Name; -+ };\n" .
   '  "" >Set< >Flow<;' . "\n" .
   $tbldef .
-  "  { Cmd: (${Name}_CS,2) HGlue 0+1 Stale: (${Name}_Stale,3) }\n" .
+# "  { Cmd: (${Name}_CS,2) HGlue 0+1 Stale: (${Name}_Stale,3) }\n" .
+  "  { HGlue 0+1 Stale: (${Name}_Stale,3) }\n" .
   "}\n";
 
-my $CSbit = 2*$HORIBA_MAX_CHANNELS;
+# my $CSbit = 2*$HORIBA_MAX_CHANNELS;
 print $conv
   "%{\n" .
   "  #include \"horiba.h\"\n" .
@@ -202,13 +212,13 @@ print $conv
   "{ text \"%1d\" ${Name}_BitStar_text(); }\n" .
   "TM typedef unsigned char ${Name}_CS_t " .
     "{ text \"%2d\" ${Name}_CStext(); }\n\n" .
-  $convdef .
-  "${Name}_CS_t ${Name}_CS; Invalidate ${Name}_CS;\n" .
-  "  { ${Name}_CS = (${Name}S >> $CSbit) & 1;\n" .
-  "    Validate ${Name}_CS; }\n";
+  $convdef;
+# "${Name}_CS_t ${Name}_CS; Invalidate ${Name}_CS;\n" .
+# "  { ${Name}_CS = (${Name}S >> $CSbit) & 1;\n" .
+# "    Validate ${Name}_CS; }\n";
 
-print $genui
-  "  $Rate ${Name}_CS:${Name}S:$CSbit ${Name} Status %5.0lf\n";
+#print $genui
+# "  $Rate ${Name}_CS:${Name}S:$CSbit ${Name} Status %5.0lf\n";
 
 print $cmd
   "%{\n" .

@@ -1,18 +1,21 @@
   1 DilFlow_SP Horiba DilFlow
   1 DilFlow   Horiba DilFlow
-  1 DilFlow_SP_Stat:HoribaS:0 Horiba Status %5.0lf
-  1 DilFlow_Stat:HoribaS:1 Horiba Status %5.0lf
   1 IonSrcFlow_SP Horiba IonSrcFlow
   1 IonSrcFlow   Horiba IonSrcFlow
-  1 IonSrcFlow_SP_Stat:HoribaS:2 Horiba Status %5.0lf
-  1 IonSrcFlow_Stat:HoribaS:3 Horiba Status %5.0lf
   1 FFlow_SP Horiba FFlow
   1 FFlow   Horiba FFlow
-  1 FFlow_SP_Stat:HoribaS:4 Horiba Status %5.0lf
-  1 FFlow_Stat:HoribaS:5 Horiba Status %5.0lf
   1 HoribaP_SP Horiba HoribaP
   1 HoribaP   Horiba HoribaP
+  1 DilFlow_SP_Stat:HoribaS:0 Horiba Status %5.0lf
+  1 DilFlow_Stat:HoribaS:1 Horiba Status %5.0lf
+  1 DilFlow_Cmd_Stat:HoribaS:10 Horiba Status %5.0lf
+  1 IonSrcFlow_SP_Stat:HoribaS:2 Horiba Status %5.0lf
+  1 IonSrcFlow_Stat:HoribaS:3 Horiba Status %5.0lf
+  1 IonSrcFlow_Cmd_Stat:HoribaS:11 Horiba Status %5.0lf
+  1 FFlow_SP_Stat:HoribaS:4 Horiba Status %5.0lf
+  1 FFlow_Stat:HoribaS:5 Horiba Status %5.0lf
+  1 FFlow_Cmd_Stat:HoribaS:12 Horiba Status %5.0lf
   1 HoribaP_SP_Stat:HoribaS:6 Horiba Status %5.0lf
   1 HoribaP_Stat:HoribaS:7 Horiba Status %5.0lf
+  1 HoribaP_Cmd_Stat:HoribaS:13 Horiba Status %5.0lf
   1 Horiba_Stale Horiba Stale
-  1 Horiba_CS:HoribaS:10 Horiba Status %5.0lf

@@ -22,9 +22,6 @@ HoribaP {
     >HBox{(HoribaP,6); (HoribaP_Stat,1)}
     mbar;
 }
-Horiba_Status {
-  { Cmd: (Horiba_CS,2) HGlue 0+1 Stale: (Horiba_Stale,3) }
-}
 Horiba {
   HBox { +-; Title: Horiba; -+ };
   "" >Set< >Flow<;
@@ -44,5 +41,5 @@ Horiba {
     >HBox{(HoribaP_SP,6); (HoribaP_SP_Stat,1)}
     >HBox{(HoribaP,6); (HoribaP_Stat,1)}
     mbar;
-  { Cmd: (Horiba_CS,2) HGlue 0+1 Stale: (Horiba_Stale,3) }
+  { HGlue 0+1 Stale: (Horiba_Stale,3) }
 }
