@@ -1,5 +1,6 @@
 #! /usr/bin/perl -w
 use strict;
+use Text::Wrap;
 
 # Horiba_gen <srcfile> name=<name>
 # Generates the following:
@@ -45,9 +46,13 @@ while (my $line = <$ifh>) {
     $Name = $1;
   } elsif ( $line =~ m|^\s* Data \s+ ([A-Za-z]\w+) \s+ (\d+) \s+
                         (\w+) \s+ %(\d)\.(\d)lf \s+
-                        "([^"]*)" (?:\s+ ([\d./]+))? \s* $|x ) {
-    my ($datum,$channel,$unit,$w,$p,$text,$scale) =
-      ($1,$2,$3,$4,$5,$6,$7);
+                        "([^"]*)"
+                        (?:\s+ ([\d./]+))?
+                        (?:\s+ ([\d./]+))?
+                        \s* $|x ) {
+    my ($datum,$channel,$unit,$w,$p,$text,$rbscale,$cmdscale) =
+      ($1,$2,$3,$4,$5,$6,$7,$8);
+    $cmdscale = $rbscale unless defined($cmdscale);
     die "$srcfile:$linenum: Datum $datum conflicts with earlier definition\n"
       if $Data{$datum};
     die "$srcfile:$linenum: Channel $channel already assigned\n"
@@ -56,7 +61,8 @@ while (my $line = <$ifh>) {
       if $channel > $HORIBA_MAX_CHANNELS || $channel < 1;
     $Data{$datum} = { channel => $channel, unit => $unit,
       fmt => "%$w.${p}lf", text => $text, w => $w, p => $p };
-    $Data{$datum}->{scale} = $scale if $scale;
+    $Data{$datum}->{rbscale} = $rbscale if $rbscale;
+    $Data{$datum}->{cmdscale} = $cmdscale if $cmdscale;
     $Channel{$channel} = $datum;
   } else {
     die "$srcfile:$linenum: Syntax error: '$line'\n";
@@ -99,8 +105,8 @@ for (my $i = 1; $i <= $HORIBA_MAX_CHANNELS; ++$i) {
     $datadef .= "TM $Rate Hz ${datum}_$unit ${datum};\n";
 
     my $scale = 10**($D->{p});
-    if ($D->{scale}) {
-      $scale .= "*" . $D->{scale};
+    if ($D->{rbscale}) {
+      $scale .= "*" . $D->{rbscale};
     }
     $coldef .= "  ${datum}_SP = ${Name}_channel($offset,SP) * $scale;\n";
     $coldef .= "  ${datum} = ${Name}_channel($offset,RB) * $scale;\n";
@@ -148,8 +154,8 @@ for (my $i = 1; $i <= $HORIBA_MAX_CHANNELS; ++$i) {
       my @text = split(' ',$text);
       my $textlen = @text + 1;
       $scale = "";
-      if ($D->{scale}) {
-	$scale = "/" . $D->{scale};
+      if ($D->{cmdscale}) {
+	$scale = "/" . $D->{cmdscale};
       }
       $cmddef .=
 	"  : " . join(' ', @text) .
@@ -161,23 +167,25 @@ for (my $i = 1; $i <= $HORIBA_MAX_CHANNELS; ++$i) {
 
 print $genui @status_genui;
 
+push @grpmem, "${Name}S", "${Name}_Stale";
+
 print $tmc
-  "%{\n" .
-  "  #define ${Name}_channel(x,y) ${Name}.channel[x].y\n" .
-  "%}\n" .
-  "$typedef" .
-  "TM typedef unsigned short ${Name}S_t { text \"%04x\"; }\n" .
-  "TM typedef unsigned char ${Name}St_t { text \"%3d\"; }\n" .
+  "%{\n" ,
+  "  #define ${Name}_channel(x,y) ${Name}.channel[x].y\n" ,
+  "%}\n" ,
+  "$typedef" ,
+  "TM typedef unsigned short ${Name}S_t { text \"%04x\"; }\n" ,
+  "TM typedef unsigned char ${Name}St_t { text \"%3d\"; }\n" ,
 
-  "\n$datadef" .
-  "TM $Rate Hz ${Name}S_t ${Name}S;\n" .
-  "TM $Rate Hz ${Name}St_t ${Name}_Stale;\n" .
-  'TM "Receive" ' . "$Name 1;\n\n" .
+  "\n$datadef" ,
+  "TM $Rate Hz ${Name}S_t ${Name}S;\n" ,
+  "TM $Rate Hz ${Name}St_t ${Name}_Stale;\n" ,
+  'TM "Receive" ' . "$Name 1;\n\n" ,
 
-  "Group $Name (" . join(', ', @grpmem) . ") {\n" .
-  $coldef . 
-  "  ${Name}S = $Name.HoribaS;\n" .
-  "  ${Name}_Stale = ${Name}_obj->stale(255);\n" .
+  wrap("","    ", "Group $Name (" . join(', ', @grpmem) . ") {\n") ,
+  $coldef ,
+  "  ${Name}S = $Name.HoribaS;\n" ,
+  "  ${Name}_Stale = ${Name}_obj->stale(255);\n" ,
   "  ${Name}_obj->synch();\n}\n";
 
 print $col

@@ -20,9 +20,10 @@ TM 1 Hz HoribaS_t HoribaS;
 TM 1 Hz HoribaSt_t Horiba_Stale;
 TM "Receive" Horiba 1;
 
-Group Horiba (DilFlow_SP, DilFlow, IonSrcFlow_SP, IonSrcFlow, FFlow_SP, FFlow, HoribaP_SP, HoribaP) {
-  DilFlow_SP = Horiba_channel(0,SP) * 10;
-  DilFlow = Horiba_channel(0,RB) * 10;
+Group Horiba (DilFlow_SP, DilFlow, IonSrcFlow_SP, IonSrcFlow, FFlow_SP,
+    FFlow, HoribaP_SP, HoribaP, HoribaS, Horiba_Stale) {
+  DilFlow_SP = Horiba_channel(0,SP) * 10*1000.;
+  DilFlow = Horiba_channel(0,RB) * 10*1000.;
   IonSrcFlow_SP = Horiba_channel(1,SP) * 10;
   IonSrcFlow = Horiba_channel(1,RB) * 10;
   FFlow_SP = Horiba_channel(2,SP) * 1000;
