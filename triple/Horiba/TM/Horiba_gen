@@ -1,5 +1,6 @@
 #! /usr/bin/perl -w
 use strict;
+use Text::Wrap;
 
 # Horiba_gen <srcfile> name=<name>
 # Generates the following:
@@ -45,9 +46,13 @@ while (my $line = <$ifh>) {
     $Name = $1;
   } elsif ( $line =~ m|^\s* Data \s+ ([A-Za-z]\w+) \s+ (\d+) \s+
                         (\w+) \s+ %(\d)\.(\d)lf \s+
-                        "([^"]*)" (?:\s+ ([\d./]+))? \s* $|x ) {
-    my ($datum,$channel,$unit,$w,$p,$text,$scale) =
-      ($1,$2,$3,$4,$5,$6,$7);
+                        "([^"]*)"
+                        (?:\s+ ([\d./]+))?
+                        (?:\s+ ([\d./]+))?
+                        \s* $|x ) {
+    my ($datum,$channel,$unit,$w,$p,$text,$rbscale,$cmdscale) =
+      ($1,$2,$3,$4,$5,$6,$7,$8);
+    $cmdscale = $rbscale unless defined($cmdscale);
     die "$srcfile:$linenum: Datum $datum conflicts with earlier definition\n"
       if $Data{$datum};
     die "$srcfile:$linenum: Channel $channel already assigned\n"
@@ -56,7 +61,8 @@ while (my $line = <$ifh>) {
       if $channel > $HORIBA_MAX_CHANNELS || $channel < 1;
     $Data{$datum} = { channel => $channel, unit => $unit,
       fmt => "%$w.${p}lf", text => $text, w => $w, p => $p };
-    $Data{$datum}->{scale} = $scale if $scale;
+    $Data{$datum}->{rbscale} = $rbscale if $rbscale;
+    $Data{$datum}->{cmdscale} = $cmdscale if $cmdscale;
     $Channel{$channel} = $datum;
   } else {
     die "$srcfile:$linenum: Syntax error: '$line'\n";
@@ -83,7 +89,8 @@ open(my $cmd, ">", "$Name.cmd") ||
   die "$srcfile: Unable to write output file $Name.cmd\n";
 # Open the rest here also
 
-my ($typedef, $datadef, $coldef, @grpmem, $tbldef, $convdef, $cmddef);
+my ($typedef, $datadef, $coldef, @grpmem, $tbldef, $convdef, $cmddef,
+    @status_genui);
 for (my $i = 1; $i <= $HORIBA_MAX_CHANNELS; ++$i) {
   if ($Channel{$i}) {
     my $offset = $i-1;
@@ -98,8 +105,8 @@ for (my $i = 1; $i <= $HORIBA_MAX_CHANNELS; ++$i) {
     $datadef .= "TM $Rate Hz ${datum}_$unit ${datum};\n";
 
     my $scale = 10**($D->{p});
-    if ($D->{scale}) {
-      $scale .= "*" . $D->{scale};
+    if ($D->{rbscale}) {
+      $scale .= "*" . $D->{rbscale};
     }
     $coldef .= "  ${datum}_SP = ${Name}_channel($offset,SP) * $scale;\n";
     $coldef .= "  ${datum} = ${Name}_channel($offset,RB) * $scale;\n";
@@ -122,8 +129,10 @@ for (my $i = 1; $i <= $HORIBA_MAX_CHANNELS; ++$i) {
 
     my $SPbit = 2*$offset;
     my $RBbit = $SPbit+1;
+    my $Cmdbit = 2*$HORIBA_MAX_CHANNELS + $offset;
     my $SPvar = "${datum}_SP_Stat";
     my $RBvar = "${datum}_Stat";
+    my $Cmdvar = "${datum}_Cmd_Stat";
     $convdef .=
       "${Name}_BitStar $SPvar; Invalidate $SPvar;\n" .
       "  { $SPvar = (${Name}S >> $SPbit) & 1;\n" .
@@ -131,18 +140,22 @@ for (my $i = 1; $i <= $HORIBA_MAX_CHANNELS; ++$i) {
       "${Name}_BitStar $RBvar; Invalidate $RBvar;\n" .
       "  { $RBvar = (${Name}S >> $RBbit) & 1;\n" .
       "    Validate $RBvar; }\n";
+      "${Name}_BitStar $Cmdvar; Invalidate $Cmdvar;\n" .
+      "  { $Cmdvar = (${Name}S >> $Cmdbit) & 1;\n" .
+      "    Validate $Cmdvar; }\n";
 
-    print $genui
+    push @status_genui,
       "  $Rate $SPvar:${Name}S:$SPbit $Name Status %5.0lf\n",
-      "  $Rate $RBvar:${Name}S:$RBbit $Name Status %5.0lf\n";
+      "  $Rate $RBvar:${Name}S:$RBbit $Name Status %5.0lf\n",
+      "  $Rate $Cmdvar:${Name}S:$Cmdbit $Name Status %5.0lf\n";
 
     my $text = $D->{text};
     if (length($text) > 0) {
       my @text = split(' ',$text);
       my $textlen = @text + 1;
       $scale = "";
-      if ($D->{scale}) {
-	$scale = "/" . $D->{scale};
+      if ($D->{cmdscale}) {
+	$scale = "/" . $D->{cmdscale};
       }
       $cmddef .=
 	"  : " . join(' ', @text) .
@@ -152,23 +165,27 @@ for (my $i = 1; $i <= $HORIBA_MAX_CHANNELS; ++$i) {
   }
 }
 
+print $genui @status_genui;
+
+push @grpmem, "${Name}S", "${Name}_Stale";
+
 print $tmc
-  "%{\n" .
-  "  #define ${Name}_channel(x,y) ${Name}.channel[x].y\n" .
-  "%}\n" .
-  "$typedef" .
-  "TM typedef unsigned short ${Name}S_t { text \"%04x\"; }\n" .
-  "TM typedef unsigned char ${Name}St_t { text \"%3d\"; }\n" .
+  "%{\n" ,
+  "  #define ${Name}_channel(x,y) ${Name}.channel[x].y\n" ,
+  "%}\n" ,
+  "$typedef" ,
+  "TM typedef unsigned short ${Name}S_t { text \"%04x\"; }\n" ,
+  "TM typedef unsigned char ${Name}St_t { text \"%3d\"; }\n" ,
 
-  "\n$datadef" .
-  "TM $Rate Hz ${Name}S_t ${Name}S;\n" .
-  "TM $Rate Hz ${Name}St_t ${Name}_Stale;\n" .
-  'TM "Receive" ' . "$Name 1;\n\n" .
+  "\n$datadef" ,
+  "TM $Rate Hz ${Name}S_t ${Name}S;\n" ,
+  "TM $Rate Hz ${Name}St_t ${Name}_Stale;\n" ,
+  'TM "Receive" ' . "$Name 1;\n\n" ,
 
-  "Group $Name (" . join(', ', @grpmem) . ") {\n" .
-  $coldef . 
-  "  ${Name}S = $Name.HoribaS;\n" .
-  "  ${Name}_Stale = ${Name}_obj->stale(255);\n" .
+  wrap("","    ", "Group $Name (" . join(', ', @grpmem) . ") {\n") ,
+  $coldef ,
+  "  ${Name}S = $Name.HoribaS;\n" ,
+  "  ${Name}_Stale = ${Name}_obj->stale(255);\n" ,
   "  ${Name}_obj->synch();\n}\n";
 
 print $col
@@ -181,17 +198,18 @@ print $genui
   "  $Rate ${Name}_Stale $Name Stale\n";
 
 print $tbl
-  "${Name}_Status {\n" .
-  "  { Cmd: (${Name}_CS,2) HGlue 0+1 Stale: (${Name}_Stale,3) }\n" .
-  "}\n" .
+  #"${Name}_Status {\n" .
+  #"  { Cmd: (${Name}_CS,2) HGlue 0+1 Stale: (${Name}_Stale,3) }\n" .
+  #"}\n" .
   "$Name {\n" .
   "  HBox { +-; Title: $Name; -+ };\n" .
   '  "" >Set< >Flow<;' . "\n" .
   $tbldef .
-  "  { Cmd: (${Name}_CS,2) HGlue 0+1 Stale: (${Name}_Stale,3) }\n" .
+# "  { Cmd: (${Name}_CS,2) HGlue 0+1 Stale: (${Name}_Stale,3) }\n" .
+  "  { HGlue 0+1 Stale: (${Name}_Stale,3) }\n" .
   "}\n";
 
-my $CSbit = 2*$HORIBA_MAX_CHANNELS;
+# my $CSbit = 2*$HORIBA_MAX_CHANNELS;
 print $conv
   "%{\n" .
   "  #include \"horiba.h\"\n" .
@@ -202,13 +220,13 @@ print $conv
   "{ text \"%1d\" ${Name}_BitStar_text(); }\n" .
   "TM typedef unsigned char ${Name}_CS_t " .
     "{ text \"%2d\" ${Name}_CStext(); }\n\n" .
-  $convdef .
-  "${Name}_CS_t ${Name}_CS; Invalidate ${Name}_CS;\n" .
-  "  { ${Name}_CS = (${Name}S >> $CSbit) & 1;\n" .
-  "    Validate ${Name}_CS; }\n";
+  $convdef;
+# "${Name}_CS_t ${Name}_CS; Invalidate ${Name}_CS;\n" .
+# "  { ${Name}_CS = (${Name}S >> $CSbit) & 1;\n" .
+# "    Validate ${Name}_CS; }\n";
 
-print $genui
-  "  $Rate ${Name}_CS:${Name}S:$CSbit ${Name} Status %5.0lf\n";
+#print $genui
+# "  $Rate ${Name}_CS:${Name}S:$CSbit ${Name} Status %5.0lf\n";
 
 print $cmd
   "%{\n" .

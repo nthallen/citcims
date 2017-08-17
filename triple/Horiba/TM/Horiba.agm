@@ -1,6 +1,30 @@
 Moduledef Horiba [ src= name=Horiba ] {
   Horiba Module requires a src variable
-  Source file syntax documentation goes here.
+  Source file syntax:
+    source_file : source_line+ .
+    source_line :
+      comment /
+      'Name' word /
+      'Rate' \d+ 'Hz' /
+      'Port' path /
+      'Data' word address unit format command [ rbscale [cmdscale]] .
+    word : \w+ .
+    address : \d+ .
+    unit : \s+ .
+    command : '"' \w+ [\s\w+]* '"' .
+    rbscale : float .
+    cmdscale : float .
+  
+  Each datum name and unit are combined to define a datum-specific
+  TM typedef for an fixed point signed short. The format's precision
+  defines the scale value by which the reported value is multiplied
+  before being stored in the short. The value is also multiple by the
+  scale factor if specified.
+  
+  If the command string is non-empty, a command is defined to define
+  a set point for the channel. If a scale value is specified, the
+  command value will be divided by the scale value before being
+  written to the device.
 }
 
 mode (default,driver) {
