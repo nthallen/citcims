@@ -1,0 +1,254 @@
+#! /usr/bin/perl -w
+use strict;
+use Text::Wrap;
+
+# Horiba_gen <srcfile> name=<name>
+# Generates the following:
+#   <name>.tmc
+#   <name>_col.tmc
+#   <name>.cmd
+#   <name>_conv.tmc
+#   <name>.genui
+
+my $HORIBA_MAX_CHANNELS = 5;
+
+my $srcfile = $ARGV[0] ||
+  die "Must specify a source file\n";
+my $name_cl = 'Horiba';
+my $Rate = '1';
+my $Port = '/dev/ser1';
+my $Name = '';
+my %Data;
+my %Channel;
+my $linenum = 0;
+if (@ARGV > 1) {
+  if ($ARGV[1] =~ m/^name=([a-z][a-z0-9_]*)$/i ) {
+    $name_cl = $1;
+  } else {
+    die "Invalid name specification: '$ARGV[1]'\n";
+  }
+}
+
+open(my $ifh, "<", $srcfile)
+  or die "Cannot open < $srcfile\n";
+
+while (my $line = <$ifh>) {
+  ++$linenum;
+  chomp $line;
+  next if $line =~ m/^\s*(?:#.*)?$/;
+  if ( $line =~ m|^\s*Rate\s+(\d+(?:/\d+)?)\s+Hz\s*|i ) {
+    $Rate = $1;
+  } elsif ( $line =~ m/^\s*Port\s+(\S+)\s*$/i ) {
+    $Port = $1;
+  } elsif ( $line =~ m/^\s*Name\s+([a-z]\w*)\s*$/i ) {
+    die "$srcfile:$linenum: Name redefined\n"
+      if $Name ne '';
+    $Name = $1;
+  } elsif ( $line =~ m|^\s* Data \s+ ([A-Za-z]\w+) \s+ (\d+) \s+
+                        (\w+) \s+ %(\d)\.(\d)lf \s+
+                        "([^"]*)"
+                        (?:\s+ ([\d./]+))?
+                        (?:\s+ ([\d./]+))?
+                        \s* $|x ) {
+    my ($datum,$channel,$unit,$w,$p,$text,$rbscale,$cmdscale) =
+      ($1,$2,$3,$4,$5,$6,$7,$8);
+    $cmdscale = $rbscale unless defined($cmdscale);
+    die "$srcfile:$linenum: Datum $datum conflicts with earlier definition\n"
+      if $Data{$datum};
+    die "$srcfile:$linenum: Channel $channel already assigned\n"
+      if $Channel{$channel};
+    die "$srcfile:$linenum: Channel $channel out of range\n"
+      if $channel > $HORIBA_MAX_CHANNELS || $channel < 1;
+    $Data{$datum} = { channel => $channel, unit => $unit,
+      fmt => "%$w.${p}lf", text => $text, w => $w, p => $p };
+    $Data{$datum}->{rbscale} = $rbscale if $rbscale;
+    $Data{$datum}->{cmdscale} = $cmdscale if $cmdscale;
+    $Channel{$channel} = $datum;
+  } else {
+    die "$srcfile:$linenum: Syntax error: '$line'\n";
+  }
+}
+
+close($ifh) or warn "Error closing srcfile '$srcfile'\n";
+
+$Name = "Horiba" unless $Name ne '';
+die "$srcfile: command line and sourcefile disagree on Name\n"
+  unless $Name eq $name_cl;
+
+open(my $tmc, ">", "$Name.tmc") ||
+  die "$srcfile: Unable to write output file $Name.tmc\n";
+open(my $col, ">", "${Name}_col.tmc") ||
+  die "$srcfile: Unable to write output file ${Name}_col.tmc\n";
+open(my $genui, ">", "${Name}.genui") ||
+  die "$srcfile: Unable to write output file ${Name}.genui\n";
+open(my $tbl, ">", "$Name.tbl") ||
+  die "$srcfile: Unable to write output file $Name.tbl\n";
+open(my $conv, ">", "${Name}_conv.tmc") ||
+  die "$srcfile: Unable to write output file ${Name}_conv.tmc\n";
+open(my $cmd, ">", "$Name.cmd") ||
+  die "$srcfile: Unable to write output file $Name.cmd\n";
+# Open the rest here also
+
+my ($typedef, $datadef, $coldef, @grpmem, $tbldef, $convdef, $cmddef,
+    @status_genui);
+for (my $i = 1; $i <= $HORIBA_MAX_CHANNELS; ++$i) {
+  if ($Channel{$i}) {
+    my $offset = $i-1;
+    my $datum = $Channel{$i};
+    my $D = $Data{$datum};
+    my $unit = $D->{unit};
+    my $w = $D->{w};
+    $typedef .= "TM typedef short ${datum}_$unit" .
+      ' { text "' . $D->{fmt} . '"; }' . "\n";
+
+    $datadef .= "TM $Rate Hz ${datum}_$unit ${datum}_SP;\n";
+    $datadef .= "TM $Rate Hz ${datum}_$unit ${datum};\n";
+
+    my $scale = 10**($D->{p});
+    if ($D->{rbscale}) {
+      $scale .= "*" . $D->{rbscale};
+    }
+    $coldef .= "  ${datum}_SP = ${Name}_channel($offset,SP) * $scale;\n";
+    $coldef .= "  ${datum} = ${Name}_channel($offset,RB) * $scale;\n";
+
+    push(@grpmem, "${datum}_SP", $datum);
+
+    print $genui
+      "  $Rate ${datum}_SP $Name $datum\n" .
+      "  $Rate ${datum}   $Name $datum\n";
+
+    my $datumtbl =
+      "  ${datum}:\n" .
+      "    >HBox{(${datum}_SP,$w); (${datum}_SP_Stat,1)}\n" .
+      "    >HBox{(${datum},$w); (${datum}_Stat,1)}\n" .
+      "    $unit;\n";
+    $tbldef .= $datumtbl;
+    print $tbl
+      "$datum {\n$datumtbl" . 
+      "}\n";
+
+    my $SPbit = 2*$offset;
+    my $RBbit = $SPbit+1;
+    my $Cmdbit = 2*$HORIBA_MAX_CHANNELS + $offset;
+    my $SPvar = "${datum}_SP_Stat";
+    my $RBvar = "${datum}_Stat";
+    my $Cmdvar = "${datum}_Cmd_Stat";
+    $convdef .=
+      "${Name}_BitStar $SPvar; Invalidate $SPvar;\n" .
+      "  { $SPvar = (${Name}S >> $SPbit) & 1;\n" .
+      "    Validate $SPvar; }\n" .
+      "${Name}_BitStar $RBvar; Invalidate $RBvar;\n" .
+      "  { $RBvar = (${Name}S >> $RBbit) & 1;\n" .
+      "    Validate $RBvar; }\n";
+      "${Name}_BitStar $Cmdvar; Invalidate $Cmdvar;\n" .
+      "  { $Cmdvar = (${Name}S >> $Cmdbit) & 1;\n" .
+      "    Validate $Cmdvar; }\n";
+
+    push @status_genui,
+      "  $Rate $SPvar:${Name}S:$SPbit $Name Status %5.0lf\n",
+      "  $Rate $RBvar:${Name}S:$RBbit $Name Status %5.0lf\n",
+      "  $Rate $Cmdvar:${Name}S:$Cmdbit $Name Status %5.0lf\n";
+
+    my $text = $D->{text};
+    if (length($text) > 0) {
+      my @text = split(' ',$text);
+      my $textlen = @text + 1;
+      $scale = "";
+      if ($D->{cmdscale}) {
+	$scale = "/" . $D->{cmdscale};
+      }
+      $cmddef .=
+	"  : " . join(' ', @text) .
+	  " %f (Enter value in $unit) $unit\n" .
+	"    { \$0.channel = $i; \$0.value = \$$textlen$scale; }\n";
+    }
+  }
+}
+
+print $genui @status_genui;
+
+push @grpmem, "${Name}S", "${Name}_Stale";
+
+print $tmc
+  "%{\n" ,
+  "  #define ${Name}_channel(x,y) ${Name}.channel[x].y\n" ,
+  "%}\n" ,
+  "$typedef" ,
+  "TM typedef unsigned short ${Name}S_t { text \"%04x\"; }\n" ,
+  "TM typedef unsigned char ${Name}St_t { text \"%3d\"; }\n" ,
+
+  "\n$datadef" ,
+  "TM $Rate Hz ${Name}S_t ${Name}S;\n" ,
+  "TM $Rate Hz ${Name}St_t ${Name}_Stale;\n" ,
+  'TM "Receive" ' . "$Name 1;\n\n" ,
+
+  wrap("","    ", "Group $Name (" . join(', ', @grpmem) . ") {\n") ,
+  $coldef ,
+  "  ${Name}S = $Name.HoribaS;\n" ,
+  "  ${Name}_Stale = ${Name}_obj->stale(255);\n" ,
+  "  ${Name}_obj->synch();\n}\n";
+
+print $col
+  "%{\n" .
+  "  #include \"horiba.h\"\n" .
+  "  horiba_tm_t $Name;\n" .
+  "%}\n";
+
+print $genui
+  "  $Rate ${Name}_Stale $Name Stale\n";
+
+print $tbl
+  #"${Name}_Status {\n" .
+  #"  { Cmd: (${Name}_CS,2) HGlue 0+1 Stale: (${Name}_Stale,3) }\n" .
+  #"}\n" .
+  "$Name {\n" .
+  "  HBox { +-; Title: $Name; -+ };\n" .
+  '  "" >Set< >Flow<;' . "\n" .
+  $tbldef .
+# "  { Cmd: (${Name}_CS,2) HGlue 0+1 Stale: (${Name}_Stale,3) }\n" .
+  "  { HGlue 0+1 Stale: (${Name}_Stale,3) }\n" .
+  "}\n";
+
+# my $CSbit = 2*$HORIBA_MAX_CHANNELS;
+print $conv
+  "%{\n" .
+  "  #include \"horiba.h\"\n" .
+  "  #define ${Name}_BitStar_text(x) ((x)?\" \":\"*\")\n" .
+  "  #define ${Name}_CStext(x) ((x)?\"OK\":\"--\")\n" .
+  "%}\n" .
+  "TM typedef unsigned char ${Name}_BitStar " .
+  "{ text \"%1d\" ${Name}_BitStar_text(); }\n" .
+  "TM typedef unsigned char ${Name}_CS_t " .
+    "{ text \"%2d\" ${Name}_CStext(); }\n\n" .
+  $convdef;
+# "${Name}_CS_t ${Name}_CS; Invalidate ${Name}_CS;\n" .
+# "  { ${Name}_CS = (${Name}S >> $CSbit) & 1;\n" .
+# "    Validate ${Name}_CS; }\n";
+
+#print $genui
+# "  $Rate ${Name}_CS:${Name}S:$CSbit ${Name} Status %5.0lf\n";
+
+print $cmd
+  "%{\n" .
+  "  typedef struct {\n" .
+  "    int channel;\n" .
+  "    float value;\n" .
+  "  } ${Name}_Cmd;\n" .
+  "%}\n" .
+  "%INTERFACE <${Name}>\n" .
+  "\n" .
+  "&command\n" .
+  "  : Set &${Name}_Chan * {\n" .
+  "      if_${Name}.Turf( \"W%d:%.2f\\n\", \$2.channel, \$2.value );\n" .
+  "    }\n" .
+  "  ;\n" .
+  "&${Name}_Chan <${Name}_Cmd>\n" .
+  $cmddef .
+  ";\n";
+
+close($tmc) || warn "$srcfile: Error closing output file $Name.tmc\n";
+close($col) || warn "$srcfile: Error closing output file ${Name}_col.tmc\n";
+close($genui) || warn "$srcfile: Error closing output file ${Name}.genui\n";
+close($tbl) || warn "$srcfile: Error closing output file $Name.tbl\n";
+close($conv) || warn "$srcfile: Error closing output file ${Name}_conv.tmc\n";
+close($cmd) || warn "$srcfile: Error closing output file $Name.cmd\n";

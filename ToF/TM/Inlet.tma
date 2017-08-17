@@ -316,7 +316,7 @@ State N2z_PControl_real {
 
   {
     long N2z_sp; 
-    N2z_sp = convert(DilFlowSP);
+    N2z_sp = convert(DilFlow_SP);
     In3_St1 = 25;
     In3_St2 = 15;
     In3_St3 = 5;

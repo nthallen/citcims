@@ -22,7 +22,7 @@ colbase = ../DSDaq/dsdaq.cc
 swsbase = ToF.sws
 genuibase = ToF.genui
 
-Module Horiba mode=default
+Module Horiba mode=driver src=Horiba.txt
 Module IonGauge mode=default Hz=1
 Module nXDS mode=default
 Module OMS mode=Y OMS1=Insl Group=Inlet Hz=5
@@ -42,12 +42,8 @@ TGTDIR = $(TGTNODE)/home/tof
 
 OBJ = address.h
 
-ToFdisp : AthenaII_conv.tmc Hercules_conv.tmc ../Horiba/TM/Horiba_conv.tmc \
+ToFdisp : AthenaII_conv.tmc Hercules_conv.tmc Horiba_conv.tmc \
   ToF.tbl
-#ToFdisp : AthenaII_conv.tmc Hercules_conv.tmc ../Horiba/TM/Horiba_conv.tmc \
-#  ToF.tbl  IWG1.tbl ../Sonic/TM/sonic.tbl
-#ToFdisp : AthenaII_conv.tmc Hercules_conv.tmc ../Horiba/TM/Horiba_conv.tmc \
-#   ToFz.tbl  ../Sonic/TM/sonic.tbl
 IWG1disp : IWG1.tbl UserPkts.tbl
 UserPktsext : UserPkts.genui
 
