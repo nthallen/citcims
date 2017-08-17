@@ -1,0 +1,45 @@
+Dilution {
+  Dilution:
+    >HBox{(Dilution_SP,6); (Dilution_SP_Stat,1)}
+    >HBox{(Dilution,6); (Dilution_Stat,1)}
+    sccm;
+}
+IonSource {
+  IonSource:
+    >HBox{(IonSource_SP,5); (IonSource_SP_Stat,1)}
+    >HBox{(IonSource,5); (IonSource_Stat,1)}
+    sccm;
+}
+Reagent {
+  Reagent:
+    >HBox{(Reagent_SP,5); (Reagent_SP_Stat,1)}
+    >HBox{(Reagent,5); (Reagent_Stat,1)}
+    sccm;
+}
+Zero {
+  Zero:
+    >HBox{(Zero_SP,6); (Zero_SP_Stat,1)}
+    >HBox{(Zero,6); (Zero_Stat,1)}
+    sccm;
+}
+Horiba {
+  HBox { +-; Title: Horiba; -+ };
+  "" >Set< >Flow<;
+  Dilution:
+    >HBox{(Dilution_SP,6); (Dilution_SP_Stat,1)}
+    >HBox{(Dilution,6); (Dilution_Stat,1)}
+    sccm;
+  IonSource:
+    >HBox{(IonSource_SP,5); (IonSource_SP_Stat,1)}
+    >HBox{(IonSource,5); (IonSource_Stat,1)}
+    sccm;
+  Reagent:
+    >HBox{(Reagent_SP,5); (Reagent_SP_Stat,1)}
+    >HBox{(Reagent,5); (Reagent_Stat,1)}
+    sccm;
+  Zero:
+    >HBox{(Zero_SP,6); (Zero_SP_Stat,1)}
+    >HBox{(Zero,6); (Zero_Stat,1)}
+    sccm;
+  { HGlue 0+1 Stale: (Horiba_Stale,3) }
+}

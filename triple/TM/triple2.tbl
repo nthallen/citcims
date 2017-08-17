@@ -1,3 +1,5 @@
+Input "Horiba.tbl";
+
 Flows {
   MFCs         Set                  Flow;
   Scrub        (ScrubMFCset,4)     (ScrubMFC,6) sccm;
@@ -68,9 +70,13 @@ nXDS {
 { -;
 # HBox { +|+; [Flows]; +|+; [Therms]; +|+; [Watlow]; +|+; [F4]; +|+ };
   HBox { +|+; {
-      HBox { [Flows]; +|+; [Therms] };
-      -;
-      HBox { [Pressures]; +|+; [Volts] };
+      HBox {
+        { [Flows];
+          [Horiba]; }; +|+;
+        { [Therms]; -;
+          [Pressures]; -;
+          [Volts] };
+      };
     }; +|+; [nXDS]; +|+ };
     -;
 }

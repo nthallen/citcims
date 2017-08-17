@@ -1,0 +1,8 @@
+# Horiba.txt
+Name Horiba
+Rate 1 Hz
+Port /net/tofathena/dev/ser3
+Data Dilution     1 sccm %6.1lf "Dilution Flow" 1000. 1
+Data IonSource    2 sccm %5.1lf "Ion Source Flow" 
+Data Reagent      3 sccm %5.3lf "Reagent Flow"
+Data Zero         4 sccm %6.1lf "Zero Flow"

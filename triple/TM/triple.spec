@@ -31,11 +31,13 @@ SCRIPT = interact Experiment.config
 Module IWG1 mode=default
 Module modbus mode=disable
 Module Zaber mode=dual
+Module Horiba mode=driver src=Horiba.txt
 Module ../../ToF/Edwards_nXDS/TM/nXDS mode=remote
 Module ../../ToF/UPS/TM/UPS mode=remote
 
 triplealgo : dstat_conv.tmc triple.tma hrdwr.tma
 tripledisp : dstat_conv.tmc ../../ToF/Edwards_nXDS/TM/nXDS_conv.tmc \
+  Horiba_conv.tmc \
   triple.tbl triple2.tbl IWG1.tbl UPSwin.tbl
 tripledoit : triple.doit
 fastext : fast.cdf

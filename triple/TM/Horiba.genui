@@ -1,0 +1,21 @@
+  1 Dilution_SP Horiba Dilution
+  1 Dilution   Horiba Dilution
+  1 IonSource_SP Horiba IonSource
+  1 IonSource   Horiba IonSource
+  1 Reagent_SP Horiba Reagent
+  1 Reagent   Horiba Reagent
+  1 Zero_SP Horiba Zero
+  1 Zero   Horiba Zero
+  1 Dilution_SP_Stat:HoribaS:0 Horiba Status %5.0lf
+  1 Dilution_Stat:HoribaS:1 Horiba Status %5.0lf
+  1 Dilution_Cmd_Stat:HoribaS:10 Horiba Status %5.0lf
+  1 IonSource_SP_Stat:HoribaS:2 Horiba Status %5.0lf
+  1 IonSource_Stat:HoribaS:3 Horiba Status %5.0lf
+  1 IonSource_Cmd_Stat:HoribaS:11 Horiba Status %5.0lf
+  1 Reagent_SP_Stat:HoribaS:4 Horiba Status %5.0lf
+  1 Reagent_Stat:HoribaS:5 Horiba Status %5.0lf
+  1 Reagent_Cmd_Stat:HoribaS:12 Horiba Status %5.0lf
+  1 Zero_SP_Stat:HoribaS:6 Horiba Status %5.0lf
+  1 Zero_Stat:HoribaS:7 Horiba Status %5.0lf
+  1 Zero_Cmd_Stat:HoribaS:13 Horiba Status %5.0lf
+  1 Horiba_Stale Horiba Stale
