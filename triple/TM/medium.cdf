@@ -1,4 +1,4 @@
-csv medium 35
+csv medium 44
   0 Tmedium 
   1 H_DIO_A  
   2 H_DIO_B 
@@ -32,3 +32,12 @@ csv medium 35
   32 ChemIonTherm
   33 TSpare1
   34 MainFlowMeter
+  35 Dilution_SP
+  36 Dilution
+  37 IonSource_SP
+  38 IonSource
+  39 Reagent_SP
+  40 Reagent
+  41 Zero_SP
+  42 Zero
+  43 Horiba_Stale 

@@ -26,11 +26,11 @@
   Launch - IonGauge -d /net/tofathena/dev/ser4
   Launch - horiba -n4 -d /net/tofathena/dev/ser3 -v
 # Launch - nXDS -d /dev/ser2 -n tripherc -e triple -v
-  Launch - TwisTorr -d /dev/ser2 -n3 -v
+  Launch - TwisTorr -d /dev/ser1 -n3 -v
 # Launch - sonic -p /net/tofherc/dev/ser1
   Launch - zaber -p /dev/ser4
   Launch - IWG1
 # Launch - UserPkts2 -p 5100 -p 5558
 # Launch - Zeno_Ser -d /dev/ser4
-  Launch - ups -p /dev/ser1 -n tripherc -e triple
+  Launch - ups -p /dev/ser3 -n tripherc -e triple
   Launch - ToFalgo -v

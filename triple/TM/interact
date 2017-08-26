@@ -8,9 +8,10 @@
   Launch cmd/server triplesrvr
   Launch - tmdf
   Launch - lgr -N `mlf_find LOG`
+  Launch - horiba -n3 -d /net/tripherc/dev/ser1 
 # stty baud=9600 -lkhflow -ohflow -ihflow -osflow -isflow +raw </dev/ser1
   Launch - zaber -p /dev/ser3
-  Launch - modbus -d /dev/ser2
+# Launch - modbus -d /dev/ser2
 # Launch specq       specq -vyc0 -a 0x1005 -H varian
   Launch - IWG1
   Launch - triplealgo -v
