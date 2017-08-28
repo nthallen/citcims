@@ -308,7 +308,7 @@ HoribaSer::Horiba_Parse_Resp HoribaSer::parse_response() {
   }
   if (CurQuery->result) {
     float val;
-    unsigned int cp0 = cp;
+    unsigned int cp0 = cp, cp1;
     if (not_str("\002", 1) || not_float(val)) {
       if (cp < nc) {
         consume(nc);
@@ -333,15 +333,18 @@ HoribaSer::Horiba_Parse_Resp HoribaSer::parse_response() {
       }
       return HP_Wait;
     }
-    if (cp >= nc) return HP_Wait;
-    if (bcc_ok(cp0)) {
+    cp1 = cp;
+    if (not_etx()) {
+      return((cp < nc) ? HP_OK : HP_Wait);
+    }
+    if (bcc_ok(cp0, cp1)) {
       *(CurQuery->result) = val;
       TMdata->HoribaS |= CurQuery->mask;
       report_ok();
       consume(cp);
     }
   } else {
-    unsigned int cp0 = cp;
+    unsigned int cp0 = cp, cp1;
     if (not_str("\002OK\003",4)) {
       if (cp < nc) {
         consume(nc);
@@ -351,8 +354,11 @@ HoribaSer::Horiba_Parse_Resp HoribaSer::parse_response() {
       return HP_Wait;
     }
     cur_min = 1;
-    if (cp >= nc) return HP_Wait;
-    if (bcc_ok(cp0)) {
+    cp1 = cp;
+    if (not_etx()) {
+      return((cp < nc) ? HP_OK : HP_Wait);
+    }
+    if (bcc_ok(cp0, cp1)) {
       TMdata->HoribaS |= CurQuery->mask;
       report_ok();
       consume(cp);
@@ -362,39 +368,56 @@ HoribaSer::Horiba_Parse_Resp HoribaSer::parse_response() {
 }
 
 /**
- * @param from points to STX char in buf[]
- * @return non-zero if a valid bcc code is found.
+ * On entry, cp is positioned just after the ETX character, so
+ * if cp < nc, then buf[cp] is the BCC character.
+ *
+ * @return non-zero unless all the necessary ETX chars are present
  */
-int HoribaSer::bcc_ok(unsigned int from) {
-  unsigned int bcc = 0, i;
-  if (from >= cp || buf[from] != '\002' || buf[cp-1] != '\003' ) {
-    report_err("bcc_ok(%d-%d) does not meet preconditions", from, cp);
-    return 0;
-  }
-  for (i = from+1; i < cp; ++i)
-    bcc = (bcc + buf[i]) & 0x7F;
-  if (cp >= nc) {
-    report_err("Expected BCC after response");
-  } else if ((unsigned)buf[cp] != bcc) {
-    report_err("BCC mismatch on response: Rec'd: %d Calc'd: %d",
-            (unsigned)buf[cp], bcc);
-  } else {
-    int extra_etx = 0;
+int HoribaSer::not_etx() {
+  if (cp >= nc) return 1;
+  unsigned int bcc = buf[cp++];
+  int extra_etx = 0;
+  if (bcc == '@') extra_etx = 3;
+  else if ( bcc == '*' || bcc == '.') extra_etx = 9;
+  while (extra_etx > 0 && cp < nc && buf[cp] == '\003') {
+    --extra_etx;
     ++cp;
-    if (bcc == '@') extra_etx = 3;
-    else if ( bcc == '*') extra_etx = 9;
-    while (extra_etx > 0 && cp < nc) {
-      if ( buf[cp] != '\003') break;
-      --extra_etx;
-      ++cp;
-    }
-    if (extra_etx)
+  }
+  if (extra_etx) {
+    if (cp < nc) {
       report_err("Missing one or more trailing ETX");
-    // else if (cp < nc)
-    //   report_err("Extra chars after command response");
+      consume(cp);
+    } else cur_min = extra_etx;
     return 1;
   }
   return 0;
+}
+
+/**
+ * @param from points to STX char in buf[]
+ * @param to points to the BCC character immediately following the ETX (\033)
+ *
+ * Because the message has already been syntactically checked via not_etx(),
+ * we can be confident that to < nc, but we do double-check that at the
+ * beginning just to be sure.
+ *
+ * @return non-zero if a valid bcc code is found.
+ */
+int HoribaSer::bcc_ok(unsigned int from, unsigned int to) {
+  unsigned int bcc = 0, i;
+  if (from >= to || buf[from] != '\002' || buf[to-1] != '\003' || to >= nc) {
+    report_err("bcc_ok(%d-%d) does not meet preconditions", from, to);
+    return 0;
+  }
+  for (i = from+1; i < to; ++i)
+    bcc = (bcc + buf[i]) & 0x7F;
+  if ((unsigned)buf[to] != bcc) {
+    report_err("BCC mismatch on response: Rec'd: %d Calc'd: %d",
+            (unsigned)buf[to], bcc);
+    consume(nc);
+    return 0;
+  }
+  return 1;
 }
 
 Timeout *HoribaSer::GetTimeout() {
