@@ -14,7 +14,7 @@ int opt_echo = 1;
 
 int main(int argc, char **argv) {
   oui_init_options(argc, argv);
-  nl_error( 0, "Starting V14.0" );
+  nl_error( 0, "Starting V14.1" );
   { Selector S;
     HoribaCmd HC;
     horiba_tm_t TMdata;
