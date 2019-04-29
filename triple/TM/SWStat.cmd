@@ -32,7 +32,7 @@
   : Telemetry Logging Resume * {}
   : &SWTM * { if_SWData.Turf(); }
   : ToF ambient flow on * {
-        send_to_tof( "Set ambient zero flow 515 sccm\n" ); }
+        send_to_tof( "Set ambient zero flow 390 sccm\n" ); }
   : ToF ambient flow off * {
         send_to_tof( "Set ambient zero flow 450 sccm\n" ); }
   : ToF command %s (Enter command to send to ToF) * {

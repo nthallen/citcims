@@ -22,9 +22,13 @@ SW_Variable: SWStat SW Status
   SWS_DATA_AMB_ZERO_LOOP_START	119 Amb zero loop start:	Validate Loop_init_sdc; break;
   SWS_DATA_AMB_ZERO_LOOP_STOP	120 Amb zero loop stop: Validate Loop_idle; break;
   SWS_AUTO_CAL_START	121 Auto cal start: Validate Auto_cal_run; break;
-  SWS_AUTO_CAL_STOP	122 Auto cal stop: Validate Auto_cal_idle; Validate Loop_idle; break;
+  SWS_AUTO_CAL_STOP	122 Auto cal stop: Validate Auto_cal_stop; Validate Loop_idle; break;
+  SWS_DATAF_LP_NC    123 Data flux loop no cal start: Validate dataf_loop_nc; break;
+  SWS_DATAF_LP_C     124 Data flux loop cal start: Validate dataf_loop_c; break;
   SWS_QUICK_SHUTDOWN 254 Shutdown Quick:         Validate Quick_Shutdown; break;
   SWS_SHUTDOWN       255 Shutdown Full:          Validate Shutdown; break;
+  SWS_AUTO_CAL_LAB_START	125 Auto cal lab start: Validate Auto_cal_run_lab; break;
+  SWS_AUTO_CAL_LAB_STOP	126 Auto cal lab stop: Validate Auto_cal_stop; Validate Loop_idle; break;
 
 SW_Variable: SWFlow SW Flow State
   : Transitioning { $0 = 0; }

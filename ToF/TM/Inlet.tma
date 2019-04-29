@@ -2,7 +2,27 @@
 
 Partition
 # Partition 11:  Inlet pressure control
+#State test123 { }
 
+#%{ 
+#   #include "TM_average.h"
+#   TM_average<MBAR> sample_avg;
+#   #define sample_avg_sample(x) sample_avg.sample(x)
+#   #define sample_avg_mean() sample_avg.mean()
+#   double ss;
+#%}
+
+#{
+#TM typedef double sample_1Hz_t { text "8.1lf"; }
+#sample_avg_sample(convert(InL_P));
+
+#sample_1Hz_t  InLP_1Hz; Invalidate InLP_1Hz;
+#depending on (1 Hz, InL_P) {
+#sample_1Hz_t InLP_1Hz;	InLP_1Hz = sample_avg_mean();
+#	Validate InLP_1Hz;
+
+#}
+#}
 
 %{
   /* Inlet_PControl implements a simple PI controller
@@ -42,6 +62,10 @@ Partition
     if (not_playback)
       ci_sendfcmd( 2, "OMS Drive %c Out %ld\n", drv, steps );
   }
+  void oms_drive_ab( char drv, long steps ) {
+    if (not_playback)
+      ci_sendfcmd( 2, "OMS Drive %c to %ld\n", drv, steps );
+  } 
 %}
 
 State Inlet_Init {
@@ -75,8 +99,17 @@ State Inlet_Closed { }
 
 State Inlet_PControl {
      > oms set inlet slit speed 1200
-     > oms drive inlet slit to 1625
-  +1 Validate Inlet_PControl_real;
+#     > oms drive inlet slit to 1625
+	{
+		int inopen;
+		long inp;
+		inp = convert(INTP);
+		inopen = floor(200.0*exp(-inp/220.0)+1645);
+		if ( inopen > 500  && inopen < 1950 ) {
+		 oms_drive_ab( 'Y', inopen );
+                }
+        }		
+  +2 Validate Inlet_PControl_real;
 }
 
 State Inlet_PControl_real {
@@ -88,42 +121,42 @@ State Inlet_PControl_real {
     int pstep_gain;
     pstep_gain = ceil((convert(INTP))/400);
     Insl_Step1 = Insl_Step;
-    histor_1 = 75;
+    histor_1 = 90;
     In_St1 = 25;
     In_St2 = 5;
     In_St3 = 2;
     In_St4 = 1;
-    FT_P = convert(InL_P);
+    FT_P = convert(InLP_1Hz);
     FT_SP = convert(InPset);
 
     if ( FT_P < 0.994*FT_SP ) { 
       if (FT_P < FT_SP*0.988 &&
           Inlet_Dir == 0 &&
-          Insl_Step1 < 6000) {
+          Insl_Step1 < 2000) {
         oms_drive( 'Y', histor_1);
         Insl_Step1+=histor_1;
         Inlet_Dir=1;
       } else if ( FT_P < FT_SP*0.710 &&
                   Inlet_Dir == 1 &&
-                  Insl_Step1 < 6000 ) {
+                  Insl_Step1 < 2000 ) {
         oms_drive( 'Y', In_St1);
         Insl_Step1 += In_St1;
       } else if ( FT_P >= FT_SP*0.710 &&
                   FT_P < 0.980*FT_SP &&
                   Inlet_Dir == 1 &&
-                  Insl_Step1 < 6000 ) {
+                  Insl_Step1 < 2000 ) {
         oms_drive( 'Y', In_St2);
         Insl_Step1 += In_St2;
       } else if ( FT_P >= FT_SP*0.980 &&
                   FT_P < 0.988*FT_SP &&
                   Inlet_Dir == 1 &&
-                  Insl_Step1 < 6000 ) {
+                  Insl_Step1 < 2000 ) {
         oms_drive( 'Y', In_St3);
         Insl_Step1 += In_St3;
       } else if ( FT_P >= 0.988*FT_SP &&
 		  FT_P < 0.994*FT_SP &&
 		  Inlet_Dir == 1 &&
-		  Insl_Step1 < 6000 ) {
+		  Insl_Step1 < 2000 ) {
 	oms_drive( 'Y', In_St4);
 	Insl_Step1 += In_St4;
       }
@@ -218,7 +251,7 @@ State ambz_PControl_real {
     In2_St2 = 10;
     In2_St3 = 5;
     In2_St4 = 2;
-    FT_P2 = convert(InL_P);
+    FT_P2 = convert(InLP_1Hz);
     FT_SP2 = convert(InPset);
 
     if ( FT_P2 < 0.994*FT_SP2 ) { 
@@ -287,7 +320,7 @@ Partition
  
   #include "nortlib.h"
   #include "math.h"
-
+  long N2z_sp = 1290;
   void N2z_set( long sp2 ) {
     if (not_playback)
       ci_sendfcmd( 2, "Set dilution flow %ld sccm\n", sp2 );
@@ -307,21 +340,25 @@ State N2z_idle { }
 }
 
 
-State N2z_PControl {
+State N2z_PControl_real {
+
+{
+	N2z_sp = convert( DilFlow_sp );
+}
+Validate N2z_PControl_real2;
+
 }
 
-State N2z_PControl_real {
+State N2z_PControl_real2 {
   depending on (Shutdown) { Validate Inlet_Close; }
   depending on (Quick_Shutdown) { Validate Inlet_Close; }
-
+  depending on ( 1 Hz ) {
   {
-    long N2z_sp; 
-    N2z_sp = convert(DilFlow_SP);
     In3_St1 = 25;
     In3_St2 = 15;
     In3_St3 = 5;
     In3_St4 = 2;
-    FT_P3 = convert(InL_P);
+    FT_P3 = convert(InLP_1Hz);
     FT_SP3 = convert(InPset);
 
     if ( FT_P3 < 0.994*FT_SP3 ) { 
@@ -370,12 +407,13 @@ State N2z_PControl_real {
     }
   }
 }
+}
 
 
 Partition
 
 %{
-int z = 31;
+int z = 40;
 int loop_i;
 int ambi;
 int dfi;
@@ -419,6 +457,7 @@ State Loop_step_dc {
 		 int stp, stp2;
 		 stp = dfi + ( loop_i - 1 )*z*.9;
 		 stp2 = ambi - ( loop_i - 1 )*z;
+		 N2z_sp += z;
 		 ci_sendfcmd(0,"set ambient zero flow %d sccm\n",stp2);
 		}
 	}
@@ -428,17 +467,18 @@ State Loop_step_dc {
 State Loop_step_dnc {
 
 	{
-	dfi = 1085;
-	ambi = 650;
+	dfi = 965;
+	ambi = 1000;
 
-	if ( ++loop_i > 33 ) {
+	if ( ++loop_i > 26 ) {
 		Validate Loop_idle;
 		} else {
 		  int stp, stp2;
-		  stp = dfi + ( loop_i - 1 )*z*0.90;
+		  stp = dfi + ( loop_i - 1 )*z;
 		  stp2 = ambi - ( loop_i -1 )*z;
 		  ci_sendfcmd(0,"set ambient zero flow %d sccm\n",stp2);
-		  ci_sendfcmd(0,"set dilution flow %d sccm\n",stp);
+		  N2z_sp += z;
+	/*	  ci_sendfcmd(0,"set dilution flow %d sccm\n",stp);*/
 		}
 	}
 	+15 Validate Loop_step_dnc;
@@ -456,7 +496,8 @@ State Loop_step_uc {
 		  int stp, stp2;
 		  stp = dfi - ( loop_i - 1 )*z*0.95;
 		  stp2 = ambi + ( loop_i - 1 )*z;
-		  ci_sendfcmd(0,"set dilution flow %d sccm\n",stp);
+		  N2z_sp -= z;
+/*		  ci_sendfcmd(0,"set dilution flow %d sccm\n",stp); */
 		  ci_sendfcmd(0,"set ambient zero flow %d sccm\n",stp2);
 		}
 	}
@@ -467,15 +508,16 @@ State Loop_step_unc {
 
 	{
 
-	dfi = 1530;
+	dfi = 965;
 	ambi = 0;
-	if ( ++loop_i > 33 ) {
+	if ( ++loop_i > 26 ) {
 		Validate Loop_idle;
 		} else {
 		  int stp, stp2;
-		  stp = dfi - ( loop_i - 1 )*z*.95;
+		  stp = dfi - ( loop_i - 1 )*z;
 		  stp2 = ambi + ( loop_i -1 )*z;
 		  ci_sendfcmd(0,"set ambient zero flow %d sccm\n",stp2);
+		  N2z_sp -= z;
 		}
 	}
 	+15 Validate Loop_step_unc;
@@ -485,18 +527,24 @@ Partition
 
 State Auto_cal_idle { }
 
-State Auto_cal_run { 
+State Auto_cal_stop {
+	Validate ambz_idle;
+	Validate N2z_idle;
+	Validate Auto_cal_idle; 
+}
 
- Validate Loop_init_sdc;
+State Auto_cal_run_lab { 
+
+ Validate Loop_init_sdnc;
  +1 hold until valid ( Loop_idle );
  +2 Validate Loop_init_sunc;
  +1 hold until valid ( Loop_idle );
- Validate Auto_cal_idle; 
+ +300 Validate Auto_cal_idle; 
 
 }
 
 
-State Auto_cal_run_DC8 { 
+State Auto_cal_run { 
 	
 	> Set oct amp 0 volts
 	Validate Flows_ON_Z_AM;

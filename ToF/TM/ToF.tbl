@@ -38,7 +38,7 @@ GasV {
   INTP: (INTP,6) mbar;
   CALP: (CALP,6) mbar;
   CalT: (CalT,6) C;
-  InL_P: (InL_P,6) mbar;
+  InL_P: (InLP_1Hz,6) mbar;
   InH_P: (InH_P,6) mbar;
   PT_P: (PT_P,6) mbar;
   GBH_P: (GBH_P,6) psi;

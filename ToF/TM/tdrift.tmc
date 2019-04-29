@@ -1,2 +1,13 @@
+%{
+	#include "TM_average.h"
+	TM_average<MBAR> sample_avg;
+	#define sample_avg_sample(x) sample_avg.sample(x)
+	#define sample_avg_mean() sample_avg.mean()
+%}
+
+sample_avg_sample(convert(InL_P));
+
 TM typedef float Drift_t { text "%7.3f"; }
 TM 1 Hz Drift_t SysTDrift; collect SysTDrift = get_drift();
+TM typedef double sample_1Hz_t { text "%6.2lf"; }
+TM 1 Hz sample_1Hz_t InLP_1Hz; collect InLP_1Hz = sample_avg_mean();

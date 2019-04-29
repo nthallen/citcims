@@ -37,8 +37,12 @@
   : Amb zero loop stop { $0 = SWS_DATA_AMB_ZERO_LOOP_STOP; }
   : Auto cal start { $0 = SWS_AUTO_CAL_START; }
   : Auto cal stop { $0 = SWS_AUTO_CAL_STOP; }
+  : Data flux loop no cal start { $0 = SWS_DATAF_LP_NC; }
+  : Data flux loop cal start { $0 = SWS_DATAF_LP_C; }
   : Shutdown Quick { $0 = SWS_QUICK_SHUTDOWN; }
   : Shutdown Full { $0 = SWS_SHUTDOWN; }
+  : Auto cal lab start { $0 = SWS_AUTO_CAL_LAB_START; }
+  : Auto cal lab stop { $0 = SWS_AUTO_CAL_LAB_STOP; }
   ;
 &SWFlow <unsigned char>
   : Transitioning { $0 = 0; }

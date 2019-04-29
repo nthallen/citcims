@@ -24,7 +24,7 @@ State zaber_close {
 }
 
 State zaber_open {
-      > zaber move drive 2 absolute 67500
+      > zaber move drive 2 absolute 115000
   +1  Validate zaber_monitor;
 }
 
@@ -79,7 +79,7 @@ State Inlet_hold {
 }
 
 State Inlet_PControl {
-     > zaber move drive 1 absolute 52000
+     > zaber move drive 1 absolute 53200
      ## this value was 47200, assuming want near open but not. 
   +3 { Inlet_Dir = 0; }
      { msg(0, "Validate Inlet_PControl_real"); }
@@ -156,16 +156,16 @@ State flows_idle {
 
 State flows_off {
  #    Validate HV_off;  #commented out for sharing voltage w/ tof
-     > Set Dilute MFC 0
-     > Set Reagent MFC 0
-     > Set Ionsource MFC 50
+     > Set Dilution flow 0 sccm
+     > Set Reagent flow 0 sccm
+     > Set Ion Source flow 50 sccm
      depending on (Inlet_PControl_real) { Validate Inlet_Idle; }
   +1 hold until valid (Inlet_hold);
      > zaber command drive 1 1 0
      > ScrubAir Valve close
   +1 Validate cal_out;
   +1 hold until valid (cal_idle);
-     > Set Ionsource MFC 0
+     > Set Ion Source flow 0 sccm
      > Set Scrub MFC 0
   +1 Validate flows_idle;
 }
@@ -182,9 +182,9 @@ State flows_stdby {
      ### (N2 thru dryz frit)
   +1 > ionsourceMFC open off
      > Set scrub MFC 0
-     > Set Dilute MFC 0
-     > Set Ionsource MFC 100
-     > Set Reagent MFC 0
+     > Set Dilution flow 100 sccm
+     > Set Ion Source flow 100 sccm
+     > Set Reagent flow 0 sccm
   +1 Validate flows_idle;
 }
 
@@ -195,8 +195,8 @@ State flows_n2_zero {
   +1 hold until valid (Inlet_hold);
      > zaber command drive 1 1 0 
   +1 > ScrubAir Valve Close
-     > Set dilute MFC 763
-     > Set Ionsource MFC 1640
+     > Set Dilution flow 1870 sccm 
+     > Set Ion Source flow 400 sccm 
      { msg(0,"validating flows_idle");}
   +1 Validate flows_idle;
 }
@@ -207,8 +207,8 @@ State flows_n2_mhp {
 +1	hold until valid (Inlet_hold);
 	> zaber command drive 1 1 0
 +1	> ScrubAir Valve Close
-	> Set dilute MFC 743
-	> Set Ionsource MFC 1640
+	> Set Dilution flow 1815 sccm
+	> Set Ion Source flow 400 sccm
 	Validate cal_MHP;
 +1	hold until valid (cal_idle);
 +1	Validate flows_idle;
@@ -223,8 +223,8 @@ State flows_amb_zero {
      depending on (Inlet_PControl_real) { Validate Inlet_Idle; }
   +1 hold until valid (Inlet_hold);
      > zaber command drive 1 1 0
-     > Set dilute MFC 581
-     > Set Ionsource MFC 1640
+     > Set Dilution flow 1500 sccm
+     > Set Ion Source flow 400 sccm
      Validate scrub_in; #change back to scrub_in w/ single
   +1 hold until valid (scrub_idle);
      { msg(0,"validating flows_idle");}
@@ -239,8 +239,8 @@ State flows_n2_cal {
      > zaber command drive 1 1 0
   +1 > ScrubAir Valve Close
      ### (no amb z air please)
-     > Set dilute MFC 703 
-     > Set Ionsource MFC 1640
+     > Set Dilution flow 1685 sccm 
+     > Set Ion Source flow 400 sccm
      Validate cal_in;
   +1 hold until valid (cal_idle);
   +1 Validate flows_idle;
@@ -251,8 +251,8 @@ State flows_amb_cal {
      depending on (Inlet_PControl_real) { Validate Inlet_Idle; }
   +1 hold until valid (Inlet_hold);
      > zaber command drive 1 1 0 
-     > Set dilute MFC 521 
-     > Set ionsource MFC 1640
+     > Set Dilution flow 1310 sccm 
+     > Set Ion Source flow 400 sccm
      Validate cal_in;
   +1 hold until valid (cal_idle);
      Validate scrub_in;  #change back for op w/ single
@@ -263,8 +263,8 @@ State flows_amb_cal {
 State flows_amb_norm {
   +1 hold until valid (Inlet_hold);
      > zaber command drive 1 1 0
-     > Set dilute MFC 535
-     > Set ionsource MFC 1640
+     > Set Dilution flow 1306 sccm
+     > Set Ion Source flow 400 sccm
      Validate cal_norm;
   +1 hold until valid (cal_idle);
      Validate scrub_in;
@@ -276,9 +276,8 @@ State flows_amb_caltwo {
      depending on (Inlet_PControl_real) { Validate Inlet_Idle; }
   +1 hold until valid (Inlet_hold);
      > zaber command drive 1 1 0
-     > Set dilute MFC 600
-  #  > Set dilute MFC 638 
-     > Set ionsource MFC 1625
+     > Set Dilution flow 1465 sccm
+     > Set Ion Source flow 400 sccm
      Validate cal_in;
   +1 hold until valid (cal_idle);
      Validate scrub_in; 
@@ -292,9 +291,8 @@ State flows_amb_calthree {
      depending on (Inlet_PControl_real) { Validate Inlet_Idle; }
   +1 hold until valid (Inlet_hold);
      > zaber command drive 1 1 0
-     > Set dilute MFC 475
-  #  > Set dilute MFC 618 
-     > Set ionsource MFC 1625
+     > Set Dilution flow 1160 sccm
+     > Set ion source flow 400 sccm
      Validate cal_in;
   +1 hold until valid (cal_idle);
      Validate scrub_in_tripsolo;
@@ -311,8 +309,8 @@ State flows_measure {
   +1 hold until valid (cal_idle);
   +1 > ScrubAir Valve Close
        ### (no amb z air please)
-     > Set dilute MFC 581 
-     > Set Ionsource MFC 1640
+     > Set Dilution flow 1440 sccm 
+     > Set Ion Source flow 400 sccm
      Validate Inlet_PControl;
      hold until ( convert(Pressure100T) > 24 );
   +1 Validate flows_idle;
@@ -477,7 +475,7 @@ State polj_idle {
 
 
 State pol_neg {
-     > set reagent mfc 100
+     > set reagent flow 0.2 sccm 
   +1 hold until ( (!D1200A) || !(H_DIO_D&1) );
   +1 Validate pol_pos;
 } 

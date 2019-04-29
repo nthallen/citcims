@@ -34,7 +34,7 @@ State ToF_start {
         > Set oct bias 0.5 volts
         > Set oct amp 0.80 volts
         { if (convert(InL_P) < 45) {
-		ci_sendfcmd(0,"zaber move iris absolute 105000\n");
+		ci_sendfcmd(0,"zaber move iris absolute 115000\n");
 	}}
 	+1 Validate Flows_ON_Z_N2;
 	+1 hold until valid (GD_Wait);
@@ -194,6 +194,16 @@ state data_loop_nc {
 
 }
 
+state dataf_loop_nc {
+		Validate zero_AM;
+		+2 hold until valid ( Collect_Idle );
+		Validate data_AM_IN;
+}
+
+state dataf_loop_c {
+		Validate data_AMC_IN;
+}
+
 state cal_quick {
 		
 		Validate quick_cal;
@@ -276,4 +286,21 @@ State data_AM {
 	> Set oct amp 0.80 volts
 	+600 Validate Collect_idle;
 
+}
+
+State data_AM_IN {
+
+	> set oct amp 0 volts
+	Validate Flows_ON_ME;
+	+1 hold until valid ( GD_Wait );
+	> Set oct amp 0.8 volts
+
+}
+
+State data_AMC_IN {
+
+	> set oct amp 0 volts
+	Validate Flows_ON_ME_CAL2;
+	+1 hold until valid ( GD_Wait );
+	> Set oct amp 0.8 volts
 }

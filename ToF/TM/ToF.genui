@@ -25,6 +25,7 @@ ROWS 18
   1 AI_SP1 GasDeck Volts
   
   1 InL_P Inlet P
+  1 InLP_1Hz Inlet P Avg
   1 InPset Inlet P SetPt
   
   #1 AII_DS0
