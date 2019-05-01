@@ -1,0 +1,145 @@
+#! /usr/bin/perl -w
+# UserPkts3_gen srcfile name=NAME
+use strict;
+
+# Handle command line
+my $srcfile = $ARGV[0] || die "UserPkts3_gen: FATAL: source file not specified\n";
+my $name = 'UserPkts3';
+if (@ARGV >= 2 && $ARGV[1] =~ m/^name=(\w+)$/) {
+  $name = $1;
+}
+
+# read source file
+open my $fh, '<', $srcfile or die "UserPkts3_gen: FATAL: Unable to read source file '$srcfile'\n";
+$/ = undef;
+my $data = <$fh>;
+close $fh;
+
+# Remove all comments (without removing newlines)
+$data =~ s/#.*$//mg;
+
+my %ports; # point to linenum
+my %packets; # packet names must be unique: point to linenum where defined
+my %vars; # variable names must be unique: point to packet, linenum where defined
+my $linenum = 1;
+
+sub generate_packet {
+  my ($port, $keyword, $timeword, $vars) = @_;
+  #print "generating port $port packet $keyword timeword=$timeword vars:",
+  #  map( "\n  $_", @$vars), "\n";
+  if ($ports{$port}) {
+    # print "using existing UDP port $port defined on line $ports{$port}->{line}\n";
+  } else {
+    # print "generating UDP port $port\n";
+    $ports{$port} = { packets => [], line => $linenum };
+  }
+  if ($packets{$keyword}) {
+    die "$srcfile:$linenum: FATAL: Packet name '$keyword' previously ".
+        "defined at line $packets{$keyword}->{line}\n";
+  } else {
+    # print "generating packet '$keyword'\n";
+    $packets{$keyword} = { port => $port, line => $linenum, vars => [], timeword => $timeword };
+    push(@{$ports{$port}->{packets}}, $keyword);
+  }
+  
+  for my $var (@$vars) {
+    if ($vars{$var}) {
+      die "$srcfile:$linenum: FATAL: Variable '$var' previously defined" .
+        " in packet $vars{$var}->{packet} at line $vars{$var}->{line}\n";
+    } else {
+      $vars{$var} = { packet => $keyword, line => $linenum };
+      push(@{$packets{$keyword}->{vars}}, $var);
+    }
+  }
+}
+
+while ( 1 ) {
+  last if $data =~ /^\s*$/;
+  if ($data =~ s/^\s* port \s+ (\d+) \s* : \s*//xi) {
+    my $port = $1;
+    # print "port match '$&'\n";
+    $linenum += $& =~ tr/\n//;
+    if ($data =~ s/^(\w+) \s* , \s* (Time|Timestamp) \s* , \s*
+        (\w+ (?: \s* , \s* \w+ )*) //xi) {
+      my $keyword = $1;
+      my $timeword = $2;
+      my $list = $3;
+      my $nlines = $& =~ tr/\n//;
+      my @vars = split(/\s*,\s*/,$list);
+      generate_packet($port, $keyword, $timeword, \@vars);
+      $linenum += $nlines;
+    } else {
+      die "$srcfile:$linenum: FATAL: Expected field list\n";
+    }
+  } else {
+    die "$srcfile:$linenum: FATAL: Syntax error\n";
+  }
+}
+
+print "Now ready to generate code\n";
+
+my $ofilename = "$name.h";
+open $fh, '>', $ofilename or die "UserPkts3_gen: FATAL: Unable to write output file '$ofilename'\n";
+my $guard = uc("${ofilename}_INCLUDED");
+$guard =~ s/\./_/g;
+print $fh "#ifndef $guard\n#define $guard\n\n";
+print $fh "#include <time.h>\n";
+
+for my $packet (keys %packets) {
+  print $fh "\ntypedef struct __attribute__((__packed__)) {\n",
+            "  double Time;\n";
+  for my $var (@{$packets{$packet}->{vars}}) {
+    print $fh "  float $var;\n";
+  }
+  print $fh "} ${packet}_t;\nextern ${packet}_t $packet;\n";
+
+}
+
+print $fh "\n#endif\n";
+close $fh or warn "UserPkts3_gen: WARNING: Error closing output file '$ofilename'\n";
+
+$ofilename = "${name}_Pkts.h";
+open $fh, '>', $ofilename or die "UserPkts3_gen: FATAL: Unable to write output file '$ofilename'\n";
+$guard = uc("${ofilename}_INCLUDED");
+$guard =~ s/\./_/g;
+print $fh "#ifndef $guard\n#define $guard\n\n";
+print $fh "#include \"UserPkts3_int.h\"\n";
+
+for my $packet (keys %packets) {
+  print $fh
+    "\nclass ${packet}pkt : public UserPkt {\n",
+    "  public:\n",
+    "    ${packet}pkt();\n",
+    "    int Process_Pkt();\n",
+    "  private:\n",
+    "    ${packet}_t $packet;\n",
+    "};\n";
+}
+
+print $fh "\n#endif\n";
+close $fh or warn "UserPkts3_gen: WARNING: Error closing output file '$ofilename'\n";
+
+$ofilename = "${name}_Pkts.cc";
+open $fh, '>', $ofilename or die "UserPkts3_gen: FATAL: Unable to write output file '$ofilename'\n";
+print $fh "#include \"${name}_Pkts.h\"\n";
+
+for my $packet (keys %packets) {
+  print $fh
+    "\n${packet}pkt::${packet}pkt() : UserPkt(\"$packet\") {\n",
+    "  TM_init(&$packet, sizeof(${packet}_t));\n",
+    "}\n\n",
+    "int ${packet}pkt::Process_Pkt() {\n",
+    "  return (\n";
+  print $fh lc($packets{$packet}->{timeword}) eq "timestamp" ?
+    "    not_ISO8601(&${packet}.Time, false) || not_str(\",\", 1) ||\n" :
+    "    not_double(&${packet}.Time) || not_str(\",\", 1) ||\n";
+  print $fh
+    join " || not_str(\",\", 1) ||\n",
+    map "    not_nfloat(&${packet}.$_)",
+    @{$packets{$packet}->{vars}};
+  print $fh
+    "\n  );\n}\n";
+}
+
+print $fh "\n#endif\n";
+close $fh or warn "UserPkts3_gen: WARNING: Error closing output file '$ofilename'\n";

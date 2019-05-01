@@ -1,0 +1,27 @@
+Moduledef UserPkts3 [ src= name=UserPkts3 ] {
+  UserPkts3 Module requires a src variable
+  Source file syntax:
+    source_file : Statement+ .
+    Statement : Packet / comment .
+    Packet : port ':' keyword ',' timevar packet_vars packet_table_defs .
+    packet_vars : / packet_vars ',' variable .
+    keyword : word .
+    variable : word .
+    timevar : 'Time' / 'Timestamp' .
+  
+}
+
+mode (default) {
+  tmcbase = @name@.tmc:
+  colbase = @name@_col.tmc:
+  genuibase = @name@.genui:
+  SRC = @src@
+  DISTRIB = @name@
+  CPPFLAGS = -I @MODDIR@
+  %%
+@name@.tmc @name@_col.tmc @name@.cmd @name@_conv.tmc @name@.genui @name@.tbl @name@_Pkts.cc @name@_Pkts.h @name@.h : @src@ @MODDIR@/UserPkts3_gen
+	@MODDIR@/UserPkts3_gen @src@ name=@name@
+@name@ : @name@.o @name@_Pkts.o
+@name@.o : UserPkts3.cc
+@name@_Pkts.o : @name@_Pkts.cc
+}
