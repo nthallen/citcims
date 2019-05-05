@@ -205,7 +205,8 @@ print $fh
   "<follow> msg\n",
   "<unsort>\n",
   "<blank>\n",
-  "Currently supports:\n";
+  "Driver to collect data arriving via UDP packets.\n",
+  "Currently configured to handle:\n";
 
 for my $port (sort keys %ports) {
   my @packets = sort @{$ports{$port}->{packets}};
@@ -213,11 +214,11 @@ for my $port (sort keys %ports) {
   
   if (@packets) {
     print $fh
-      "packets " . join(" and ", join(', ', @packets), $last_pkt)
+      "  packets " . join(" and ", join(', ', @packets), $last_pkt)
         . " on port $port\n";
   } else {
     print $fh
-      "packet $last_pkt on port $port\n";
+      "  packet $last_pkt on port $port\n";
   }
 }
 print $fh
