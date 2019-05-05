@@ -76,8 +76,7 @@ while ( 1 ) {
   }
 }
 
-print "Now ready to generate code\n";
-
+#---------------------------------------------------------------------------------
 my $ofilename = "$name.h";
 open $fh, '>', $ofilename or die "UserPkts3_gen: FATAL: Unable to write output file '$ofilename'\n";
 my $guard = uc("${ofilename}_INCLUDED");
@@ -98,12 +97,13 @@ for my $packet (keys %packets) {
 print $fh "\n#endif\n";
 close $fh or warn "UserPkts3_gen: WARNING: Error closing output file '$ofilename'\n";
 
+#---------------------------------------------------------------------------------
 $ofilename = "${name}_Pkts.h";
 open $fh, '>', $ofilename or die "UserPkts3_gen: FATAL: Unable to write output file '$ofilename'\n";
 $guard = uc("${ofilename}_INCLUDED");
 $guard =~ s/\./_/g;
 print $fh "#ifndef $guard\n#define $guard\n\n";
-print $fh "#include \"UserPkts3_int.h\"\n";
+print $fh "#include \"${name}_int.h\"\n";
 
 for my $packet (keys %packets) {
   print $fh
@@ -119,9 +119,13 @@ for my $packet (keys %packets) {
 print $fh "\n#endif\n";
 close $fh or warn "UserPkts3_gen: WARNING: Error closing output file '$ofilename'\n";
 
+#---------------------------------------------------------------------------------
 $ofilename = "${name}_Pkts.cc";
 open $fh, '>', $ofilename or die "UserPkts3_gen: FATAL: Unable to write output file '$ofilename'\n";
-print $fh "#include \"${name}_Pkts.h\"\n";
+print $fh
+  "#include \"${name}.h\"\n",
+  "#include \"${name}_int.h\"\n",
+  "#include \"${name}_Pkts.h\"\n";
 
 for my $packet (keys %packets) {
   print $fh
@@ -141,5 +145,75 @@ for my $packet (keys %packets) {
     "\n  );\n}\n";
 }
 
-print $fh "\n#endif\n";
+print $fh
+  "\nUserPkts::UserPkts(Selector *S) {\n",
+  "  UserPkts_UDP *UP;\n";
+
+for my $port (keys %ports) {
+  print $fh "  UP = new UserPkts_UDP($port);\n";
+  for my $pkt (@{$ports{$port}->{packets}}) {
+    print $fh
+      "  UP->add_packet(new ${pkt}pkt());\n";
+  }
+  print $fh
+    "  S->add_child(UP);\n",
+    "  UDPs.push_back(UP);\n";
+}
+
+print $fh "}\n\n";
+
+close $fh or warn "UserPkts3_gen: WARNING: Error closing output file '$ofilename'\n";
+#---------------------------------------------------------------------------------
+$ofilename = "${name}.tmc";
+open $fh, '>', $ofilename or die "UserPkts3_gen: FATAL: Unable to write output file '$ofilename'\n";
+
+for my $packet (keys %packets) {
+  print $fh
+    "TM 1 Hz IWG1_Drift ${packet}_TDrift;\n";
+  for my $var (@{$packets{$packet}->{vars}}) {
+    print $fh
+      "TM 1 Hz IWG1_float ${packet}_${var};\n";
+  }
+  print $fh
+    "TM \"Receive\" $packet 0;\n\n",
+    "Group $packet (${packet}_TDrift",
+    map(", ${packet}_$_", @{$packets{$packet}->{vars}}),
+    ") {\n",
+    "  ${packet}_TDrift = calc_drift(${packet}.Time);\n",
+    map("  ${packet}_$_ = ${packet}.$_;\n", @{$packets{$packet}->{vars}}),
+    "}\n\n";
+}
+
+close $fh or warn "UserPkts3_gen: WARNING: Error closing output file '$ofilename'\n";
+#---------------------------------------------------------------------------------
+$ofilename = "${name}_col.tmc";
+open $fh, '>', $ofilename or die "UserPkts3_gen: FATAL: Unable to write output file '$ofilename'\n";
+
+print $fh
+  "%{\n",
+  "  #include \"${name}.h\"\n",
+  map("  ${_}_t $_;\n", keys %packets),
+  "%}\n";
+
+close $fh or warn "UserPkts3_gen: WARNING: Error closing output file '$ofilename'\n";
+#---------------------------------------------------------------------------------
+$ofilename = "${name}.oui";
+open $fh, '>', $ofilename or die "UserPkts3_gen: FATAL: Unable to write output file '$ofilename'\n";
+my @packets = sort keys %packets;
+my $last_pkt = pop(@packets);
+print $fh
+  "<package> $name\n",
+  "<include> msg\n",
+  "<follow> msg\n",
+  "<unsort>\n",
+  "<blank>\n",
+  "Currently supports ",
+  scalar(@packets) ?
+    "packets " . join(" and ", join(', ', @packets), $last_pkt) :
+    "packet $last_pkt",
+  "\n\n",
+  "<package> msghdr_init\n",
+  "<init>\n",
+  "  msg_hdr_default = \"$name\";\n";
+
 close $fh or warn "UserPkts3_gen: WARNING: Error closing output file '$ofilename'\n";

@@ -22,6 +22,6 @@ mode (default) {
 @name@.tmc @name@_col.tmc @name@.cmd @name@_conv.tmc @name@.genui @name@.tbl @name@_Pkts.cc @name@_Pkts.h @name@.h : @src@ @MODDIR@/UserPkts3_gen
 	@MODDIR@/UserPkts3_gen @src@ name=@name@
 @name@ : @name@.o @name@_Pkts.o
-@name@.o : UserPkts3.cc
+@name@.o : @name@.cc:UserPkts3.cc.in @name@_int.h:UserPkts3_int.h.in
 @name@_Pkts.o : @name@_Pkts.cc
 }
