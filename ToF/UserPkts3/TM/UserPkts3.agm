@@ -15,13 +15,21 @@ mode (default) {
   tmcbase = @name@.tmc:
   colbase = @name@_col.tmc:
   genuibase = @name@.genui:
+  - : @name@.cc:UserPkts3.cc.in @name@_int.h:UserPkts3_int.h.in
   SRC = @src@
+  TGT = @name@
+  OBJ = @name@oui.c @name@oui.o @name@.o @name@_Pkts.o
   DISTRIB = @name@
   CPPFLAGS = -I @MODDIR@
   %%
 @name@.tmc @name@_col.tmc @name@.cmd @name@_conv.tmc @name@.genui @name@.tbl @name@_Pkts.cc @name@_Pkts.h @name@.h : @src@ @MODDIR@/UserPkts3_gen
 	@MODDIR@/UserPkts3_gen @src@ name=@name@
-@name@ : @name@.o @name@_Pkts.o
-@name@.o : @name@.cc:UserPkts3.cc.in @name@_int.h:UserPkts3_int.h.in
-@name@_Pkts.o : @name@_Pkts.cc
+@name@ : @name@.o @name@_Pkts.o @name@oui.o
+	$(LINK.normCXX) -o @name@ @name@.o @name@_Pkts.o @name@oui.o -ltmpp -ltm -lnort -lsocket
+	$(OUIUSE) @name@oui.c
+@name@.o : @name@.cc @name@_int.h @name@.h
+@name@_Pkts.o : @name@_Pkts.cc @name@_int.h @name@.h
+@name@oui.o : @name@oui.c
+@name@oui.c : @name@.oui
+	$(OUI) -o @name@oui.c @name@.oui
 }

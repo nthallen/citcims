@@ -46,14 +46,6 @@ class UserPkt {
     int not_int(int &val);
 };
 
-class UserPkts {
-  public:
-    UserPkts(Selector *S); // generated
-    ~UserPkts();
-  private:
-    std::vector<UserPkts_UDP*> UDPs;
-};
-
 class UserPkts_UDP : public Ser_Sel {
   public:
     UserPkts_UDP(int udp_port);
@@ -63,7 +55,15 @@ class UserPkts_UDP : public Ser_Sel {
     void Bind(int port);
     int fillbuf();
     int not_KW(char *KWbuf);
-    std::vector<UserPkts *> Pkts;
+    std::vector<UserPkt *> Pkts;
+};
+
+class UserPkts {
+  public:
+    UserPkts(Selector *S); // generated
+    ~UserPkts();
+  private:
+    std::vector<UserPkts_UDP*> UDPs;
 };
 
 #endif // __cplusplus
