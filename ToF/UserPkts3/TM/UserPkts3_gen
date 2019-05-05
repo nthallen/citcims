@@ -20,7 +20,9 @@ $data =~ s/#.*$//mg;
 
 my %ports; # point to linenum
 my %packets; # packet names must be unique: point to linenum where defined
+my @pktorder;
 my %vars; # variable names must be unique: point to packet, linenum where defined
+my $maxrows = 24;
 my $linenum = 1;
 
 sub generate_packet {
@@ -40,6 +42,7 @@ sub generate_packet {
     # print "generating packet '$keyword'\n";
     $packets{$keyword} = { port => $port, line => $linenum, vars => [], timeword => $timeword };
     push(@{$ports{$port}->{packets}}, $keyword);
+    push(@pktorder, $keyword);
   }
   
   for my $var (@$vars) {
@@ -71,6 +74,10 @@ while ( 1 ) {
     } else {
       die "$srcfile:$linenum: FATAL: Expected field list\n";
     }
+  } elsif ($data =~ s/^\s* maxrows \s* = \s* (\d+)//xi) {
+    $maxrows = $1;
+    my $nlines = $& =~ tr/\n//;
+    $linenum += $nlines;
   } else {
     die "$srcfile:$linenum: FATAL: Syntax error\n";
   }
@@ -226,5 +233,75 @@ print $fh
   "<package> msghdr_init\n",
   "<init>\n",
   "  msg_hdr_default = \"$name\";\n";
+
+close $fh or warn "UserPkts3_gen: WARNING: Error closing output file '$ofilename'\n";
+#---------------------------------------------------------------------------------
+$ofilename = "${name}.tbl";
+open $fh, '>', $ofilename or die "UserPkts3_gen: FATAL: Unable to write output file '$ofilename'\n";
+
+my @tblsizes;
+
+for my $packet (@pktorder) {
+  # total number of rows counting header is
+  # number of vars + 1 (for the header)
+  # If this exceeds maxrows, then we will split into multiple balanced columns
+  # TDrift and stale will be grouped in separate tables
+  my @vars = @{$packets{$packet}->{vars}};
+  use integer;
+  my $nvars = @vars;
+  my $ncols = ($nvars+$maxrows-2)/($maxrows-1);
+  my $nrows = 1+($nvars+$ncols-1)/$ncols;
+  push(@tblsizes, [ $packet, $ncols, $nrows]);
+  my $indent = "  ";
+  my $multicol = $ncols > 1;
+  print $fh
+    "\n$packet {\n",
+    "  HBox { +-; title: $packet; -+ };\n";
+  if ($multicol) {
+    print $fh
+      "  HBox {\n";
+    $indent = "    ";
+  }
+  while ($nvars) {
+    my $vrows = ($nvars+$ncols-1)/$ncols;
+    # Record table rows,cols
+    $nvars -= $vrows;
+    while ($vrows) {
+      my $var = shift(@vars);
+      print $fh
+        "$indent$var: (${packet}_$var,9);\n";
+      --$vrows;
+    }
+    if (--$ncols) {
+      print $fh "  }; |; {\n";
+    }
+  }
+  $multicol && print $fh "  }\n";
+  print $fh "}\n";
+}
+
+print $fh
+  "${name}_stale {\n",
+  "  \"\"  Drift Stale;\n",
+  map("  $_:  (${_}_TDrift,6)  (${_}_stale,3);\n",
+    sort keys %packets),
+  "  MFCtr: (MFCtr,5);\n",
+  "  (flttime,9);\n",
+  "}\n";
+push @tblsizes, [ "${name}_stale", 1, 3 + @pktorder ];
+
+@tblsizes =
+  sort { $b->[1] <=> $a->[1] || $b->[2] <=> $a->[2] || $a->[0] cmp $b->[0] }
+    @tblsizes;
+# output stale/TDrift table
+# build full table
+#   Going for HBox of VBoxes
+#   Sort tables by width, height
+#   Start with widest, tallest table
+#   Below that, chooses the widest table that will fit in remaining rows
+#     if there is additional horizontal space, look for a table that is short enough
+#
+#   
+# build bordered table
 
 close $fh or warn "UserPkts3_gen: WARNING: Error closing output file '$ofilename'\n";
