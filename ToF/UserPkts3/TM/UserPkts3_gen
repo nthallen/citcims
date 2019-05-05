@@ -199,18 +199,28 @@ close $fh or warn "UserPkts3_gen: WARNING: Error closing output file '$ofilename
 #---------------------------------------------------------------------------------
 $ofilename = "${name}.oui";
 open $fh, '>', $ofilename or die "UserPkts3_gen: FATAL: Unable to write output file '$ofilename'\n";
-my @packets = sort keys %packets;
-my $last_pkt = pop(@packets);
 print $fh
   "<package> $name\n",
   "<include> msg\n",
   "<follow> msg\n",
   "<unsort>\n",
   "<blank>\n",
-  "Currently supports ",
-  scalar(@packets) ?
-    "packets " . join(" and ", join(', ', @packets), $last_pkt) :
-    "packet $last_pkt",
+  "Currently supports:\n";
+
+for my $port (sort keys %ports) {
+  my @packets = sort @{$ports{$port}->{packets}};
+  my $last_pkt = pop(@packets);
+  
+  if (@packets) {
+    print $fh
+      "packets " . join(" and ", join(', ', @packets), $last_pkt)
+        . " on port $port\n";
+  } else {
+    print $fh
+      "packet $last_pkt on port $port\n";
+  }
+}
+print $fh
   "\n\n",
   "<package> msghdr_init\n",
   "<init>\n",
