@@ -7,3 +7,5 @@ port 3246:
 Keyword2, Timestamp, VarE, VarF
 port 3245:
 Keyword3, Time, VarG, VarH
+
+maxrows = 6
