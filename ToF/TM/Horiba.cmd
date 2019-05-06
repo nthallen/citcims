@@ -18,4 +18,8 @@
     { $0.channel = 2; $0.value = $4; }
   : Fluorine Flow %f (Enter value in sccm) sccm
     { $0.channel = 3; $0.value = $3; }
+  : Cal Flow %f (Enter value in sccm) sccm
+    { $0.channel = 5; $0.value = $3; }
+  : Zero Flow %f (Enter value in sccm) sccm
+    { $0.channel = 6; $0.value = $3; }
 ;

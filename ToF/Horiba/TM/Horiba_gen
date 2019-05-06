@@ -10,7 +10,7 @@ use Text::Wrap;
 #   <name>_conv.tmc
 #   <name>.genui
 
-my $HORIBA_MAX_CHANNELS = 5;
+my $HORIBA_MAX_CHANNELS = 6;
 
 my $srcfile = $ARGV[0] ||
   die "Must specify a source file\n";

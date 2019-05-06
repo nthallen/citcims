@@ -5,6 +5,8 @@ TM typedef short DilFlow_sccm { text "%6.1lf"; }
 TM typedef short IonSrcFlow_sccm { text "%5.1lf"; }
 TM typedef short FFlow_sccm { text "%5.3lf"; }
 TM typedef short HoribaP_mbar { text "%6.1lf"; }
+TM typedef short CalFlow_sccm { text "%5.3lf"; }
+TM typedef short ZeroFlow_sccm { text "%6.1lf"; }
 TM typedef unsigned short HoribaS_t { text "%04x"; }
 TM typedef unsigned char HoribaSt_t { text "%3d"; }
 
@@ -16,12 +18,17 @@ TM 1 Hz FFlow_sccm FFlow_SP;
 TM 1 Hz FFlow_sccm FFlow;
 TM 1 Hz HoribaP_mbar HoribaP_SP;
 TM 1 Hz HoribaP_mbar HoribaP;
+TM 1 Hz CalFlow_sccm CalFlow_SP;
+TM 1 Hz CalFlow_sccm CalFlow;
+TM 1 Hz ZeroFlow_sccm ZeroFlow_SP;
+TM 1 Hz ZeroFlow_sccm ZeroFlow;
 TM 1 Hz HoribaS_t HoribaS;
 TM 1 Hz HoribaSt_t Horiba_Stale;
 TM "Receive" Horiba 1;
 
 Group Horiba (DilFlow_SP, DilFlow, IonSrcFlow_SP, IonSrcFlow, FFlow_SP,
-    FFlow, HoribaP_SP, HoribaP, HoribaS, Horiba_Stale) {
+    FFlow, HoribaP_SP, HoribaP, CalFlow_SP, CalFlow, ZeroFlow_SP, ZeroFlow,
+    HoribaS, Horiba_Stale) {
   DilFlow_SP = Horiba_channel(0,SP) * 10*1000.;
   DilFlow = Horiba_channel(0,RB) * 10*1000.;
   IonSrcFlow_SP = Horiba_channel(1,SP) * 10;
@@ -30,6 +37,10 @@ Group Horiba (DilFlow_SP, DilFlow, IonSrcFlow_SP, IonSrcFlow, FFlow_SP,
   FFlow = Horiba_channel(2,RB) * 1000;
   HoribaP_SP = Horiba_channel(3,SP) * 10*30.;
   HoribaP = Horiba_channel(3,RB) * 10*30.;
+  CalFlow_SP = Horiba_channel(4,SP) * 1000;
+  CalFlow = Horiba_channel(4,RB) * 1000;
+  ZeroFlow_SP = Horiba_channel(5,SP) * 10;
+  ZeroFlow = Horiba_channel(5,RB) * 10;
   HoribaS = Horiba.HoribaS;
   Horiba_Stale = Horiba_obj->stale(255);
   Horiba_obj->synch();
