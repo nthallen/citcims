@@ -1,3 +1,7 @@
+HEADER FIREX User Packets
+MNEMONIC UP
+HOMEDIR ToF_Data_Dir
+
 port 3245: #This is a comment
 
 Keyword,Time,VarA,VarB, VarC,

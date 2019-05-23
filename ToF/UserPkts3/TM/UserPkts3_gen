@@ -24,6 +24,7 @@ my @pktorder;
 my %vars; # variable names must be unique: point to packet, linenum where defined
 my $maxrows = 24;
 my $linenum = 1;
+my @genui_hdrs;
 
 sub generate_packet {
   my ($port, $keyword, $timeword, $vars) = @_;
@@ -76,6 +77,10 @@ while ( 1 ) {
     }
   } elsif ($data =~ s/^\s* maxrows \s* = \s* (\d+)//xi) {
     $maxrows = $1;
+    my $nlines = $& =~ tr/\n//;
+    $linenum += $nlines;
+  } elsif ($data =~ s/^\s* ((?:HEADER|MNEMONIC|HOMEDIR) \s .*)//xi) {
+    push(@genui_hdrs, $1);
     my $nlines = $& =~ tr/\n//;
     $linenum += $nlines;
   } else {
@@ -174,12 +179,16 @@ close $fh or warn "UserPkts3_gen: WARNING: Error closing output file '$ofilename
 $ofilename = "${name}.tmc";
 open $fh, '>', $ofilename or die "UserPkts3_gen: FATAL: Unable to write output file '$ofilename'\n";
 
+print $fh
+  "TM typedef signed short ${name}_Drift { text \"%6d\"; }\n",
+  "TM typedef float ${name}_float { text \"%9.4f\"; }\n\n";
+
 for my $packet (keys %packets) {
   print $fh
-    "TM 1 Hz IWG1_Drift ${packet}_TDrift;\n";
+    "TM 1 Hz ${name}_Drift ${packet}_TDrift;\n";
   for my $var (@{$packets{$packet}->{vars}}) {
     print $fh
-      "TM 1 Hz IWG1_float ${packet}_${var};\n";
+      "TM 1 Hz ${name}_float ${packet}_${var};\n";
   }
   print $fh
     "TM \"Receive\" $packet 0;\n\n",
@@ -438,5 +447,21 @@ print $fh
   "}\n";
 #   
 # build bordered table
+
+close $fh or warn "UserPkts3_gen: WARNING: Error closing output file '$ofilename'\n";
+#---------------------------------------------------------------------------------
+$ofilename = "${name}.genui";
+open $fh, '>', $ofilename or die "UserPkts3_gen: FATAL: Unable to write output file '$ofilename'\n";
+
+print $fh map "$_\n", @genui_hdrs;
+for my $packet (keys %packets) {
+  print $fh
+    "  1 ${packet}_TDrift ${name}_Status TDrift\n",
+    "  1 ${packet}_stale ${name}_Status Stale\n";
+  for my $var (@{$packets{$packet}->{vars}}) {
+    print $fh
+      "  1 Hz ${packet}_${var} ${name}_Science ${packet}\n";
+  }
+}
 
 close $fh or warn "UserPkts3_gen: WARNING: Error closing output file '$ofilename'\n";
