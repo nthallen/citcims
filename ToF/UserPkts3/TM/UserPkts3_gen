@@ -25,6 +25,7 @@ my %vars; # variable names must be unique: point to packet, linenum where define
 my $maxrows = 24;
 my $linenum = 1;
 my @genui_hdrs;
+my $tablename = '';
 
 sub generate_packet {
   my ($port, $keyword, $timeword, $vars) = @_;
@@ -81,6 +82,10 @@ while ( 1 ) {
     $linenum += $nlines;
   } elsif ($data =~ s/^\s* ((?:HEADER|MNEMONIC|HOMEDIR) \s .*)//xi) {
     push(@genui_hdrs, $1);
+    my $nlines = $& =~ tr/\n//;
+    $linenum += $nlines;
+  } elsif ($data =~ s/^\s* Table \s* (\w+)//xi) {
+    $tablename = $1;
     my $nlines = $& =~ tr/\n//;
     $linenum += $nlines;
   } else {
@@ -261,7 +266,7 @@ sub gen_table {
   my $multicol = $ncols > 1;
   print $fh
     "\n$tblname {\n",
-    "  HBox { +-; title: \"$title\"; -+ };\n";
+    "  HBox { +-; Title: \"$title\"; -+ };\n";
   if ($multicol) {
     print $fh
       "  HBox {\n";
@@ -441,12 +446,10 @@ my @tbl = get_columns();
 output_table($name, \@tbl);
 
 print $fh
-  "\n${name}_full {\n",
+  "\n$tablename {\n",
   "  HBox { |+; [$name]; |+ }\n",
   "  -;\n",
   "}\n";
-#   
-# build bordered table
 
 close $fh or warn "UserPkts3_gen: WARNING: Error closing output file '$ofilename'\n";
 #---------------------------------------------------------------------------------
