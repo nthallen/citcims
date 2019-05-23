@@ -9,7 +9,7 @@
 
 const char *horiba_path = "/net/athenaII_a/dev/ser3";
 const char *horiba_name = "Horiba";
-int horiba_channels = 4;
+int horiba_channels = HORIBA_MAX_CHANNELS;
 int opt_echo = 1;
 
 int main(int argc, char **argv) {
