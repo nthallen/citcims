@@ -1,6 +1,14 @@
+# This header data is useful if creating a separate extraction
+# for UserPkts data
 HEADER FIREX User Packets
 MNEMONIC UP
 HOMEDIR ToF_Data_Dir
+
+# The name of the last table in the output can be set if
+# you plan to Input the file into a larger display. By
+# default, the last table is unnamed, so the table takes up
+# the entire window.
+# Table UP_full
 
 port 3245: #This is a comment
 
