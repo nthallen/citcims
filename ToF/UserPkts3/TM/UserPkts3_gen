@@ -269,8 +269,9 @@ sub gen_table {
     "  HBox { +-; Title: \"$title\"; -+ };\n";
   if ($multicol) {
     print $fh
-      "  HBox {\n";
-    $indent = "    ";
+      "  HBox {\n",
+      "    {\n";
+    $indent = "      ";
   }
   while ($nvars) {
     my $vrows = ($nvars+$ncols-1)/$ncols;
@@ -282,10 +283,12 @@ sub gen_table {
       --$vrows;
     }
     if (--$ncols) {
-      print $fh "  }; |; {\n";
+      print $fh "    }; |; {\n";
     }
   }
-  $multicol && print $fh "  }\n";
+  $multicol && print $fh
+    "    }\n",
+    "  }\n";
   print $fh "}\n";
 }
 
