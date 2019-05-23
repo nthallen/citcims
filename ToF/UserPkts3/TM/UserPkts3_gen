@@ -301,7 +301,7 @@ for my $packet (@pktorder) {
 
 # output stale/TDrift table
 gen_table($fh, "${name}_stale", "Drift",
-  "\"\"   Drift     Stale\n",
+  "\"\"   Drift     Stale;\n",
   map("$_:  (${_}_TDrift,6)  (${_}_stale,3);\n",
     @pktorder),
   "MFCtr: (MFCtr,5);\n",
@@ -447,7 +447,7 @@ output_table($name, \@tbl);
 
 print $fh
   "\n$tablename {\n",
-  "  HBox { |+; [$name]; |+ }\n",
+  "  HBox { |+; [$name]; |+ };\n",
   "  -;\n",
   "}\n";
 
