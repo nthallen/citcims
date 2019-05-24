@@ -42,3 +42,9 @@ Horiba_BitStar ZeroFlow_SP_Stat; Invalidate ZeroFlow_SP_Stat;
 Horiba_BitStar ZeroFlow_Stat; Invalidate ZeroFlow_Stat;
   { ZeroFlow_Stat = (HoribaS >> 11) & 1;
     Validate ZeroFlow_Stat; }
+Horiba_BitStar Cal2Flow_SP_Stat; Invalidate Cal2Flow_SP_Stat;
+  { Cal2Flow_SP_Stat = (HoribaS >> 12) & 1;
+    Validate Cal2Flow_SP_Stat; }
+Horiba_BitStar Cal2Flow_Stat; Invalidate Cal2Flow_Stat;
+  { Cal2Flow_Stat = (HoribaS >> 13) & 1;
+    Validate Cal2Flow_Stat; }

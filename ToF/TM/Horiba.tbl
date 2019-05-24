@@ -34,6 +34,12 @@ ZeroFlow {
     >HBox{(ZeroFlow,6); (ZeroFlow_Stat,1)}
     sccm;
 }
+Cal2Flow {
+  Cal2Flow:
+    >HBox{(Cal2Flow_SP,5); (Cal2Flow_SP_Stat,1)}
+    >HBox{(Cal2Flow,5); (Cal2Flow_Stat,1)}
+    sccm;
+}
 Horiba {
   HBox { +-; Title: Horiba; -+ };
   "" >Set< >Flow<;
@@ -60,6 +66,10 @@ Horiba {
   ZeroFlow:
     >HBox{(ZeroFlow_SP,6); (ZeroFlow_SP_Stat,1)}
     >HBox{(ZeroFlow,6); (ZeroFlow_Stat,1)}
+    sccm;
+  Cal2Flow:
+    >HBox{(Cal2Flow_SP,5); (Cal2Flow_SP_Stat,1)}
+    >HBox{(Cal2Flow,5); (Cal2Flow_Stat,1)}
     sccm;
   { HGlue 0+1 Stale: (Horiba_Stale,3) }
 }

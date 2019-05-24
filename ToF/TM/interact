@@ -24,7 +24,7 @@
   Launch - lgr -N `mlf_find LOG`
   Launch - omsdrv -i7
   Launch - IonGauge -d /net/tofathena/dev/ser4
-  Launch - horiba -n4 -d /net/tofathena/dev/ser3 -v
+  Launch - horiba -n7 -d /net/tofathena/dev/ser3 -v
   Launch - nXDS -d /dev/ser2 -n tripherc -e triple -v
   Launch - TwisTorr -d /dev/ser1 -n3 -v
 # Launch - sonic -p /net/tofherc/dev/ser1
