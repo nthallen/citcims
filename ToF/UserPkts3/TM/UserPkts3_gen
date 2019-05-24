@@ -186,22 +186,27 @@ open $fh, '>', $ofilename or die "UserPkts3_gen: FATAL: Unable to write output f
 
 print $fh
   "TM typedef signed short ${name}_Drift { text \"%6d\"; }\n",
-  "TM typedef float ${name}_float { text \"%9.4f\"; }\n\n";
+  "TM typedef float ${name}_float { text \"%9.4f\"; }\n",
+  "TM typedef unsigned char ${NAME}_uchar { text \"%3u\"; }\n\n";
 
 for my $packet (keys %packets) {
   print $fh
-    "TM 1 Hz ${name}_Drift ${packet}_TDrift;\n";
+    "TM 1 Hz ${name}_Drift ${packet}_TDrift;\n",
+    "TM 1 Hz ${name}_float ${packet}_TDDrift;\n",
+    "TM 1 Hz ${name}_uchar ${packet}_Stale;\n";
   for my $var (@{$packets{$packet}->{vars}}) {
     print $fh
       "TM 1 Hz ${name}_float ${packet}_${var};\n";
   }
   print $fh
     "TM \"Receive\" $packet 0;\n\n",
-    "Group $packet (${packet}_TDrift",
+    "Group $packet (${packet}_TDrift, ${packet}_TDDrift",
     map(", ${packet}_$_", @{$packets{$packet}->{vars}}),
-    ") {\n",
+    ", ${packet}_Stale) {\n",
     "  ${packet}_TDrift = calc_drift(${packet}.Time);\n",
+    "  ${packet}_TDDrift = dtime() - ${packet}.Time;\n",
     map("  ${packet}_$_ = ${packet}.$_;\n", @{$packets{$packet}->{vars}}),
+    "  ${packet}_Stale = ${packet}_obj->stale(255);\n",
     "}\n\n";
 }
 
@@ -214,6 +219,18 @@ print $fh
   "%{\n",
   "  #include \"${name}.h\"\n",
   map("  ${_}_t $_;\n", keys %packets),
+  "\n",
+  "  signed short calc_drift(double IWG_T) {\n",
+  "    double now;\n",
+  "    double dt;\n",
+  "    double dti, dtf;\n",
+  "    signed short dts;\n",
+  "    now = dtime();\n",
+  "    dtf = modf((now - IWG_T)/(12*3600) + .5, &dti);\n",
+  "    dt = (dtf - .5) * 12 * 3600;\n",
+  "    dts = (signed short) floor(dt+.5);\n",
+  "    return dts;\n",
+  "  }\n",
   "%}\n";
 
 close $fh or warn "UserPkts3_gen: WARNING: Error closing output file '$ofilename'\n";
