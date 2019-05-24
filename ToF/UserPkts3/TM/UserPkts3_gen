@@ -187,7 +187,7 @@ open $fh, '>', $ofilename or die "UserPkts3_gen: FATAL: Unable to write output f
 print $fh
   "TM typedef signed short ${name}_Drift { text \"%6d\"; }\n",
   "TM typedef float ${name}_float { text \"%9.4f\"; }\n",
-  "TM typedef unsigned char ${NAME}_uchar { text \"%3u\"; }\n\n";
+  "TM typedef unsigned char ${name}_uchar { text \"%3u\"; }\n\n";
 
 for my $packet (keys %packets) {
   print $fh
@@ -217,6 +217,7 @@ open $fh, '>', $ofilename or die "UserPkts3_gen: FATAL: Unable to write output f
 
 print $fh
   "%{\n",
+  "  #include <math.h>\n",
   "  #include \"${name}.h\"\n",
   map("  ${_}_t $_;\n", keys %packets),
   "\n",
@@ -480,10 +481,11 @@ print $fh map "$_\n", @genui_hdrs;
 for my $packet (keys %packets) {
   print $fh
     "  1 ${packet}_TDrift ${name}_Status TDrift\n",
+    "  1 ${packet}_TDDrift ${name}_Status TDrift\n",
     "  1 ${packet}_stale ${name}_Status Stale\n";
   for my $var (@{$packets{$packet}->{vars}}) {
     print $fh
-      "  1 Hz ${packet}_${var} ${name}_Science ${packet}\n";
+      "  1 ${packet}_${var} ${name}_Science ${packet}\n";
   }
 }
 

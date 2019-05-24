@@ -1,5 +1,5 @@
 display ToFdisp
-display IWG1disp
+display UPdisp
 display ToFBdisp
 display TwisTorrdisp
 client ToFclt

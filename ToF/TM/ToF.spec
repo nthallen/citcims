@@ -46,8 +46,8 @@ OBJ = address.h
 
 ToFdisp : AthenaII_conv.tmc Hercules_conv.tmc Horiba_conv.tmc \
   ToF.tbl
-IWG1disp : IWG1.tbl UserPkts.tbl
-UserPktsext : UserPkts.genui
+UPdisp : UP.tbl
+UPext : UP.genui
 
 ToFBdisp : ../Edwards_nXDS/TM/nXDS_conv.tmc ../GPS/TM/gpsd_conv.tmc ToFB.tbl
 TwisTorrdisp : TwisTorr_conv.tmc TwisTorr_Pumps.tbl
@@ -55,7 +55,7 @@ TwisTorrdisp : TwisTorr_conv.tmc TwisTorr_Pumps.tbl
 ToFext : ToF.cdf
 
 #ToFjsonext : ToFjson.cdf
-ToFjsonext : ToFajson.cdf
+#ToFjsonext : ToFajson.cdf
 #ToFjsonext : ToFzjson.cdf
 
 ToFalgo : tpfilt.tmc ToF.tma ToF.sws Inlet.tma turbo.tma gasdeck.tma
