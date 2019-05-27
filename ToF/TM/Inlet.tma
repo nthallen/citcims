@@ -534,8 +534,8 @@ State Auto_cal_stop {
 }
 
 State Auto_cal_run_lab { 
-
- Validate Loop_init_sdnc;
+ Validate N2z_PControl_real;
+ +1 Validate Loop_init_sdnc;
  +1 hold until valid ( Loop_idle );
  +2 Validate Loop_init_sunc;
  +1 hold until valid ( Loop_idle );
