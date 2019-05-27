@@ -57,6 +57,7 @@ ToFext : ToF.cdf
 #ToFjsonext : ToFjson.cdf
 #ToFjsonext : ToFajson.cdf
 #ToFjsonext : ToFzjson.cdf
+ToFjsonext : ToFbjson.cdf UP.genui
 
 ToFalgo : tpfilt.tmc ToF.tma ToF.sws Inlet.tma turbo.tma gasdeck.tma
 # Inlet.tma

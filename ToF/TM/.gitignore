@@ -51,11 +51,18 @@ TwisTorrdispncoui.c
 TwisTorrdispncoui.o
 TwisTorrdispnc.o
 ToFextcdf.oui
-ToFcdf.tmc
+ToFextcdf.tmc
 ToFext.cc
 ToFextoui.c
 ToFextoui.o
 ToFext.o
+ToFjsonext.cdf
+ToFjsonextcdf.oui
+ToFjsonextcdf.tmc
+ToFjsonext.cc
+ToFjsonextoui.c
+ToFjsonextoui.o
+ToFjsonext.o
 ToFsws.tma
 ToFalgoa.tmc
 ToFalgo.cc
@@ -118,6 +125,7 @@ ToFBdispnc
 TwisTorrdisp
 TwisTorrdispnc
 ToFext
+ToFjsonext
 ToFalgo
 doit
 ToFclt
