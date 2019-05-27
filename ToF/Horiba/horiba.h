@@ -1,7 +1,7 @@
 #ifndef HORIBA_H_INCLUDED
 #define HORIBA_H_INCLUDED
 
-#define HORIBA_MAX_CHANNELS 5
+#define HORIBA_MAX_CHANNELS 8
 
 typedef struct __attribute__((__packed__)) {
   float SP;

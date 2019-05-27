@@ -30,3 +30,21 @@ Horiba_BitStar HoribaP_SP_Stat; Invalidate HoribaP_SP_Stat;
 Horiba_BitStar HoribaP_Stat; Invalidate HoribaP_Stat;
   { HoribaP_Stat = (HoribaS >> 7) & 1;
     Validate HoribaP_Stat; }
+Horiba_BitStar CalFlow_SP_Stat; Invalidate CalFlow_SP_Stat;
+  { CalFlow_SP_Stat = (HoribaS >> 8) & 1;
+    Validate CalFlow_SP_Stat; }
+Horiba_BitStar CalFlow_Stat; Invalidate CalFlow_Stat;
+  { CalFlow_Stat = (HoribaS >> 9) & 1;
+    Validate CalFlow_Stat; }
+Horiba_BitStar ZeroFlow_SP_Stat; Invalidate ZeroFlow_SP_Stat;
+  { ZeroFlow_SP_Stat = (HoribaS >> 10) & 1;
+    Validate ZeroFlow_SP_Stat; }
+Horiba_BitStar ZeroFlow_Stat; Invalidate ZeroFlow_Stat;
+  { ZeroFlow_Stat = (HoribaS >> 11) & 1;
+    Validate ZeroFlow_Stat; }
+Horiba_BitStar Cal2Flow_SP_Stat; Invalidate Cal2Flow_SP_Stat;
+  { Cal2Flow_SP_Stat = (HoribaS >> 12) & 1;
+    Validate Cal2Flow_SP_Stat; }
+Horiba_BitStar Cal2Flow_Stat; Invalidate Cal2Flow_Stat;
+  { Cal2Flow_Stat = (HoribaS >> 13) & 1;
+    Validate Cal2Flow_Stat; }

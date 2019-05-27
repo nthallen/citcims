@@ -9,12 +9,12 @@
 
 const char *horiba_path = "/net/athenaII_a/dev/ser3";
 const char *horiba_name = "Horiba";
-int horiba_channels = 4;
+int horiba_channels = HORIBA_MAX_CHANNELS;
 int opt_echo = 1;
 
 int main(int argc, char **argv) {
   oui_init_options(argc, argv);
-  nl_error( 0, "Starting V14.1" );
+  nl_error( 0, "Starting V14.4 max=%d", horiba_channels );
   { Selector S;
     HoribaCmd HC;
     horiba_tm_t TMdata;
@@ -105,7 +105,7 @@ int HoribaCmd::ProcessData(int flag) {
     return 0;
   }
   if (addr < 1 || addr > horiba_channels) {
-    report_err("Invalid address %d in HoribaCmd", addr);
+    report_err("Invalid address %d in HoribaCmd, max=%d", addr, horiba_channels);
     return 0;
   }
   HCquery.format( addr, 0, HORIBA_CMD_S << (addr-1), 'B', "AFC%.2lf,B", value );
