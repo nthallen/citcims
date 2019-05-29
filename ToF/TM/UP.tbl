@@ -1,0 +1,62 @@
+
+ChemWAD {
+  HBox { +-; Title: "ChemWAD"; -+ };
+  HBox {
+    {
+      Latitude: (ChemWAD_Latitude,9);
+      Longitude: (ChemWAD_Longitude,9);
+      GPS_MSL_Alt: (ChemWAD_GPS_MSL_Alt,9);
+      WGS_84_Alt: (ChemWAD_WGS_84_Alt,9);
+      Press_Alt: (ChemWAD_Press_Alt,9);
+      Radar_Alt: (ChemWAD_Radar_Alt,9);
+      Grnd_Spd: (ChemWAD_Grnd_Spd,9);
+      True_Airspeed: (ChemWAD_True_Airspeed,9);
+      Indicated_Airspeed: (ChemWAD_Indicated_Airspeed,9);
+      Mach_Number: (ChemWAD_Mach_Number,9);
+      Vert_Velocity: (ChemWAD_Vert_Velocity,9);
+      True_Heading: (ChemWAD_True_Heading,9);
+      Track: (ChemWAD_Track,9);
+      Drift: (ChemWAD_Drift,9);
+      Pitch: (ChemWAD_Pitch,9);
+      Roll: (ChemWAD_Roll,9);
+    }; |; {
+      Side_Slip: (ChemWAD_Side_Slip,9);
+      Angle_of_Attack: (ChemWAD_Angle_of_Attack,9);
+      Ambient_Temp: (ChemWAD_Ambient_Temp,9);
+      Dew_Point: (ChemWAD_Dew_Point,9);
+      Total_Temp: (ChemWAD_Total_Temp,9);
+      Static_Press: (ChemWAD_Static_Press,9);
+      Dynamic_Press: (ChemWAD_Dynamic_Press,9);
+      Cabin_Pressure: (ChemWAD_Cabin_Pressure,9);
+      Wind_Speed: (ChemWAD_Wind_Speed,9);
+      Wind_Direction: (ChemWAD_Wind_Direction,9);
+      Vert_Wind_Spd: (ChemWAD_Vert_Wind_Spd,9);
+      Solar_Zenith: (ChemWAD_Solar_Zenith,9);
+      Sun_Elev_AC: (ChemWAD_Sun_Elev_AC,9);
+      Sun_Az_Grd: (ChemWAD_Sun_Az_Grd,9);
+      Sun_Az_AC: (ChemWAD_Sun_Az_AC,9);
+    }
+  }
+}
+
+UP_stale {
+  HBox { +-; Title: "Drift"; -+ };
+  ""   Drift     Stale;
+  ChemWAD:  (ChemWAD_TDrift,6)  (ChemWAD_stale,3);
+  MFCtr: (MFCtr,5);
+  (flttime,9);
+}
+
+UP {
+  HBox {
+    {
+      [ChemWAD];
+      [UP_stale]
+    }
+  }
+}
+
+ {
+  HBox { |+; [UP]; |+ };
+  -;
+}
