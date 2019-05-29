@@ -1,0 +1,46 @@
+# This header data is useful if creating a separate extraction
+# for UserPkts data
+HEADER FIREX User Packets
+MNEMONIC UP
+HOMEDIR ToF_Data_Dir
+
+# The name of the last table in the output can be set if
+# you plan to Input the file into a larger display. By
+# default, the last table is unnamed, so the table takes up
+# the entire window.
+# Table UP_full
+
+port 5104:
+ChemWAD,
+Timestamp,
+Latitude,
+Longitude,
+GPS_MSL_Alt,
+WGS_84_Alt,
+Press_Alt,
+Radar_Alt,
+Grnd_Spd,
+True_Airspeed,
+Indicated_Airspeed,
+Mach_Number,
+Vert_Velocity,
+True_Heading,
+Track,
+Drift,
+Pitch,
+Roll,
+Side_Slip,
+Angle_of_Attack,
+Ambient_Temp,
+Dew_Point,
+Total_Temp,
+Static_Press,
+Dynamic_Press,
+Cabin_Pressure,
+Wind_Speed,
+Wind_Direction,
+Vert_Wind_Spd,
+Solar_Zenith,
+Sun_Elev_AC,
+Sun_Az_Grd,
+Sun_Az_AC

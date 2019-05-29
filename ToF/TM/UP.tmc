@@ -1,0 +1,77 @@
+TM typedef signed short UP_Drift { text "%6d"; }
+TM typedef float UP_float { text "%9.4f"; }
+TM typedef unsigned char UP_uchar { text "%3u"; }
+
+TM 1 Hz UP_Drift ChemWAD_TDrift;
+TM 1 Hz UP_float ChemWAD_TDDrift;
+TM 1 Hz UP_uchar ChemWAD_Stale;
+TM 1 Hz UP_float ChemWAD_Latitude;
+TM 1 Hz UP_float ChemWAD_Longitude;
+TM 1 Hz UP_float ChemWAD_GPS_MSL_Alt;
+TM 1 Hz UP_float ChemWAD_WGS_84_Alt;
+TM 1 Hz UP_float ChemWAD_Press_Alt;
+TM 1 Hz UP_float ChemWAD_Radar_Alt;
+TM 1 Hz UP_float ChemWAD_Grnd_Spd;
+TM 1 Hz UP_float ChemWAD_True_Airspeed;
+TM 1 Hz UP_float ChemWAD_Indicated_Airspeed;
+TM 1 Hz UP_float ChemWAD_Mach_Number;
+TM 1 Hz UP_float ChemWAD_Vert_Velocity;
+TM 1 Hz UP_float ChemWAD_True_Heading;
+TM 1 Hz UP_float ChemWAD_Track;
+TM 1 Hz UP_float ChemWAD_Drift;
+TM 1 Hz UP_float ChemWAD_Pitch;
+TM 1 Hz UP_float ChemWAD_Roll;
+TM 1 Hz UP_float ChemWAD_Side_Slip;
+TM 1 Hz UP_float ChemWAD_Angle_of_Attack;
+TM 1 Hz UP_float ChemWAD_Ambient_Temp;
+TM 1 Hz UP_float ChemWAD_Dew_Point;
+TM 1 Hz UP_float ChemWAD_Total_Temp;
+TM 1 Hz UP_float ChemWAD_Static_Press;
+TM 1 Hz UP_float ChemWAD_Dynamic_Press;
+TM 1 Hz UP_float ChemWAD_Cabin_Pressure;
+TM 1 Hz UP_float ChemWAD_Wind_Speed;
+TM 1 Hz UP_float ChemWAD_Wind_Direction;
+TM 1 Hz UP_float ChemWAD_Vert_Wind_Spd;
+TM 1 Hz UP_float ChemWAD_Solar_Zenith;
+TM 1 Hz UP_float ChemWAD_Sun_Elev_AC;
+TM 1 Hz UP_float ChemWAD_Sun_Az_Grd;
+TM 1 Hz UP_float ChemWAD_Sun_Az_AC;
+TM "Receive" ChemWAD 0;
+
+Group ChemWAD (ChemWAD_TDrift, ChemWAD_TDDrift, ChemWAD_Latitude, ChemWAD_Longitude, ChemWAD_GPS_MSL_Alt, ChemWAD_WGS_84_Alt, ChemWAD_Press_Alt, ChemWAD_Radar_Alt, ChemWAD_Grnd_Spd, ChemWAD_True_Airspeed, ChemWAD_Indicated_Airspeed, ChemWAD_Mach_Number, ChemWAD_Vert_Velocity, ChemWAD_True_Heading, ChemWAD_Track, ChemWAD_Drift, ChemWAD_Pitch, ChemWAD_Roll, ChemWAD_Side_Slip, ChemWAD_Angle_of_Attack, ChemWAD_Ambient_Temp, ChemWAD_Dew_Point, ChemWAD_Total_Temp, ChemWAD_Static_Press, ChemWAD_Dynamic_Press, ChemWAD_Cabin_Pressure, ChemWAD_Wind_Speed, ChemWAD_Wind_Direction, ChemWAD_Vert_Wind_Spd, ChemWAD_Solar_Zenith, ChemWAD_Sun_Elev_AC, ChemWAD_Sun_Az_Grd, ChemWAD_Sun_Az_AC, ChemWAD_Stale) {
+  ChemWAD_TDrift = calc_drift(ChemWAD.Time);
+  ChemWAD_TDDrift = dtime() - ChemWAD.Time;
+  ChemWAD_Latitude = ChemWAD.Latitude;
+  ChemWAD_Longitude = ChemWAD.Longitude;
+  ChemWAD_GPS_MSL_Alt = ChemWAD.GPS_MSL_Alt;
+  ChemWAD_WGS_84_Alt = ChemWAD.WGS_84_Alt;
+  ChemWAD_Press_Alt = ChemWAD.Press_Alt;
+  ChemWAD_Radar_Alt = ChemWAD.Radar_Alt;
+  ChemWAD_Grnd_Spd = ChemWAD.Grnd_Spd;
+  ChemWAD_True_Airspeed = ChemWAD.True_Airspeed;
+  ChemWAD_Indicated_Airspeed = ChemWAD.Indicated_Airspeed;
+  ChemWAD_Mach_Number = ChemWAD.Mach_Number;
+  ChemWAD_Vert_Velocity = ChemWAD.Vert_Velocity;
+  ChemWAD_True_Heading = ChemWAD.True_Heading;
+  ChemWAD_Track = ChemWAD.Track;
+  ChemWAD_Drift = ChemWAD.Drift;
+  ChemWAD_Pitch = ChemWAD.Pitch;
+  ChemWAD_Roll = ChemWAD.Roll;
+  ChemWAD_Side_Slip = ChemWAD.Side_Slip;
+  ChemWAD_Angle_of_Attack = ChemWAD.Angle_of_Attack;
+  ChemWAD_Ambient_Temp = ChemWAD.Ambient_Temp;
+  ChemWAD_Dew_Point = ChemWAD.Dew_Point;
+  ChemWAD_Total_Temp = ChemWAD.Total_Temp;
+  ChemWAD_Static_Press = ChemWAD.Static_Press;
+  ChemWAD_Dynamic_Press = ChemWAD.Dynamic_Press;
+  ChemWAD_Cabin_Pressure = ChemWAD.Cabin_Pressure;
+  ChemWAD_Wind_Speed = ChemWAD.Wind_Speed;
+  ChemWAD_Wind_Direction = ChemWAD.Wind_Direction;
+  ChemWAD_Vert_Wind_Spd = ChemWAD.Vert_Wind_Spd;
+  ChemWAD_Solar_Zenith = ChemWAD.Solar_Zenith;
+  ChemWAD_Sun_Elev_AC = ChemWAD.Sun_Elev_AC;
+  ChemWAD_Sun_Az_Grd = ChemWAD.Sun_Az_Grd;
+  ChemWAD_Sun_Az_AC = ChemWAD.Sun_Az_AC;
+  ChemWAD_Stale = ChemWAD_obj->stale(255);
+}
+

@@ -1,0 +1,13 @@
+<package> UP
+<include> msg
+<follow> msg
+<unsort>
+<blank>
+Driver to collect data arriving via UDP packets.
+Currently configured to handle:
+  packet ChemWAD on port 5104
+
+
+<package> msghdr_init
+<init>
+  msg_hdr_default = "UP";

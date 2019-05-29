@@ -1,0 +1,37 @@
+HEADER FIREX User Packets
+MNEMONIC UP
+HOMEDIR ToF_Data_Dir
+  1 ChemWAD_TDrift UP_Status TDrift
+  1 ChemWAD_TDDrift UP_Status TDrift
+  1 ChemWAD_stale UP_Status Stale
+  1 ChemWAD_Latitude UP_Science ChemWAD
+  1 ChemWAD_Longitude UP_Science ChemWAD
+  1 ChemWAD_GPS_MSL_Alt UP_Science ChemWAD
+  1 ChemWAD_WGS_84_Alt UP_Science ChemWAD
+  1 ChemWAD_Press_Alt UP_Science ChemWAD
+  1 ChemWAD_Radar_Alt UP_Science ChemWAD
+  1 ChemWAD_Grnd_Spd UP_Science ChemWAD
+  1 ChemWAD_True_Airspeed UP_Science ChemWAD
+  1 ChemWAD_Indicated_Airspeed UP_Science ChemWAD
+  1 ChemWAD_Mach_Number UP_Science ChemWAD
+  1 ChemWAD_Vert_Velocity UP_Science ChemWAD
+  1 ChemWAD_True_Heading UP_Science ChemWAD
+  1 ChemWAD_Track UP_Science ChemWAD
+  1 ChemWAD_Drift UP_Science ChemWAD
+  1 ChemWAD_Pitch UP_Science ChemWAD
+  1 ChemWAD_Roll UP_Science ChemWAD
+  1 ChemWAD_Side_Slip UP_Science ChemWAD
+  1 ChemWAD_Angle_of_Attack UP_Science ChemWAD
+  1 ChemWAD_Ambient_Temp UP_Science ChemWAD
+  1 ChemWAD_Dew_Point UP_Science ChemWAD
+  1 ChemWAD_Total_Temp UP_Science ChemWAD
+  1 ChemWAD_Static_Press UP_Science ChemWAD
+  1 ChemWAD_Dynamic_Press UP_Science ChemWAD
+  1 ChemWAD_Cabin_Pressure UP_Science ChemWAD
+  1 ChemWAD_Wind_Speed UP_Science ChemWAD
+  1 ChemWAD_Wind_Direction UP_Science ChemWAD
+  1 ChemWAD_Vert_Wind_Spd UP_Science ChemWAD
+  1 ChemWAD_Solar_Zenith UP_Science ChemWAD
+  1 ChemWAD_Sun_Elev_AC UP_Science ChemWAD
+  1 ChemWAD_Sun_Az_Grd UP_Science ChemWAD
+  1 ChemWAD_Sun_Az_AC UP_Science ChemWAD

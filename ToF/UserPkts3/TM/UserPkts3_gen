@@ -1,0 +1,492 @@
+#! /usr/bin/perl -w
+# UserPkts3_gen srcfile name=NAME
+use strict;
+
+# Handle command line
+my $srcfile = $ARGV[0] || die "UserPkts3_gen: FATAL: source file not specified\n";
+my $name = 'UserPkts3';
+if (@ARGV >= 2 && $ARGV[1] =~ m/^name=(\w+)$/) {
+  $name = $1;
+}
+
+# read source file
+open my $fh, '<', $srcfile or die "UserPkts3_gen: FATAL: Unable to read source file '$srcfile'\n";
+$/ = undef;
+my $data = <$fh>;
+close $fh;
+
+# Remove all comments (without removing newlines)
+$data =~ s/#.*$//mg;
+
+my %ports; # point to linenum
+my %packets; # packet names must be unique: point to linenum where defined
+my @pktorder;
+my %vars; # variable names must be unique: point to packet, linenum where defined
+my $maxrows = 24;
+my $linenum = 1;
+my @genui_hdrs;
+my $tablename = '';
+
+sub generate_packet {
+  my ($port, $keyword, $timeword, $vars) = @_;
+  #print "generating port $port packet $keyword timeword=$timeword vars:",
+  #  map( "\n  $_", @$vars), "\n";
+  if ($ports{$port}) {
+    # print "using existing UDP port $port defined on line $ports{$port}->{line}\n";
+  } else {
+    # print "generating UDP port $port\n";
+    $ports{$port} = { packets => [], line => $linenum };
+  }
+  if ($packets{$keyword}) {
+    die "$srcfile:$linenum: FATAL: Packet name '$keyword' previously ".
+        "defined at line $packets{$keyword}->{line}\n";
+  } else {
+    # print "generating packet '$keyword'\n";
+    $packets{$keyword} = { port => $port, line => $linenum, vars => [], timeword => $timeword };
+    push(@{$ports{$port}->{packets}}, $keyword);
+    push(@pktorder, $keyword);
+  }
+  
+  for my $var (@$vars) {
+    if ($vars{$var}) {
+      die "$srcfile:$linenum: FATAL: Variable '$var' previously defined" .
+        " in packet $vars{$var}->{packet} at line $vars{$var}->{line}\n";
+    } else {
+      $vars{$var} = { packet => $keyword, line => $linenum };
+      push(@{$packets{$keyword}->{vars}}, $var);
+    }
+  }
+}
+
+while ( 1 ) {
+  last if $data =~ /^\s*$/;
+  if ($data =~ s/^\s* port \s+ (\d+) \s* : \s*//xi) {
+    my $port = $1;
+    # print "port match '$&'\n";
+    $linenum += $& =~ tr/\n//;
+    if ($data =~ s/^(\w+) \s* , \s* (Time|Timestamp) \s* , \s*
+        (\w+ (?: \s* , \s* \w+ )*) //xi) {
+      my $keyword = $1;
+      my $timeword = $2;
+      my $list = $3;
+      my $nlines = $& =~ tr/\n//;
+      my @vars = split(/\s*,\s*/,$list);
+      generate_packet($port, $keyword, $timeword, \@vars);
+      $linenum += $nlines;
+    } else {
+      die "$srcfile:$linenum: FATAL: Expected field list\n";
+    }
+  } elsif ($data =~ s/^\s* maxrows \s* = \s* (\d+)//xi) {
+    $maxrows = $1;
+    my $nlines = $& =~ tr/\n//;
+    $linenum += $nlines;
+  } elsif ($data =~ s/^\s* ((?:HEADER|MNEMONIC|HOMEDIR) \s .*)//xi) {
+    push(@genui_hdrs, $1);
+    my $nlines = $& =~ tr/\n//;
+    $linenum += $nlines;
+  } elsif ($data =~ s/^\s* Table \s* (\w+)//xi) {
+    $tablename = $1;
+    my $nlines = $& =~ tr/\n//;
+    $linenum += $nlines;
+  } else {
+    die "$srcfile:$linenum: FATAL: Syntax error\n";
+  }
+}
+
+#---------------------------------------------------------------------------------
+my $ofilename = "$name.h";
+open $fh, '>', $ofilename or die "UserPkts3_gen: FATAL: Unable to write output file '$ofilename'\n";
+my $guard = uc("${ofilename}_INCLUDED");
+$guard =~ s/\./_/g;
+print $fh "#ifndef $guard\n#define $guard\n\n";
+print $fh "#include <time.h>\n";
+
+for my $packet (keys %packets) {
+  print $fh "\ntypedef struct __attribute__((__packed__)) {\n",
+            "  double Time;\n";
+  for my $var (@{$packets{$packet}->{vars}}) {
+    print $fh "  float $var;\n";
+  }
+  print $fh "} ${packet}_t;\nextern ${packet}_t $packet;\n";
+
+}
+
+print $fh "\n#endif\n";
+close $fh or warn "UserPkts3_gen: WARNING: Error closing output file '$ofilename'\n";
+
+#---------------------------------------------------------------------------------
+$ofilename = "${name}_Pkts.h";
+open $fh, '>', $ofilename or die "UserPkts3_gen: FATAL: Unable to write output file '$ofilename'\n";
+$guard = uc("${ofilename}_INCLUDED");
+$guard =~ s/\./_/g;
+print $fh "#ifndef $guard\n#define $guard\n\n";
+print $fh "#include \"${name}_int.h\"\n";
+
+for my $packet (keys %packets) {
+  print $fh
+    "\nclass ${packet}pkt : public UserPkt {\n",
+    "  public:\n",
+    "    ${packet}pkt();\n",
+    "    int Process_Pkt();\n",
+    "  private:\n",
+    "    ${packet}_t $packet;\n",
+    "};\n";
+}
+
+print $fh "\n#endif\n";
+close $fh or warn "UserPkts3_gen: WARNING: Error closing output file '$ofilename'\n";
+
+#---------------------------------------------------------------------------------
+$ofilename = "${name}_Pkts.cc";
+open $fh, '>', $ofilename or die "UserPkts3_gen: FATAL: Unable to write output file '$ofilename'\n";
+print $fh
+  "#include \"${name}.h\"\n",
+  "#include \"${name}_int.h\"\n",
+  "#include \"${name}_Pkts.h\"\n";
+
+for my $packet (keys %packets) {
+  print $fh
+    "\n${packet}pkt::${packet}pkt() : UserPkt(\"$packet\") {\n",
+    "  TM_init(&$packet, sizeof(${packet}_t));\n",
+    "}\n\n",
+    "int ${packet}pkt::Process_Pkt() {\n",
+    "  return (\n";
+  print $fh lc($packets{$packet}->{timeword}) eq "timestamp" ?
+    "    not_ISO8601(&${packet}.Time, false) || not_str(\",\", 1) ||\n" :
+    "    not_double(&${packet}.Time) || not_str(\",\", 1) ||\n";
+  print $fh
+    join " || not_str(\",\", 1) ||\n",
+    map "    not_nfloat(&${packet}.$_)",
+    @{$packets{$packet}->{vars}};
+  print $fh
+    "\n  );\n}\n";
+}
+
+print $fh
+  "\nUserPkts::UserPkts(Selector *S) {\n",
+  "  UserPkts_UDP *UP;\n";
+
+for my $port (keys %ports) {
+  print $fh "  UP = new UserPkts_UDP($port);\n";
+  for my $pkt (@{$ports{$port}->{packets}}) {
+    print $fh
+      "  UP->add_packet(new ${pkt}pkt());\n";
+  }
+  print $fh
+    "  S->add_child(UP);\n",
+    "  UDPs.push_back(UP);\n";
+}
+
+print $fh "}\n\n";
+
+close $fh or warn "UserPkts3_gen: WARNING: Error closing output file '$ofilename'\n";
+#---------------------------------------------------------------------------------
+$ofilename = "${name}.tmc";
+open $fh, '>', $ofilename or die "UserPkts3_gen: FATAL: Unable to write output file '$ofilename'\n";
+
+print $fh
+  "TM typedef signed short ${name}_Drift { text \"%6d\"; }\n",
+  "TM typedef float ${name}_float { text \"%9.4f\"; }\n",
+  "TM typedef unsigned char ${name}_uchar { text \"%3u\"; }\n\n";
+
+for my $packet (keys %packets) {
+  print $fh
+    "TM 1 Hz ${name}_Drift ${packet}_TDrift;\n",
+    "TM 1 Hz ${name}_float ${packet}_TDDrift;\n",
+    "TM 1 Hz ${name}_uchar ${packet}_Stale;\n";
+  for my $var (@{$packets{$packet}->{vars}}) {
+    print $fh
+      "TM 1 Hz ${name}_float ${packet}_${var};\n";
+  }
+  print $fh
+    "TM \"Receive\" $packet 0;\n\n",
+    "Group $packet (${packet}_TDrift, ${packet}_TDDrift",
+    map(", ${packet}_$_", @{$packets{$packet}->{vars}}),
+    ", ${packet}_Stale) {\n",
+    "  ${packet}_TDrift = calc_drift(${packet}.Time);\n",
+    "  ${packet}_TDDrift = dtime() - ${packet}.Time;\n",
+    map("  ${packet}_$_ = ${packet}.$_;\n", @{$packets{$packet}->{vars}}),
+    "  ${packet}_Stale = ${packet}_obj->stale(255);\n",
+    "}\n\n";
+}
+
+close $fh or warn "UserPkts3_gen: WARNING: Error closing output file '$ofilename'\n";
+#---------------------------------------------------------------------------------
+$ofilename = "${name}_col.tmc";
+open $fh, '>', $ofilename or die "UserPkts3_gen: FATAL: Unable to write output file '$ofilename'\n";
+
+print $fh
+  "%{\n",
+  "  #include <math.h>\n",
+  "  #include \"${name}.h\"\n",
+  map("  ${_}_t $_;\n", keys %packets),
+  "\n",
+  "  signed short calc_drift(double IWG_T) {\n",
+  "    double now;\n",
+  "    double dt;\n",
+  "    double dti, dtf;\n",
+  "    signed short dts;\n",
+  "    now = dtime();\n",
+  "    dtf = modf((now - IWG_T)/(12*3600) + .5, &dti);\n",
+  "    dt = (dtf - .5) * 12 * 3600;\n",
+  "    dts = (signed short) floor(dt+.5);\n",
+  "    return dts;\n",
+  "  }\n",
+  "%}\n";
+
+close $fh or warn "UserPkts3_gen: WARNING: Error closing output file '$ofilename'\n";
+#---------------------------------------------------------------------------------
+$ofilename = "${name}.oui";
+open $fh, '>', $ofilename or die "UserPkts3_gen: FATAL: Unable to write output file '$ofilename'\n";
+print $fh
+  "<package> $name\n",
+  "<include> msg\n",
+  "<follow> msg\n",
+  "<unsort>\n",
+  "<blank>\n",
+  "Driver to collect data arriving via UDP packets.\n",
+  "Currently configured to handle:\n";
+
+for my $port (sort keys %ports) {
+  my @packets = sort @{$ports{$port}->{packets}};
+  my $last_pkt = pop(@packets);
+  
+  if (@packets) {
+    print $fh
+      "  packets " . join(" and ", join(', ', @packets), $last_pkt)
+        . " on port $port\n";
+  } else {
+    print $fh
+      "  packet $last_pkt on port $port\n";
+  }
+}
+print $fh
+  "\n\n",
+  "<package> msghdr_init\n",
+  "<init>\n",
+  "  msg_hdr_default = \"$name\";\n";
+
+close $fh or warn "UserPkts3_gen: WARNING: Error closing output file '$ofilename'\n";
+#---------------------------------------------------------------------------------
+$ofilename = "${name}.tbl";
+open $fh, '>', $ofilename or die "UserPkts3_gen: FATAL: Unable to write output file '$ofilename'\n";
+
+my @tblsizes;
+
+sub gen_table {
+  my ($fh, $tblname, $title, @rows) = @_;
+  use integer;
+  my $nvars = @rows;
+  my $ncols = ($nvars+$maxrows-2)/($maxrows-1);
+  my $nrows = 1+($nvars+$ncols-1)/$ncols;
+  push(@tblsizes, [$tblname, $ncols, $nrows]);
+  my $indent = "  ";
+  my $multicol = $ncols > 1;
+  print $fh
+    "\n$tblname {\n",
+    "  HBox { +-; Title: \"$title\"; -+ };\n";
+  if ($multicol) {
+    print $fh
+      "  HBox {\n",
+      "    {\n";
+    $indent = "      ";
+  }
+  while ($nvars) {
+    my $vrows = ($nvars+$ncols-1)/$ncols;
+    $nvars -= $vrows;
+    while ($vrows) {
+      my $var = shift(@rows);
+      print $fh
+        "$indent$var";
+      --$vrows;
+    }
+    if (--$ncols) {
+      print $fh "    }; |; {\n";
+    }
+  }
+  $multicol && print $fh
+    "    }\n",
+    "  }\n";
+  print $fh "}\n";
+}
+
+for my $packet (@pktorder) {
+  # total number of rows counting header is
+  # number of vars + 1 (for the header)
+  # If this exceeds maxrows, then we will split into multiple balanced columns
+  # TDrift and stale will be grouped in separate tables
+  my @vars = @{$packets{$packet}->{vars}};
+  gen_table($fh, $packet, $packet,
+    map("$_: (${packet}_$_,9);\n", @vars));
+}
+
+# output stale/TDrift table
+gen_table($fh, "${name}_stale", "Drift",
+  "\"\"   Drift     Stale;\n",
+  map("$_:  (${_}_TDrift,6)  (${_}_stale,3);\n",
+    @pktorder),
+  "MFCtr: (MFCtr,5);\n",
+  "(flttime,9);\n");
+
+# sort by width, height and name
+@tblsizes =
+  sort { $b->[1] <=> $a->[1] || $b->[2] <=> $a->[2] || $a->[0] cmp $b->[0] }
+    @tblsizes;
+
+my %tblsizes = map( ($_->[0], $_), @tblsizes);
+my @subtables = map $_->[0], @tblsizes;
+my %placed;
+
+
+# Returns an array of horizontal elements
+sub get_row_wh {
+  my ($width, $height) = @_;
+  my @row;
+  while ($width > 0) {
+    my $col;
+    for my $tbl (@subtables) {
+      my @sizes = @{$tblsizes{$tbl}};
+      if (!$placed{$tbl} && $sizes[1] <= $width && $sizes[2] <= $height) {
+        $placed{$tbl} = 1;
+        my @col = ($col, get_col_wh($sizes[1],$height-$sizes[2]));
+        if (@col > 1) {
+          $col = \@col;
+        } else {
+          $col = $tbl
+        }
+        $width -= $sizes[1];
+        last;
+      }
+    }
+    if (defined($col)) {
+      push @row, $col;
+    } else {
+      last;
+    }
+  }
+  return @row;
+}
+
+# Returns an array of vertical elements
+sub get_col_wh {
+  my ($width, $height) = @_;
+  my @col;
+  while ($height > 0) {
+    my $row;
+    for my $tbl (@subtables) {
+      my @sizes = @{$tblsizes{$tbl}};
+      if (!$placed{$tbl} && $sizes[1] <= $width && $sizes[2] <= $height) {
+        $placed{$tbl} = 1;
+        if ($sizes[1] <= $width) {
+          my @row = ($tbl, get_row_wh($width-$sizes[1],$sizes[2]));
+          if (@row > 1) {
+            $row = \@row;
+          } else {
+            $row = $tbl;
+          }
+        } else {
+          $row = $tbl;
+        }
+        $height -= $sizes[2];
+        last;
+      }
+    }
+    if (defined($row)) {
+      push @col, $row;
+    } else {
+      last;
+    }
+  }
+  return @col;
+}
+
+# returns an array of horizontal elements
+sub get_columns {
+  my @cols;
+  while (1) {
+    my @subtable = grep ! $placed{$_}, map $_->[0], @tblsizes;
+    if (@subtable) {
+      my $tbl = shift @subtable;
+      $placed{$tbl} = 1;
+      my $width = $tblsizes{$tbl}->[1];
+      my $height = $maxrows - $tblsizes{$tbl}->[2];
+      my @col = ($tbl, get_col_wh($width, $height));
+      if (@col > 1) {
+        push @cols, \@col;
+      } else {
+        push @cols, $tbl;
+      }
+    } else {
+      last;
+    }
+  }
+  return @cols;
+}
+
+sub output_vert_element {
+  my ($indent, $tref) = @_;
+  if (ref($tref)) {
+    print $fh "${indent}{\n";
+    my @col = @$tref;
+    output_hor_element("  " . $indent, shift @col);
+    for my $hel (@col) {
+      print $fh ";\n";
+      output_hor_element("  " . $indent, $hel);
+    }
+    print $fh "\n$indent}";
+  } else {
+    print $fh "${indent}[$tref]";
+  }
+}
+
+sub output_hor_element {
+  my ($indent, $tref) = @_;
+  if (ref($tref)) {
+    print $fh "${indent}HBox {\n";
+    my @row = @$tref;
+    output_vert_element("  " . $indent, shift @row);
+    for my $vel (@row) {
+      print $fh "; |;\n";
+      output_vert_element("  " . $indent, $vel);
+    }
+    print $fh "\n$indent}";
+  } else {
+    print $fh "${indent}[$tref]";
+  }
+}
+
+sub output_table {
+  my ($name, $tref) = @_;
+  print $fh "\n$name {\n";
+  my $indent = "  ";
+  output_hor_element($indent, $tref);
+  print $fh "\n}\n";
+}
+
+my @tbl = get_columns();
+output_table($name, \@tbl);
+
+print $fh
+  "\n$tablename {\n",
+  "  HBox { |+; [$name]; |+ };\n",
+  "  -;\n",
+  "}\n";
+
+close $fh or warn "UserPkts3_gen: WARNING: Error closing output file '$ofilename'\n";
+#---------------------------------------------------------------------------------
+$ofilename = "${name}.genui";
+open $fh, '>', $ofilename or die "UserPkts3_gen: FATAL: Unable to write output file '$ofilename'\n";
+
+print $fh map "$_\n", @genui_hdrs;
+for my $packet (keys %packets) {
+  print $fh
+    "  1 ${packet}_TDrift ${name}_Status TDrift\n",
+    "  1 ${packet}_TDDrift ${name}_Status TDrift\n",
+    "  1 ${packet}_stale ${name}_Status Stale\n";
+  for my $var (@{$packets{$packet}->{vars}}) {
+    print $fh
+      "  1 ${packet}_${var} ${name}_Science ${packet}\n";
+  }
+}
+
+close $fh or warn "UserPkts3_gen: WARNING: Error closing output file '$ofilename'\n";

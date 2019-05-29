@@ -1,0 +1,11 @@
+port 3245: #This is a comment
+
+Keyword,Time,VarA,VarB, VarC,
+  VarD
+# This is another comment
+port 3246:
+Keyword2, Timestamp, VarE, VarF
+port 3245:
+Keyword3, Time, VarG, VarH
+
+maxrows = 6

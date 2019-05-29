@@ -29,7 +29,8 @@ Module nXDS mode=default
 Module OMS mode=Y OMS1=Insl Group=Inlet Hz=5
 Module UPS mode=default
 Module gpsd mode=default
-Module IWG1 mode=UserPkts2
+#Module IWG1 mode=UserPkts2
+Module UserPkts3 src=UP.txt name=UP
 Module Zaber mode=default
 Module Sonic mode=disable Hz=8
 Module Zeno mode=disable
@@ -45,8 +46,8 @@ OBJ = address.h
 
 ToFdisp : AthenaII_conv.tmc Hercules_conv.tmc Horiba_conv.tmc \
   ToF.tbl
-IWG1disp : IWG1.tbl UserPkts.tbl
-UserPktsext : UserPkts.genui
+UPdisp : UP.tbl
+UPext : UP.genui
 
 ToFBdisp : ../Edwards_nXDS/TM/nXDS_conv.tmc ../GPS/TM/gpsd_conv.tmc ToFB.tbl
 TwisTorrdisp : TwisTorr_conv.tmc TwisTorr_Pumps.tbl
@@ -54,8 +55,9 @@ TwisTorrdisp : TwisTorr_conv.tmc TwisTorr_Pumps.tbl
 ToFext : ToF.cdf
 
 #ToFjsonext : ToFjson.cdf
-ToFjsonext : ToFajson.cdf
+#ToFjsonext : ToFajson.cdf
 #ToFjsonext : ToFzjson.cdf
+ToFjsonext : ToFbjson.cdf UP.genui
 
 ToFalgo : tpfilt.tmc ToF.tma ToF.sws Inlet.tma turbo.tma gasdeck.tma
 # Inlet.tma

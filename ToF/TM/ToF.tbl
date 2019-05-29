@@ -142,9 +142,9 @@ Misc {
 
 IWG1 {
   HBox{ +-; Title: "IWG1"; -+ };
-  TDrift: (TDrift,6) Sec;
-  DDrift: (TDDrift,9) Sec;
-  Stale: (IWG1_Stale,3);
+  TDrift: (ChemWAD_TDrift,6) Sec;
+  DDrift: (ChemWAD_TDDrift,9) Sec;
+  Stale: (ChemWAD_Stale,3);
 }
 
 TDrift {
