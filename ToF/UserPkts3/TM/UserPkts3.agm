@@ -14,7 +14,7 @@ Moduledef UserPkts3 [ src= name=UserPkts3 ] {
 mode (default) {
   tmcbase = @name@.tmc:
   colbase = @name@_col.tmc:
-  genuibase = @name@.genui:
+  # genuibase = @name@.genui:
   - : @name@.cc:UserPkts3.cc.in @name@_int.h:UserPkts3_int.h.in
   SRC = @src@
   TGT = @name@
