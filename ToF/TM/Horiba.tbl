@@ -12,8 +12,8 @@ IonSrcFlow {
 }
 FFlow {
   FFlow:
-    >HBox{(FFlow_SP,5); (FFlow_SP_Stat,1)}
-    >HBox{(FFlow,5); (FFlow_Stat,1)}
+    >HBox{(FFlow_SP,6); (FFlow_SP_Stat,1)}
+    >HBox{(FFlow,6); (FFlow_Stat,1)}
     sccm;
 }
 HoribaP {
@@ -24,8 +24,8 @@ HoribaP {
 }
 CalFlow {
   CalFlow:
-    >HBox{(CalFlow_SP,5); (CalFlow_SP_Stat,1)}
-    >HBox{(CalFlow,5); (CalFlow_Stat,1)}
+    >HBox{(CalFlow_SP,6); (CalFlow_SP_Stat,1)}
+    >HBox{(CalFlow,6); (CalFlow_Stat,1)}
     sccm;
 }
 ZeroFlow {
@@ -36,8 +36,8 @@ ZeroFlow {
 }
 Cal2Flow {
   Cal2Flow:
-    >HBox{(Cal2Flow_SP,5); (Cal2Flow_SP_Stat,1)}
-    >HBox{(Cal2Flow,5); (Cal2Flow_Stat,1)}
+    >HBox{(Cal2Flow_SP,6); (Cal2Flow_SP_Stat,1)}
+    >HBox{(Cal2Flow,6); (Cal2Flow_Stat,1)}
     sccm;
 }
 Horiba {
@@ -52,24 +52,24 @@ Horiba {
     >HBox{(IonSrcFlow,5); (IonSrcFlow_Stat,1)}
     sccm;
   FFlow:
-    >HBox{(FFlow_SP,5); (FFlow_SP_Stat,1)}
-    >HBox{(FFlow,5); (FFlow_Stat,1)}
+    >HBox{(FFlow_SP,6); (FFlow_SP_Stat,1)}
+    >HBox{(FFlow,6); (FFlow_Stat,1)}
     sccm;
   HoribaP:
     >HBox{(HoribaP_SP,6); (HoribaP_SP_Stat,1)}
     >HBox{(HoribaP,6); (HoribaP_Stat,1)}
     mbar;
   CalFlow:
-    >HBox{(CalFlow_SP,5); (CalFlow_SP_Stat,1)}
-    >HBox{(CalFlow,5); (CalFlow_Stat,1)}
+    >HBox{(CalFlow_SP,6); (CalFlow_SP_Stat,1)}
+    >HBox{(CalFlow,6); (CalFlow_Stat,1)}
     sccm;
   ZeroFlow:
     >HBox{(ZeroFlow_SP,6); (ZeroFlow_SP_Stat,1)}
     >HBox{(ZeroFlow,6); (ZeroFlow_Stat,1)}
     sccm;
   Cal2Flow:
-    >HBox{(Cal2Flow_SP,5); (Cal2Flow_SP_Stat,1)}
-    >HBox{(Cal2Flow,5); (Cal2Flow_Stat,1)}
+    >HBox{(Cal2Flow_SP,6); (Cal2Flow_SP_Stat,1)}
+    >HBox{(Cal2Flow,6); (Cal2Flow_Stat,1)}
     sccm;
   { HGlue 0+1 Stale: (Horiba_Stale,3) }
 }
