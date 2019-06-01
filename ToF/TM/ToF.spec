@@ -38,6 +38,7 @@ Module TwisTorr drives=AB
 
 SCRIPT = interact runfile.AII runfile.AIIa
 SCRIPT = mv_ext.sh
+IDISTRIB = Headless_doit
 DISTRIB = ../DSDaq/AthenaII
 DISTRIB = ../DSDaq/Hercules
 TGTDIR = $(TGTNODE)/home/tof
