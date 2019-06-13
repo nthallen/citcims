@@ -3,9 +3,14 @@
   TM_average<MBAR> sample_avg;
   #define sample_avg_sample(x) sample_avg.sample(x)
   #define sample_avg_mean() sample_avg.mean()
+
   TM_average<VOLTS> T3_avg;
   #define T3_sample(x) T3_avg.sample(x)
   #define T3_mean() T3_avg.mean()
+
+  TM_average<VOLTS> T4_avg;
+  #define T4_sample(x) T4_avg.sample(x)
+  #define T4_mean() T4_avg.mean()
 %}
 
 sample_avg_sample(convert(InL_P));
@@ -20,5 +25,4 @@ TM typedef double T34_1Hz_t { text "%7.3lf"; }
 TM 1 Hz T34_1Hz_t T3_1Hz; collect T3_1Hz = T3_mean();
 
 T4_sample(convert(T4));
-TM typedef double T34_1Hz_t { text "%7.3lf"; }
 TM 1 Hz T34_1Hz_t T4_1Hz; collect T4_1Hz = T4_mean();

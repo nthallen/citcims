@@ -19,12 +19,12 @@ ChemWAD {
       Drift: (ChemWAD_Drift,9);
       Pitch: (ChemWAD_Pitch,9);
       Roll: (ChemWAD_Roll,9);
-    }; |; {
-      Side_Slip: (ChemWAD_Side_Slip,9);
-      Angle_of_Attack: (ChemWAD_Angle_of_Attack,9);
+      MMS_Side_Slip: (ChemWAD_MMS_Side_Slip,9);
+      MMS_Angle_of_Attack: (ChemWAD_MMS_Angle_of_Attack,9);
       Ambient_Temp: (ChemWAD_Ambient_Temp,9);
       Dew_Point: (ChemWAD_Dew_Point,9);
       Total_Temp: (ChemWAD_Total_Temp,9);
+    }; |; {
       Static_Press: (ChemWAD_Static_Press,9);
       Dynamic_Press: (ChemWAD_Dynamic_Press,9);
       Cabin_Pressure: (ChemWAD_Cabin_Pressure,9);
@@ -35,6 +35,58 @@ ChemWAD {
       Sun_Elev_AC: (ChemWAD_Sun_Elev_AC,9);
       Sun_Az_Grd: (ChemWAD_Sun_Az_Grd,9);
       Sun_Az_AC: (ChemWAD_Sun_Az_AC,9);
+      jNO2: (ChemWAD_jNO2,9);
+      CH2O: (ChemWAD_CH2O,9);
+      C2H6: (ChemWAD_C2H6,9);
+      CO: (ChemWAD_CO,9);
+      CH4: (ChemWAD_CH4,9);
+      WV_ppm: (ChemWAD_WV_ppm,9);
+      RHi: (ChemWAD_RHi,9);
+      RHw: (ChemWAD_RHw,9);
+      PAN: (ChemWAD_PAN,9);
+      SO4: (ChemWAD_SO4,9);
+    }; |; {
+      NO3: (ChemWAD_NO3,9);
+      TotalOrganic: (ChemWAD_TotalOrganic,9);
+      Chloride: (ChemWAD_Chloride,9);
+      NH4: (ChemWAD_NH4,9);
+      f43: (ChemWAD_f43,9);
+      f44: (ChemWAD_f44,9);
+      f57: (ChemWAD_f57,9);
+      f60: (ChemWAD_f60,9);
+      HCHO: (ChemWAD_HCHO,9);
+      n_mCPC: (ChemWAD_n_mCPC,9);
+      ufCN: (ChemWAD_ufCN,9);
+      coldCN: (ChemWAD_coldCN,9);
+      hotCN: (ChemWAD_hotCN,9);
+      drySCg_sub1: (ChemWAD_drySCg_sub1,9);
+      wetSCg_sub1: (ChemWAD_wetSCg_sub1,9);
+      totalSCg: (ChemWAD_totalSCg,9);
+      rawABSg: (ChemWAD_rawABSg,9);
+      DilutionRatio: (ChemWAD_DilutionRatio,9);
+      MMS_Static: (ChemWAD_MMS_Static,9);
+      MMS_StaticTemp: (ChemWAD_MMS_StaticTemp,9);
+    }; |; {
+      MMS_TAS: (ChemWAD_MMS_TAS,9);
+      HCOOH: (ChemWAD_HCOOH,9);
+      CL2: (ChemWAD_CL2,9);
+      NOAA_WAS_CanNumber: (ChemWAD_NOAA_WAS_CanNumber,9);
+      Acetonitrile: (ChemWAD_Acetonitrile,9);
+      Acetone: (ChemWAD_Acetone,9);
+      Ethanol: (ChemWAD_Ethanol,9);
+      Isoprene_Furan: (ChemWAD_Isoprene_Furan,9);
+      Benzene: (ChemWAD_Benzene,9);
+      Toluene: (ChemWAD_Toluene,9);
+      Furfural: (ChemWAD_Furfural,9);
+      Catechol_MethFurfural: (ChemWAD_Catechol_MethFurfural,9);
+      MaleicAnhydride: (ChemWAD_MaleicAnhydride,9);
+      SO2_pptv: (ChemWAD_SO2_pptv,9);
+      NO_pptv: (ChemWAD_NO_pptv,9);
+      NO: (ChemWAD_NO,9);
+      NOy: (ChemWAD_NOy,9);
+      O3: (ChemWAD_O3,9);
+      BlackCarbon: (ChemWAD_BlackCarbon,9);
+      CO2: (ChemWAD_CO2,9);
     }
   }
 }
@@ -49,10 +101,8 @@ UP_stale {
 
 UP {
   HBox {
-    {
-      [ChemWAD];
-      [UP_stale]
-    }
+    [ChemWAD]; |;
+    [UP_stale]
   }
 }
 
