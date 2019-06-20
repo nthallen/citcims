@@ -13,7 +13,9 @@ ROWS 18
   
   1 T1 GasDeck Temp
  10 T3 GasDeck Temp
+  1 T3_1Hz GasDeck Temp
  10 T4 GasDeck Temp
+  1 T4_1Hz GasDeck Temp
   1 INTP GasDeck mbar
   1 CALP GasDeck mbar
   1 CalT GasDeck Temp
