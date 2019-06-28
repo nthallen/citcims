@@ -8,7 +8,7 @@ ChemWADpkt::ChemWADpkt() : UserPkt("ChemWAD") {
 
 int ChemWADpkt::Process_Pkt() {
   return (
-    not_ISO8601(&ChemWAD.Time, false) || not_str(",", 1) ||
+    not_ISO8601(&ChemWAD.Time, true) || not_str(",", 1) ||
     not_nfloat(&ChemWAD.Latitude) || not_str(",", 1) ||
     not_nfloat(&ChemWAD.Longitude) || not_str(",", 1) ||
     not_nfloat(&ChemWAD.GPS_MSL_Alt) || not_str(",", 1) ||

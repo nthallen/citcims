@@ -134,11 +134,11 @@ int UserPkt::not_str(const char *str_in, unsigned int len) {
   return 0;
 }
 
-bool UserPkt::not_fptext() {
-  if ( cp < 0 || cp > nc || nc < 0 || nc >= bufsize || buf == 0 )
+int UserPkt::not_fptext() {
+  if ( cp < 0 || cp > nc || nc < 0 || buf == 0 )
     msg( MSG_EXIT_ABNORM, "Ser_Sel precondition failed: "
-      "cp = %d, nc = %d, bufsize = %d, buf %s",
-      cp, nc, bufsize, buf ? "not NULL" : "is NULL" );
+      "cp = %d, nc = %d, buf %s",
+      cp, nc, buf ? "not NULL" : "is NULL" );
 
   if (cp >= nc) return true;
   if (buf[cp] == '-') {

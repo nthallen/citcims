@@ -155,10 +155,10 @@ for my $packet (keys %packets) {
   if ( $timeword eq "timestamp" ) {
     print $fh
       "    not_ISO8601(&${packet}.Time, true) || not_str(\",\", 1) ||\n";
-  } else if ($timeword eq "timestampnh") {
+  } elsif ($timeword eq "timestampnh") {
     print $fh
       "    not_ISO8601(&${packet}.Time, false) || not_str(\",\", 1) ||\n";
-  } else if ($timeword eq "time") {
+  } elsif ($timeword eq "time") {
     print $fh
       "    not_double(&${packet}.Time) || not_str(\",\", 1) ||\n";
   }

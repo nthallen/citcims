@@ -21,7 +21,7 @@ class UserPkt {
   public:
     UserPkt(const char *KW_in);
     ~UserPkt();
-    int Process_Pkt(unsigned char *s, unsigned nc);
+    int Process_Pkt(unsigned char *s, unsigned nc, unsigned cp);
     virtual int Process_Pkt() = 0;
     void report_err(const char *fmt, ...);
     void report_ok();
@@ -39,6 +39,7 @@ class UserPkt {
     int not_ndigits(int n, int &value);
     int not_str(const char *str, unsigned int len);
     int not_ISO8601(double *Time, bool w_hyphens = true);
+    int not_fptext();
     int not_double(double *value);
     int not_float(float *value);
     int not_nfloat(float *value, float NaNval = 999999.);
