@@ -50,10 +50,10 @@ void UserPkt::TM_init(void *data, unsigned short n_bytes) {
   TM_id = Col_send_init( KW, data, n_bytes, 0);
 }
 
-int UserPkt::Process_Pkt(unsigned char *s, unsigned nc_in) {
+int UserPkt::Process_Pkt(unsigned char *s, unsigned nc_in, unsigned cp_in) {
   buf = s;
   nc = nc_in;
-  cp = 0;
+  cp = cp_in;
   if (Process_Pkt())
     return 1;
   Col_send(TM_id);
@@ -102,13 +102,13 @@ void UserPkt::report_ok() {
 }
 
 int UserPkt::not_ndigits(int n, int &value) {
-  int i = n;
+  int i = 0;
   value = 0;
-  while ( i > 0 && cp < nc && isdigit(buf[cp])) {
+  while ( i < n && cp < nc && isdigit(buf[cp])) {
     value = value*10 + buf[cp++] - '0';
-    --i;
+    ++i;
   }
-  if (i > 0) {
+  if (i < n) {
     report_err("%s Expected %d digits at column %d", KW, n, cp-i);
     return 1;
   }
@@ -134,23 +134,73 @@ int UserPkt::not_str(const char *str_in, unsigned int len) {
   return 0;
 }
 
+bool UserPkt::not_fptext() {
+  if ( cp < 0 || cp > nc || nc < 0 || nc >= bufsize || buf == 0 )
+    msg( MSG_EXIT_ABNORM, "Ser_Sel precondition failed: "
+      "cp = %d, nc = %d, bufsize = %d, buf %s",
+      cp, nc, bufsize, buf ? "not NULL" : "is NULL" );
+
+  if (cp >= nc) return true;
+  if (buf[cp] == '-') {
+    if (++cp >= nc) return true;
+  }
+  if (buf[cp] == '.') {
+    if (++cp >= nc) return true;
+    if (isdigit(buf[cp])) {
+      do { ++cp; }
+        while (cp < nc && isdigit(buf[cp]));
+    } else {
+      return true;
+    }
+  } else if (isdigit(buf[cp])) {
+    do { ++cp; }
+      while (cp < nc && isdigit(buf[cp]));
+    if (cp < nc && buf[cp] == '.') {
+      do { ++cp; }
+        while (cp < nc && isdigit(buf[cp]));
+    }
+  } else if (cp < nc && tolower(buf[cp]) == 'n') {
+    if (++cp >= nc || tolower(buf[cp]) != 'a' ||
+        ++cp >= nc || tolower(buf[cp]) != 'n') {
+      if (cp < nc) {
+        report_err("no_fptext() expected 'nan' at col %d", cp);
+      }
+      return true;
+    }
+    ++cp;
+    return false;
+  } else {
+    report_err("not_fptext() expected [0-9.] at col %d", cp);
+    return true;
+  }
+  if (cp < nc && tolower(buf[cp]) == 'e') {
+    if (++cp >= nc) return true;
+    if (buf[cp] == '+' || buf[cp] == '-') {
+      if (++cp >= nc) return true;
+    }
+    if (isdigit(buf[cp])) {
+      do { ++cp; } while (cp < nc && isdigit(buf[cp]));
+    } else {
+      report_err("not_fptext() expected digits at col %d", cp);
+      return true;
+    }
+  }
+  return false;
+}
+
 int UserPkt::not_double( double *value ) {
   char *endptr;
+  int start_cp = cp;
   int ncf;
-  if ( cp < 0 || cp > nc || nc < 0 || buf == 0 )
-    msg( 4, "%s not_float precondition failed: "
-      "cp = %d, nc = %d, buf %s",
-      KW, cp, nc, buf ? "not NULL" : "is NULL" );
-  *value = strtod( (char*)&buf[cp], &endptr );
-  ncf = endptr - (char*)&buf[cp];
-  if ( ncf == 0 ) {
-    report_err( "%s Expected float at column %d", KW, cp );
-    return 1;
-  } else {
-    nl_assert( ncf > 0 && cp + ncf <= nc );
-    cp += ncf;
-    return 0;
+  if (not_fptext()) return true;
+  *value = strtod( (char*)&buf[start_cp], &endptr );
+  if (endptr == (char *)&buf[cp]) {
+    return false;
   }
+  ncf = endptr - (char *)buf;
+  report_err("strtof at col %d ended at col %d, not %d",
+    start_cp, ncf, cp);
+  return true;
 }
 
 
@@ -273,7 +323,7 @@ int UserPkts_UDP::ProcessData(int flag) {
   for (cur_pkt = Pkts.begin(); cur_pkt != Pkts.end(); ++cur_pkt) {
     UserPkt * const pkt = *cur_pkt;
     if (strcmp(KW,pkt->KW) == 0) {
-      rv = pkt->Process_Pkt(buf+cp, nc-cp);
+      rv = pkt->Process_Pkt(buf, nc, cp);
       if (rv) {
         nc = cp = 0;
       } else {

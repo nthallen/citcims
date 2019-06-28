@@ -151,9 +151,17 @@ for my $packet (keys %packets) {
     "}\n\n",
     "int ${packet}pkt::Process_Pkt() {\n",
     "  return (\n";
-  print $fh lc($packets{$packet}->{timeword}) eq "timestamp" ?
-    "    not_ISO8601(&${packet}.Time, false) || not_str(\",\", 1) ||\n" :
-    "    not_double(&${packet}.Time) || not_str(\",\", 1) ||\n";
+  my $timeword = lc($packets{$packet}->{timeword});
+  if ( $timeword eq "timestamp" ) {
+    print $fh
+      "    not_ISO8601(&${packet}.Time, true) || not_str(\",\", 1) ||\n";
+  } else if ($timeword eq "timestampnh") {
+    print $fh
+      "    not_ISO8601(&${packet}.Time, false) || not_str(\",\", 1) ||\n";
+  } else if ($timeword eq "time") {
+    print $fh
+      "    not_double(&${packet}.Time) || not_str(\",\", 1) ||\n";
+  }
   print $fh
     join " || not_str(\",\", 1) ||\n",
     map "    not_nfloat(&${packet}.$_)",

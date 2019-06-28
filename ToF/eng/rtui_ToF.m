@@ -52,18 +52,21 @@ function rtui_ToF_OpeningFcn(hObject, ~, handles, varargin)
 % handles    structure with handles and user data (see GUIDATA)
 % varargin   command line arguments to rtui_ToF (see VARARGIN)
 
-% Choose default command line output for rtui_ToF
-handles.output = hObject;
+if ~libisloaded('TofDaqDll')
+    disp('Load TofTAQ library')
+   loadlibrary(['C:\tofwerk\TofDaq_1.98_API\bin\x64\TofDaqDll.dll'],['C:\tofwerk\TofDaq_1.98_API\include\TofDaqDll.h']);
+end
 
-% Update handles structure
+handles.output = hObject;
+handles.ToFdata.ToF_initialized = false;
+handles.ToFdata.strc = struct('NbrSamples',int32(0));
+handles.ToFdata.iBB = -1; % previous iBuf value
+handles.ToFdata.N = 0; % number of spectra processed this round
+handles.ToFdata.running = false;
 guidata(hObject, handles);
 
-% UIWAIT makes rtui_ToF wait for user response (see UIRESUME)
-% uiwait(handles.figure1);
-
-
 % --- Outputs from this function are returned to the command line.
-function varargout = rtui_ToF_OutputFcn(hObject, eventdata, handles) 
+function varargout = rtui_ToF_OutputFcn(~, ~, handles) 
 % varargout  cell array for returning output args (see VARARGOUT);
 % hObject    handle to figure
 % eventdata  reserved - to be defined in a future version of MATLAB
@@ -79,23 +82,64 @@ function Run_Callback(hObject, ~, handles)
 % handles    structure with handles and user data (see GUIDATA)
 
 % Hint: get(hObject,'Value') returns toggle state of Run
-if get(hObject,'Value')
-    hostname='10.0.0.155';
-    hostport=80;
+if ~handles.ToFdata.running
+    handles.ToFdata.running = true;
     set(handles.RunStatus,'String','Running');
-    handles.data_conn.n = 0;
-    handles.data_conn.t = tcpip(hostname, hostport,'Terminator','}', ...
-        'InputBufferSize',4096);
-    handles.data_conn.t.BytesAvailableFcn = { @BytesAvailable, hObject };
-    fopen(handles.data_conn.t);
-    handles.data_conn.connected = 1;
+    handles = setup_json_connection(handles, '10.0.0.155', 80);
     guidata(hObject, handles);
-else
-    fclose(handles.data_conn.t);
-    delete(handles.data_conn.t);
+    while true
+        handles = guidata(hObject);
+        if ~handles.ToFdata.running
+            break;
+        end
+        if ~handles.ToFdata.ToF_initialized
+            if calllib('TofDaqDll','TwTofDaqRunning')
+                handles = ToF_setup(handles);
+                guidata(hObject,handles);
+            end
+        end
+        if handles.data_conn.t.BytesAvailable
+        end
+        j = j + 1;
+        pause(0.05);
+    end
+    handles = close_json_connection(handles);
     set(handles.RunStatus,'String','Idle');
-    handles.data_conn.connected = 0;
-    guidata(hObject, handles);
+else
+    handles.ToFdata.running = false;
+end
+guidata(hObject, handles);
+
+function handles = setup_json_connection(handles, hostname, hostport)
+handles.data_conn.n = 0;
+handles.data_conn.t = tcpip(hostname, hostport,'Terminator','}', ...
+    'InputBufferSize',4096);
+% handles.data_conn.t.BytesAvailableFcn = { @BytesAvailable, hObject };
+fopen(handles.data_conn.t);
+handles.data_conn.connected = 1;
+
+function handles = close_json_connection(handles)
+fclose(handles.data_conn.t);
+delete(handles.data_conn.t);
+handles.data_conn.connected = 0;
+
+function handles = ToF_setup(handles)
+handles.ToFdata.NbrSamples = str2num(calllib('TofDaqDll','TwGetDaqParameter','NbrSamples'));
+handles.ToFdata.dat0 = zeros(handles.ToFdata.NbrSamples,1);
+handles.ToFdata.dat = handles.ToFdata.dat0;
+handles.ToFdata.raw = handles.ToFdata.dat0;
+handles.ToFdata.iBB = -1; % Current iBuf
+handles.ToFdata.strc = struct('NbrSamples',int32(0));
+handles.ToFdata.mz = double([1:double(handles.ToFdata.NbrSamples)]);
+
+% TwGetSpecXaxisFromShMem
+%   0: TwDaqRecNotRunning
+%   4: TwSuccess
+%   5: TwError
+%   6: TwOutOfBounds
+[res,handles.ToFdata.mz] = calllib('TofDaqDll','TwGetSpecXaxisFromShMem',mz,1,[],0.0);
+if res ~= 4
+    error('TwGetSpecXaxisFromShMem returned %d\n', res);
 end
 
 % --- Executes when data is available.

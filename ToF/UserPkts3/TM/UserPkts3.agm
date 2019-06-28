@@ -7,8 +7,10 @@ Moduledef UserPkts3 [ src= name=UserPkts3 ] {
     packet_vars : / packet_vars ',' variable .
     keyword : word .
     variable : word .
-    timevar : 'Time' / 'Timestamp' .
-  
+    timevar : 'Time' / 'Timestamp' / 'TimestampNH' .
+      Time: double-encoded seconds since midnight UTC
+      Timestamp: ISO8601 time (YYYY-MM-DDTHH:MM::SS.FFFFFF)
+      TimestampNH: ISO8601 time w/o hyphens (YYYYMMDDTHH:MM:SS.FFFFFF)
 }
 
 mode (default) {
