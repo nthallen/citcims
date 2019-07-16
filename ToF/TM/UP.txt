@@ -1,5 +1,7 @@
 # This header data is useful if creating a separate extraction
-# for UserPkts data
+# for UserPkts data. The current definition of this packet can be found at
+# https://asp-interface.arc.nasa.gov/usefulfiles/N817NA-Chemwad-Header.csv
+# Last Updated June 12, 2019. Last Checked July 16, 2019.
 HEADER FIREX User Packets
 MNEMONIC UP
 HOMEDIR ToF_Data_Dir
