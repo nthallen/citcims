@@ -54,15 +54,21 @@ function rtui_ToF_OpeningFcn(hObject, ~, handles, varargin)
 
 if ~libisloaded('TofDaqDll')
     disp('Load TofTAQ library')
-   loadlibrary(['C:\tofwerk\TofDaq_1.98_API\bin\x64\TofDaqDll.dll'],['C:\tofwerk\TofDaq_1.98_API\include\TofDaqDll.h']);
+   loadlibrary('C:\tofwerk\TofDaq_1.98_API\bin\x64\TofDaqDll.dll', ...
+       'C:\tofwerk\TofDaq_1.98_API\include\TofDaqDll.h');
 end
 
 handles.output = hObject;
 handles.ToFdata.ToF_initialized = false;
 handles.ToFdata.strc = struct('NbrSamples',int32(0));
 handles.ToFdata.iBB = -1; % previous iBuf value
+handles.ToFdata.iBuf_d = -1; % current iBuf value from TwGetDestriptor
 handles.ToFdata.N = 0; % number of spectra processed this round
 handles.ToFdata.running = false;
+handles.ToFdata.pause_time = 0.05;
+handles.ToFdata.bufTime = 1;
+handles.ToFdata.iBufs = zeros(20,1);
+handles.ToFdata.bufTimes = zeros(20,1);
 guidata(hObject, handles);
 
 % --- Outputs from this function are returned to the command line.
@@ -84,26 +90,34 @@ function Run_Callback(hObject, ~, handles)
 % Hint: get(hObject,'Value') returns toggle state of Run
 if ~handles.ToFdata.running
     handles.ToFdata.running = true;
+    set(handles.Run,'String','Stop');
     set(handles.RunStatus,'String','Running');
     handles = setup_json_connection(handles, '10.0.0.155', 80);
     guidata(hObject, handles);
     while true
         handles = guidata(hObject);
-        if ~handles.ToFdata.running
-            break;
-        end
+        if ~handles.ToFdata.running, break, end
         if ~handles.ToFdata.ToF_initialized
             if calllib('TofDaqDll','TwTofDaqRunning')
                 handles = ToF_setup(handles);
                 guidata(hObject,handles);
             end
         end
-        if handles.data_conn.t.BytesAvailable
+        handles = ToF_get_descriptor(handles);
+        guidata(hObject,handles);
+        handles.ToFdata.pause_time = 0.05;
+        % ToF_read_scan() and Read_json() Handlers here are required to
+        % save handles to guidata and update handles.ToFdata.pause_time.
+        if handles.ToFdata.iBB ~= handles.ToFdata.iBuf_d
+            handles = ToF_read_scan(handles);
         end
-        j = j + 1;
+        if handles.data_conn.t.BytesAvailable
+            handles = Read_json(handles.data_conn.t,hObject);
+        end
         pause(0.05);
     end
     handles = close_json_connection(handles);
+    set(handles.Run,'String','Run');
     set(handles.RunStatus,'String','Idle');
 else
     handles.ToFdata.running = false;
@@ -124,49 +138,109 @@ delete(handles.data_conn.t);
 handles.data_conn.connected = 0;
 
 function handles = ToF_setup(handles)
-handles.ToFdata.NbrSamples = str2num(calllib('TofDaqDll','TwGetDaqParameter','NbrSamples'));
+handles.ToFdata.NbrSamples = str2double(calllib('TofDaqDll','TwGetDaqParameter','NbrSamples'));
 handles.ToFdata.dat0 = zeros(handles.ToFdata.NbrSamples,1);
 handles.ToFdata.dat = handles.ToFdata.dat0;
 handles.ToFdata.raw = handles.ToFdata.dat0;
 handles.ToFdata.iBB = -1; % Current iBuf
 handles.ToFdata.strc = struct('NbrSamples',int32(0));
-handles.ToFdata.mz = double([1:double(handles.ToFdata.NbrSamples)]);
+handles.ToFdata.mz = double(1:double(handles.ToFdata.NbrSamples));
 
 % TwGetSpecXaxisFromShMem
 %   0: TwDaqRecNotRunning
 %   4: TwSuccess
 %   5: TwError
 %   6: TwOutOfBounds
-[res,handles.ToFdata.mz] = calllib('TofDaqDll','TwGetSpecXaxisFromShMem',mz,1,[],0.0);
+[res,handles.ToFdata.mz] = ...
+    calllib('TofDaqDll','TwGetSpecXaxisFromShMem',mz,1,[],0.0);
 if res ~= 4
     error('TwGetSpecXaxisFromShMem returned %d\n', res);
 end
 
+% TwGetDescriptor
+%   0: TwDaqRecNotRunning
+%   4: TwSuccess
+%   5: TwError
+function handles = ToF_get_descriptor(handles)
+[res,handles.ToFdata.strc] = ...
+    calllib('TofDaqDll','TwGetDescriptor',handles.ToFdata.strc);
+if res ~= 4
+    error('TwGetDescriptor returned %d', res);
+end
+handles.ToFdata.iBuf_d = num2str(handles.strc.iBuf);
+
+function handles = ToF_read_scan(handles)
+    % TwGetBufTimeFromShMem
+    %   0: TwDaqRecNotRunning
+    %   4: TwSuccess
+    %   5: TwError
+    %   6: TwOutOfBounds
+    %   7: TwNoData
+    [res,handles.ToFdata.bufTime] = ...
+        calllib('TofDaqDll','TwGetBufTimeFromShMem', ...
+        handles.ToFdata.bufTime, handles.ToFdata.strc.iBuf, ...
+        handles.ToFdata.strc.iWrite);
+    if res ~= 4
+        error('TwGetBufTimeFromShMem returned %d', res);
+    end
+    handles.ToFdata.N = handles.ToFdata.N+1;
+    handles.ToFdata.iBufs(handles.ToFdata.N) = ...
+        handles.ToFdata.iBuf_d;
+    handles.ToFdata.bufTimes(handles.ToFdata.N) = ...
+        handles.ToFdata.bufTime;
+    
+    % TwGetTofSpectrumFromShMem
+    %   0: TwDaqRecNotRunning
+    %   4: TwSuccess
+    %   5: TwError
+    %   6: TwOutOfBounds
+    %   7: TwNoData
+    [res,handles.ToFdata.raw] = ...
+        calllib('TofDaqDll','TwGetTofSpectrumFromShMem', ...
+            handles.ToFdata.raw,0,0,handles.ToFdata.strc.iBuf,true);
+    if res ~= 4
+        error('TwGetTofSpectrumFromShMem returned %d', res);
+    end
+    handles.ToFdata.dat = handles.ToFdata.dat + handles.ToFdata.raw;
+    handles.ToFdata.pause_time = 0;
+    guidata(handles.Run,handles);
+
 % --- Executes when data is available.
-function BytesAvailable(obj, event, hObject)
-handles = guidata(hObject);
+function handles = Read_json(handles)
 if handles.data_conn.connected == 0
     return;
 end
-s = fgets(obj);
+s = fgets(handles.data_conn.t);
 if isempty(s)
-    Run_Callback(hObject, event, handles);
+    % Run_Callback(handles.Run, 0, handles);
+    handles.ToFdata.running = false;
+    guidata(handles.Run,handles);
+else
+    dp = loadjson(s);
+    handles.data_conn.n = handles.data_conn.n+1;
+    set(handles.Nrecs,'String',num2str(handles.data_conn.n));
+    [handles,rec] = process_json_record(handles, dp);
+    if strcmp(rec,'ToFeng_1')
+        handles = process_ToF_records(handles);
+    end
 end
-dp = loadjson(s);
-handles.data_conn.n = handles.data_conn.n+1;
-set(handles.Nrecs,'String',num2str(handles.data_conn.n));
-guidata(hObject,handles);
-process_record(hObject, handles, dp);
-drawnow;
+handles.ToFdata.pause_time = 0;
+guidata(handles.Run, handles);
 
-% process_record should be generic based on the conventions
+function handles = process_ToF_records(handles)
+% Responsible for analyzing the handles.ToFdata.dat vector
+% using handles.data.ToFeng_1.vars.(var) arrays
+
+% process_json_record should be generic based on the conventions
 % I am using for received JSON data. This should build up
 % structures within handles.data.(rec):
 %   n_alloc The length of each vector under vars
 %   n_recd  The number of records received
 %   vars    A struct with vectors for each variable
-%   vars.(varname)  n_alloc x 1 vector
-function process_record(hObject, handles, dp)
+%   handles.data.(rec).vars.(varname)  n_alloc x 1 vector
+%   handles.data.(rec).vars.(varname)(handles.data.(rec).n_recd) is
+%      the most recent datum.
+function [handles,rec] = process_json_record(handles, dp)
 min_alloc = 10000;
 rec = dp.Record;
 dp = rmfield(dp,'Record');
@@ -194,25 +268,24 @@ for i = 1:length(flds)
             dp.(flds{i});
     end
 end
-guidata(hObject,handles);
-update_graphics(handles, rec);
+% guidata(hObject,handles);
+% update_graphics(handles, rec);
 
 %
-function update_graphics(handles, rec)
+function handles = update_graphics(handles, rec)
 if strcmp(rec,'ToFeng_1')
-    x = 1:handles.data.ToFeng_1.n_recd;
-    T = handles.data.ToFeng_1.vars.TToFeng_1(x);
-    v = T > (T(end)-200);
-    x = x(v);
-    T = T(x);
-    T = T - T(1);
-    TPA_Cmon = handles.data.ToFeng_1.vars.TPA_Cmon(x);
-    TPB_Cmon = handles.data.ToFeng_1.vars.TPB_Cmon(x);
-    plot(handles.axes1, T, TPA_Cmon, T, TPB_Cmon);
-    title(handles.axes1, 'TPA\_Cmon, TPB\_Cmon');
-    xlim(handles.axes1, [0 200]);
+    % x = 1:handles.data.ToFeng_1.n_recd;
+    % T = handles.data.ToFeng_1.vars.TToFeng_1(x);
+    % v = T > (T(end)-200);
+    % x = x(v);
+    % T = T(x);
+    % T = T - T(1);
+    % TPA_Cmon = handles.data.ToFeng_1.vars.TPA_Cmon(x);
+    % TPB_Cmon = handles.data.ToFeng_1.vars.TPB_Cmon(x);
+    %plot(handles.axes1, T, TPA_Cmon, T, TPB_Cmon);
+    %title(handles.axes1, 'TPA\_Cmon, TPB\_Cmon');
+    %xlim(handles.axes1, [0 200]);
 end
-
 
 % --- Executes on button press in Export.
 function Export_Callback(~, ~, handles)
