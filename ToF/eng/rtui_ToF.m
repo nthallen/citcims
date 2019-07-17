@@ -69,6 +69,7 @@ handles.ToFdata.pause_time = 0.05;
 handles.ToFdata.bufTime = 1;
 handles.ToFdata.iBufs = zeros(20,1);
 handles.ToFdata.bufTimes = zeros(20,1);
+handles.ToFdata.SendStatus = false;
 guidata(hObject, handles);
 
 % --- Outputs from this function are returned to the command line.
@@ -93,6 +94,10 @@ if ~handles.ToFdata.running
     set(handles.Run,'String','Stop');
     set(handles.RunStatus,'String','Running');
     handles = setup_json_connection(handles, '10.0.0.155', 80);
+    if handles.ToFdata.SendStatus
+        handles.ToFdata.udp = udp('10.1.1.255',5100);
+        fopen(handles.ToFdata.udp);
+    end
     guidata(hObject, handles);
     while true
         handles = guidata(hObject);
@@ -117,6 +122,9 @@ if ~handles.ToFdata.running
         pause(0.05);
     end
     handles = close_json_connection(handles);
+    if handles.ToFdata.SendStatus
+        fclose(handles.ToFdata.udp);
+    end
     set(handles.Run,'String','Run');
     set(handles.RunStatus,'String','Idle');
 else
@@ -184,10 +192,12 @@ function handles = ToF_read_scan(handles)
         error('TwGetBufTimeFromShMem returned %d', res);
     end
     handles.ToFdata.N = handles.ToFdata.N+1;
-    handles.ToFdata.iBufs(handles.ToFdata.N) = ...
-        handles.ToFdata.iBuf_d;
-    handles.ToFdata.bufTimes(handles.ToFdata.N) = ...
-        handles.ToFdata.bufTime;
+    if handles.ToFdata.N <= 20
+        handles.ToFdata.iBufs(handles.ToFdata.N) = ...
+            handles.ToFdata.iBuf_d;
+        handles.ToFdata.bufTimes(handles.ToFdata.N) = ...
+            handles.ToFdata.bufTime;
+    end
     
     % TwGetTofSpectrumFromShMem
     %   0: TwDaqRecNotRunning
@@ -227,7 +237,7 @@ end
 handles.ToFdata.pause_time = 0;
 guidata(handles.Run, handles);
 
-function handles = process_ToF_records(handles)
+%function handles = process_ToF_records(handles)
 % Responsible for analyzing the handles.ToFdata.dat vector
 % using handles.data.ToFeng_1.vars.(var) arrays
 
