@@ -11,6 +11,14 @@ function handles = process_ToF_records(handles)
 %  handles.ToFdata.dat = handles.ToFdata.dat0; % sum of N spectra
 %  handles.ToFdata.NbrSamples = str2double(calllib('TofDaqDll','TwGetDaqParameter','NbrSamples'));
 %
+% With rec = 'ToFeng_1':
+%   handles.data.(rec) has the following members:
+%     n_alloc The length of each vector under vars
+%     n_recd  The number of records received
+%     vars    A struct with vectors for each variable
+%     handles.data.(rec).vars.(varname)  n_alloc x 1 vector
+%     handles.data.(rec).vars.(varname)(handles.data.(rec).n_recd) is
+%       the most recent datum.
 %----------------------------------------------------------------------
 % Perform analysis to calculate relevant output values
 %   Persistent variables can be added to the handles data structure.
