@@ -54,8 +54,8 @@ function rtui_ToF_OpeningFcn(hObject, ~, handles, varargin)
 
 if ~libisloaded('TofDaqDll')
     disp('Load TofTAQ library')
-   loadlibrary('C:\tofwerk\TofDaq_1.98_API\bin\x64\TofDaqDll.dll', ...
-       'C:\tofwerk\TofDaq_1.98_API\include\TofDaqDll.h');
+   loadlibrary('C:\tofwerk\ADQ1600-new\TofDaq_1.98_API\bin\x64\TofDaqDll.dll', ...
+       'C:\tofwerk\ADQ1600-new\TofDaq_1.98_API\include\TofDaqDll.h');
 end
 
 handles.output = hObject;
@@ -96,7 +96,7 @@ if ~handles.ToFdata.running
     handles.ToFdata.running = true;
     set(handles.Run,'String','Stop');
     set(handles.RunStatus,'String','Running');
-    handles = setup_json_connection(handles, '10.0.0.155', 80);
+    handles = setup_json_connection(handles, '10.1.1.231', 80);
     if handles.ToFdata.SendStatus
         handles.ToFdata.udp = udp('10.1.1.255',5100);
         fopen(handles.ToFdata.udp);

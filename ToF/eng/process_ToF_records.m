@@ -24,6 +24,7 @@ function handles = process_ToF_records(handles)
 %   Persistent variables can be added to the handles data structure.
 %----------------------------------------------------------------------
 % CALCULATIONS GO HERE
+test=0;
 set(handles.NToF,'String',num2str(handles.ToFdata.N));
 
 
