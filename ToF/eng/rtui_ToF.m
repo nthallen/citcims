@@ -117,7 +117,7 @@ if ~handles.ToFdata.running
             handles = ToF_read_scan(handles);
         end
         if handles.data_conn.t.BytesAvailable
-            handles = Read_json(handles.data_conn.t,hObject);
+            handles = Read_json(handles);
         end
         pause(0.05);
     end
@@ -160,8 +160,8 @@ handles.ToFdata.mz = double(1:double(handles.ToFdata.NbrSamples));
 %   5: TwError
 %   6: TwOutOfBounds
 [res,handles.ToFdata.mz] = ...
-    calllib('TofDaqDll','TwGetSpecXaxisFromShMem',mz,1,[],0.0);
-if res ~= 4
+    calllib('TofDaqDll','TwGetSpecXaxisFromShMem',handles.ToFdata.mz,1,[],0.0);
+if ~strcmp(res,'TwSuccess')
     error('TwGetSpecXaxisFromShMem returned %d\n', res);
 end
 
@@ -172,8 +172,8 @@ end
 function handles = ToF_get_descriptor(handles)
 [res,handles.ToFdata.strc] = ...
     calllib('TofDaqDll','TwGetDescriptor',handles.ToFdata.strc);
-if res ~= 4
-    error('TwGetDescriptor returned %d', res);
+if ~strcmp(res,'TwSuccess')
+    error('TwGetDescriptor returned %s', res);
 end
 handles.ToFdata.iBuf_d = num2str(handles.strc.iBuf);
 
@@ -188,8 +188,8 @@ function handles = ToF_read_scan(handles)
         calllib('TofDaqDll','TwGetBufTimeFromShMem', ...
         handles.ToFdata.bufTime, handles.ToFdata.strc.iBuf, ...
         handles.ToFdata.strc.iWrite);
-    if res ~= 4
-        error('TwGetBufTimeFromShMem returned %d', res);
+    if ~strcmp(res,'TwSuccess')
+        error('TwGetBufTimeFromShMem returned %s', res);
     end
     handles.ToFdata.N = handles.ToFdata.N+1;
     if handles.ToFdata.N <= 20
@@ -208,8 +208,8 @@ function handles = ToF_read_scan(handles)
     [res,handles.ToFdata.raw] = ...
         calllib('TofDaqDll','TwGetTofSpectrumFromShMem', ...
             handles.ToFdata.raw,0,0,handles.ToFdata.strc.iBuf,true);
-    if res ~= 4
-        error('TwGetTofSpectrumFromShMem returned %d', res);
+    if ~strcmp(res,'TwSuccess')
+        error('TwGetTofSpectrumFromShMem returned %s', res);
     end
     handles.ToFdata.dat = handles.ToFdata.dat + handles.ToFdata.raw;
     handles.ToFdata.pause_time = 0;
@@ -251,10 +251,23 @@ guidata(handles.Run, handles);
 %   handles.data.(rec).vars.(varname)(handles.data.(rec).n_recd) is
 %      the most recent datum.
 function [handles,rec] = process_json_record(handles, dp)
-min_alloc = 10000;
 rec = dp.Record;
 dp = rmfield(dp,'Record');
-flds = fieldnames(dp);
+handles = check_growing_vectors(handles, rec, dp);
+% guidata(hObject,handles);
+% update_graphics(handles, rec);
+
+function handles = check_growing_vectors(handles, rec, data)
+% handles = check_growing_vectors(handles, rec, vars, vals)
+% rec is the name of the record
+% data is struct of scalar elements.
+%   data should include a time member 
+% Each variable with get a growing column vector, each of the
+% same allocated length ( handles.data.(rec).n_alloc) and each
+% assumed to have the same number of valid values stored
+% (handles.data.(rec).n_recd).
+min_alloc = 10000;
+flds = fieldnames(data);
 if ~isfield(handles,'data') || ~isfield(handles.data, rec)
     % initialize variable
     handles.data.(rec).n_alloc = min_alloc;
@@ -273,13 +286,11 @@ if handles.data.(rec).n_recd > handles.data.(rec).n_alloc
     handles.data.(rec).n_alloc = handles.data.(rec).n_alloc + min_alloc;
 end
 for i = 1:length(flds)
-    if isnumeric(dp.(flds{i}))
+    if isnumeric(data.(flds{i}))
         handles.data.(rec).vars.(flds{i})(handles.data.(rec).n_recd) = ...
-            dp.(flds{i});
+            data.(flds{i});
     end
 end
-% guidata(hObject,handles);
-% update_graphics(handles, rec);
 
 %
 function handles = update_graphics(handles, rec)

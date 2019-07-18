@@ -24,6 +24,8 @@ function handles = process_ToF_records(handles)
 %   Persistent variables can be added to the handles data structure.
 %----------------------------------------------------------------------
 % CALCULATIONS GO HERE
+set(handles.NToF,'String',num2str(handles.ToFdata.N));
+
 
 %----------------------------------------------------------------------
 % Reinitialize N and dat
@@ -47,9 +49,10 @@ if handles.ToFdata.SendStatus
     status = 3;
     v1 = NaN;
     v2 = NaN;
+    v3 = NaN;
     % Note: fprintf() on a udp object apparently does not support all
     % the conversions that fprintf() on a file does, so I format the
     % string with sprintf first.
-    str = sprintf('CIT-CIMS,%s,%d,%.7e,%.7e\n', string(t), status, v1, v2);
+    str = sprintf('CIT-CIMS,%s,%d,%.7e,%.7e,%.7e\n', char(t), status, v1, v2, v3);
     fprintf(handles.ToFdata.udp,'%s',str);
 end
