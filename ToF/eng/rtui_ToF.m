@@ -90,6 +90,9 @@ function Run_Callback(hObject, ~, handles)
 
 % Hint: get(hObject,'Value') returns toggle state of Run
 if ~handles.ToFdata.running
+    %---------------------------
+    % Setup for 'Run' mode
+    %---------------------------
     handles.ToFdata.running = true;
     set(handles.Run,'String','Stop');
     set(handles.RunStatus,'String','Running');
@@ -99,6 +102,10 @@ if ~handles.ToFdata.running
         fopen(handles.ToFdata.udp);
     end
     guidata(hObject, handles);
+    
+    %---------------------------
+    % 'Run' loop
+    %---------------------------
     while true
         handles = guidata(hObject);
         if ~handles.ToFdata.running, break, end
@@ -119,8 +126,12 @@ if ~handles.ToFdata.running
         if handles.data_conn.t.BytesAvailable
             handles = Read_json(handles);
         end
-        pause(0.05);
+        pause(handles.ToFdata.pause_time);
     end
+    
+    %---------------------------
+    % Cleanup after Stop
+    %---------------------------
     handles = close_json_connection(handles);
     if handles.ToFdata.SendStatus
         fclose(handles.ToFdata.udp);
@@ -175,7 +186,7 @@ function handles = ToF_get_descriptor(handles)
 if ~strcmp(res,'TwSuccess')
     error('TwGetDescriptor returned %s', res);
 end
-handles.ToFdata.iBuf_d = num2str(handles.strc.iBuf);
+handles.ToFdata.iBuf_d = num2str(handles.ToFdata.strc.iBuf);
 
 function handles = ToF_read_scan(handles)
     % TwGetBufTimeFromShMem
@@ -232,8 +243,11 @@ else
     [handles,rec] = process_json_record(handles, dp);
     if strcmp(rec,'ToFeng_1')
         handles = process_ToF_records(handles);
+    else
+        fprintf(1,'Received rec %s\n', rec);
     end
 end
+handles.ToFdata.iBB = handles.ToFdata.iBuf_d;
 handles.ToFdata.pause_time = 0;
 guidata(handles.Run, handles);
 

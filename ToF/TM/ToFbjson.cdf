@@ -72,14 +72,15 @@ json ToFeng_1 73
   70 ZF2_F
   71 ZF2_F_sp
   72 Zstale
-json ToFeng_5 4
-  0 TToFeng_5 %.3lf
-  1 Insl_Stat %.0lf
-  2 Insl_Step
-  3 OMS_Stale
-json ToFeng_10 5
-  0 TToFeng_10 %.3lf
-  1 InH_P
-  2 InL_P
-  3 T3
-  4 T4
+# json ToFeng_5 4
+#   0 TToFeng_5 %.3lf
+#   1 Insl_Stat %.0lf
+#   2 Insl_Step
+#   3 OMS_Stale
+# json ToFeng_10 5
+#   0 TToFeng_10 %.3lf
+#   1 InH_P
+#   2 InL_P
+#   3 T3
+#   4 T4
+# 
