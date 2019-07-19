@@ -126,6 +126,7 @@ if ~handles.ToFdata.running
         if handles.data_conn.t.BytesAvailable
             handles = Read_json(handles);
         end
+        guidata(hObject,handles);
         pause(handles.ToFdata.pause_time);
     end
     
@@ -175,6 +176,7 @@ handles.ToFdata.mz = double(1:double(handles.ToFdata.NbrSamples));
 if ~strcmp(res,'TwSuccess')
     error('TwGetSpecXaxisFromShMem returned %d\n', res);
 end
+handles.ToFdata.ToF_initialized = true;
 
 % TwGetDescriptor
 %   0: TwDaqRecNotRunning
@@ -223,6 +225,7 @@ function handles = ToF_read_scan(handles)
         error('TwGetTofSpectrumFromShMem returned %s', res);
     end
     handles.ToFdata.dat = handles.ToFdata.dat + handles.ToFdata.raw;
+    handles.ToFdata.iBB = handles.ToFdata.iBuf_d;
     handles.ToFdata.pause_time = 0;
     guidata(handles.Run,handles);
 
@@ -247,7 +250,6 @@ else
         fprintf(1,'Received rec %s\n', rec);
     end
 end
-handles.ToFdata.iBB = handles.ToFdata.iBuf_d;
 handles.ToFdata.pause_time = 0;
 guidata(handles.Run, handles);
 
