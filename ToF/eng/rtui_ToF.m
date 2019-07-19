@@ -154,7 +154,7 @@ function handles = setup_json_connection(handles, hostname, hostport)
 handles.data_conn.n = 0;
 handles.data_conn.t = tcpip(hostname, hostport,'Terminator','}', ...
     'InputBufferSize',4096);
-handles.data_conn.t.BytesAvailableFcn = { @BytesAvFn, hObject };
+handles.data_conn.t.BytesAvailableFcn = { @BytesAvFn, handles.Run };
 fopen(handles.data_conn.t);
 handles.data_conn.connected = 1;
 
