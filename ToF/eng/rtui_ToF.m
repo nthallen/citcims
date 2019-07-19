@@ -106,6 +106,7 @@ if ~handles.ToFdata.running
     %---------------------------
     % 'Run' loop
     %---------------------------
+    iterations = 0;
     while true
         handles = guidata(hObject);
         if ~handles.ToFdata.running, break, end
@@ -115,17 +116,22 @@ if ~handles.ToFdata.running
                 guidata(hObject,handles);
             end
         end
+        iterations = iterations + 1;
         handles = ToF_get_descriptor(handles);
         guidata(hObject,handles);
         handles.ToFdata.pause_time = 0.05;
         % ToF_read_scan() and Read_json() Handlers here are required to
         % save handles to guidata and update handles.ToFdata.pause_time.
         if handles.ToFdata.iBB ~= handles.ToFdata.iBuf_d
+            fprintf(1,'124: iterations: %d iBB: %d  iBuf_d: %d\n', ...
+                iterations, handles.ToFdata.iBB, ...
+                handles.ToFdata.iBuf_d);
+            iterations = 0;
             handles = ToF_read_scan(handles);
         end
-        if handles.data_conn.t.BytesAvailable
-            handles = Read_json(handles);
-        end
+%         if handles.data_conn.t.BytesAvailable
+%             handles = Read_json(handles);
+%         end
         guidata(hObject,handles);
         pause(handles.ToFdata.pause_time);
     end
@@ -148,7 +154,7 @@ function handles = setup_json_connection(handles, hostname, hostport)
 handles.data_conn.n = 0;
 handles.data_conn.t = tcpip(hostname, hostport,'Terminator','}', ...
     'InputBufferSize',4096);
-% handles.data_conn.t.BytesAvailableFcn = { @BytesAvailable, hObject };
+handles.data_conn.t.BytesAvailableFcn = { @BytesAvFn, hObject };
 fopen(handles.data_conn.t);
 handles.data_conn.connected = 1;
 
@@ -178,10 +184,13 @@ if ~strcmp(res,'TwSuccess')
 end
 handles.ToFdata.ToF_initialized = true;
 
+%---------------------------
+% ToF_get_descriptor
 % TwGetDescriptor
 %   0: TwDaqRecNotRunning
 %   4: TwSuccess
 %   5: TwError
+%---------------------------
 function handles = ToF_get_descriptor(handles)
 [res,handles.ToFdata.strc] = ...
     calllib('TofDaqDll','TwGetDescriptor',handles.ToFdata.strc);
@@ -229,6 +238,10 @@ function handles = ToF_read_scan(handles)
     handles.ToFdata.pause_time = 0;
     guidata(handles.Run,handles);
 
+function BytesAvFn(~, ~, hObject)
+handles = guidata(hObject);
+handles = Read_json(handles);
+        
 % --- Executes when data is available.
 function handles = Read_json(handles)
 if handles.data_conn.connected == 0
