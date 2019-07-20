@@ -18,7 +18,7 @@ classdef data_record < handle
             obj.n_flds = 0;
         end
         
-        function process_record(str)
+        function process_record(obj, str)
             flds = fieldnames(str);
             if obj.n_flds == 0
                 obj.n_alloc = obj.min_alloc;

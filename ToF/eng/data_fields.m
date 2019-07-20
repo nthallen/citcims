@@ -14,7 +14,22 @@ classdef data_fields < handle
         max_x
         cur_x
         cur_y
+        hspace
+        vspace
         records
+        fields
+        % fields will be indexed like records, i.e.
+        % obj.fields.(rec).vars.(var) will be an array of data_field
+        % objects, allowing a variable to appear in more than one
+        % location
+        cur_col
+        % cur_col will record fields in the current column
+        % We need to keep this until the column is closed, so we can
+        % adjust the column widths.
+        % cur_col.fields will be a cell array of data_field objects
+        % cur_col.n_rows will be a scalar count of elements in fields
+        % cur_col.max_lbl_width will be the current maximum label width
+        % cur_col.max_txt_width will be the current maximum text width
     end
     methods
         function obj = data_fields(fig_in)
@@ -23,25 +38,49 @@ classdef data_fields < handle
             % record dimensions
             set(obj.fig,'units','pixels');
             d = get(obj.fig,'Position');
-            obj.min_x = 0;
+            obj.min_x = 20;
             obj.max_x = d(3);
             obj.min_y = 0;
             obj.max_y = d(4);
             obj.cur_x = obj.min_x;
             obj.cur_y = obj.max_y;
+            obj.hspace = 10;
+            obj.vspace = 5;
             obj.records = data_records();
             obj.figbgcolor = get(obj.fig,'Color');
+            obj.start_col();
         end
-        function df = data_field(rec_name, var_name)
+        
+        function start_col(obj)
+            obj.cur_col.fields = {};
+            obj.cur_col.n_rows = 0;
+            obj.cur_col.max_lbl_width = 0;
+            obj.cur_col.max_txt_width = 0;
+        end
+        
+        function df = field(obj, rec_name, var_name, fmt)
             obj.records.add_record(rec_name);
-            lbl = [var_name ':'];
-            tag = [var_name '_lbl'];
-            h = uicontrol(obj.fig, 'Style', 'text', 'String', lbl, ...
-                'Callback', 'lbl_selected', 'HorizontalAlignment', 'left', ...
-                'BackgroundColor', obj.figbgcolor, ...
-                'tag', tag);
-            e = get(h, 'Extent' );
-            dims = e(3:4) + [ 3 3 ];
+            if ~isfield(obj.fields, rec_name) || ~isfield(obj.fields.(rec_name).vars,var_name)
+                obj.fields.(rec_name).vars.(var_name) = {};
+            end
+            df_int = data_field(rec_name, var_name, fmt, obj);
+            obj.fields.(rec_name).vars.(var_name){end+1} = df_int;
+            obj.cur_col.fields{end+1} = df_int;
+            obj.cur_col.n_rows = obj.cur_col.n_rows+1;
+            if df_int.lbl_width > obj.cur_col.max_lbl_width
+                obj.cur_col.max_lbl_width = df_int.lbl_width;
+            end
+            if df_int.txt_width > obj.cur_col.max_txt_width
+                obj.cur_col.max_txt_width = df_int.txt_width;
+            end
+            obj.cur_y = obj.cur_y - df_int.fld_height;
+            df_int.lbl.Position = ...
+                [ obj.cur_x, obj.cur_y, df_int.lbl_width, df_int.fld_height];
+            df_int.txt.Position = ...
+                [ obj.cur_x + df_int.lbl_width + obj.hspace, obj.cur_y, ...
+                  df_int.txt_width, df_int.fld_height];
+            obj.cur_y = obj.cur_y - obj.vspace;
+            if nargout > 0; df = df_int; end
         end
     end
 end
