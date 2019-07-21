@@ -18,6 +18,7 @@ classdef data_fields < handle
     %       h_padding % space between edge and outer columns
     %       h_leading % space between label and text and unit
     %       col_leading % horizontal space between columns
+    %       txt_padding
         cur_x
         cur_y
         records
@@ -51,6 +52,7 @@ classdef data_fields < handle
             obj.opts.h_padding = 20;
             obj.opts.h_leading = 0;
             obj.opts.col_leading = 15;
+            obj.opts.txt_padding = 5;
             for i = 1:2:length(varargin)
                 fld = varargin{i};
                 if isfield(obj.opts, fld)
@@ -111,6 +113,7 @@ classdef data_fields < handle
             if df_int.lbl_width > obj.cur_col.max_lbl_width
                 obj.cur_col.max_lbl_width = df_int.lbl_width;
             end
+            df_int.txt_width = df_int.txt_width + obj.opts.txt_padding;
             if df_int.txt_width > obj.cur_col.max_txt_width
                 obj.cur_col.max_txt_width = df_int.txt_width;
             end
@@ -119,9 +122,29 @@ classdef data_fields < handle
                 [ obj.cur_x, obj.cur_y, df_int.lbl_width, df_int.fld_height];
             df_int.txt.Position = ...
                 [ obj.cur_x + df_int.lbl_width + obj.opts.h_leading, obj.cur_y, ...
-                  df_int.txt_width, df_int.fld_height];
+                  df_int.txt_width, ...
+                  df_int.fld_height];
             obj.cur_y = obj.cur_y - obj.opts.v_leading;
             if nargout > 0; df = df_int; end
+        end
+        function process_record(obj,rec_name,str)
+            if nargin >= 3
+                obj.records.process_record(rec_name,str);
+            end
+            % Now go through fields and update text
+            if isfield(obj.fields,rec_name)
+                flds = obj.fields.(rec_name);
+                vars = fieldnames(flds.vars);
+                for i=1:length(vars)
+                    if isfield(str,vars{i})
+                        fs = flds.vars.(vars{i});
+                        for j = 1:length(fs)
+                            set(fs{j}.txt,'String', ...
+                                fs{j}.txt_convert(str.(vars{i})));
+                        end
+                    end
+                end
+            end
         end
     end
 end
