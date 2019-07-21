@@ -69,7 +69,8 @@ handles.ToFdata.pause_time = 0.05;
 handles.ToFdata.bufTime = 1;
 handles.ToFdata.iBufs = zeros(20,1);
 handles.ToFdata.bufTimes = zeros(20,1);
-handles.ToFdata.SendStatus = false;
+handles.ToFdata.SendStatus = true;
+handles.ToFdata.TCal = T_cal_crv;
 guidata(hObject, handles);
 
 % --- Outputs from this function are returned to the command line.
@@ -108,7 +109,9 @@ if ~handles.ToFdata.running
     %---------------------------
     iterations = 0;
     while true
+        %fprintf(1,'111: ibb: %d, iBuf_d: %d\n', handles.ToFdata.iBB, handles.ToFdata.iBuf_d);
         handles = guidata(hObject);
+        %fprintf(1,'113: ibb: %d, iBuf_d: %d\n', handles.ToFdata.iBB, handles.ToFdata.iBuf_d);
         if ~handles.ToFdata.running, break, end
         if ~handles.ToFdata.ToF_initialized
             if calllib('TofDaqDll','TwTofDaqRunning')
@@ -122,17 +125,20 @@ if ~handles.ToFdata.running
         handles.ToFdata.pause_time = 0.05;
         % ToF_read_scan() and Read_json() Handlers here are required to
         % save handles to guidata and update handles.ToFdata.pause_time.
+
         if handles.ToFdata.iBB ~= handles.ToFdata.iBuf_d
-            fprintf(1,'124: iterations: %d iBB: %d  iBuf_d: %d\n', ...
-                iterations, handles.ToFdata.iBB, ...
-                handles.ToFdata.iBuf_d);
+            %display(handles.ToFdata.strc.iBuf);
+            %fprintf(1,'124: iterations: %d ibb: %d, iBuf_d: %d\n', iterations, handles.ToFdata.iBB, handles.ToFdata.iBuf_d);
             iterations = 0;
             handles = ToF_read_scan(handles);
+            %fprintf(1,'126: ibb: %d, iBuf_d: %d\n', handles.ToFdata.iBB, handles.ToFdata.iBuf_d);
         end
-%         if handles.data_conn.t.BytesAvailable
-%             handles = Read_json(handles);
-%         end
-        guidata(hObject,handles);
+
+        % if handles.data_conn.t.BytesAvailable
+        %    handles = Read_json(handles);
+        % end
+        % guidata(hObject, handles);
+
         pause(handles.ToFdata.pause_time);
     end
     
@@ -182,6 +188,8 @@ handles.ToFdata.mz = double(1:double(handles.ToFdata.NbrSamples));
 if ~strcmp(res,'TwSuccess')
     error('TwGetSpecXaxisFromShMem returned %d\n', res);
 end
+handles.ToFdata.mzc=handles.ToFdata.mz;
+[handles.ToFdata.map,handles.ToFdata.bl1,handles.ToFdata.bl2]=mass_map_rt(400,handles.ToFdata.mz);
 handles.ToFdata.ToF_initialized = true;
 
 %---------------------------
@@ -233,21 +241,25 @@ function handles = ToF_read_scan(handles)
     if ~strcmp(res,'TwSuccess')
         error('TwGetTofSpectrumFromShMem returned %s', res);
     end
-    handles.ToFdata.dat = handles.ToFdata.dat + handles.ToFdata.raw;
     handles.ToFdata.iBB = handles.ToFdata.iBuf_d;
-    handles.ToFdata.pause_time = 0;
-    guidata(handles.Run,handles);
+    handles.ToFdata.dat = handles.ToFdata.dat + handles.ToFdata.raw;
+    handles.ToFdata.pause_time = 0.001;
+    guidata(handles.figure1,handles);
 
 function BytesAvFn(~, ~, hObject)
 handles = guidata(hObject);
 handles = Read_json(handles);
-        
+
 % --- Executes when data is available.
 function handles = Read_json(handles)
+%tic
 if handles.data_conn.connected == 0
     return;
 end
+%toc
+%tic
 s = fgets(handles.data_conn.t);
+%toc
 if isempty(s)
     % Run_Callback(handles.Run, 0, handles);
     handles.ToFdata.running = false;
@@ -259,11 +271,11 @@ else
     [handles,rec] = process_json_record(handles, dp);
     if strcmp(rec,'ToFeng_1')
         handles = process_ToF_records(handles);
-    else
-        fprintf(1,'Received rec %s\n', rec);
+    %else
+    %    fprintf(1,'Received rec %s\n', rec);
     end
 end
-handles.ToFdata.pause_time = 0;
+handles.ToFdata.pause_time = 0.001;
 guidata(handles.Run, handles);
 
 %function handles = process_ToF_records(handles)
