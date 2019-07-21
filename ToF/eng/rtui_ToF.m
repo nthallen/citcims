@@ -22,7 +22,7 @@ function varargout = rtui_ToF(varargin)
 
 % Edit the above text to modify the response to help rtui_ToF
 
-% Last Modified by GUIDE v2.5 08-Oct-2012 17:53:23
+% Last Modified by GUIDE v2.5 20-Jul-2019 20:59:15
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -69,7 +69,6 @@ handles.ToFdata.pause_time = 0.05;
 handles.ToFdata.bufTime = 1;
 handles.ToFdata.iBufs = zeros(20,1);
 handles.ToFdata.bufTimes = zeros(20,1);
-handles.ToFdata.SendStatus = true;
 handles.ToFdata.TCal = T_cal_crv;
 guidata(hObject, handles);
 
@@ -98,10 +97,8 @@ if ~handles.ToFdata.running
     set(handles.Run,'String','Stop');
     set(handles.RunStatus,'String','Running');
     handles = setup_json_connection(handles, '10.1.1.231', 80);
-    if handles.ToFdata.SendStatus
-        handles.ToFdata.udp = udp('10.1.1.255',5100);
-        fopen(handles.ToFdata.udp);
-    end
+    handles.ToFdata.udp = udp('10.1.1.255',5100);
+    fopen(handles.ToFdata.udp);
     guidata(hObject, handles);
     
     %---------------------------
@@ -146,9 +143,7 @@ if ~handles.ToFdata.running
     % Cleanup after Stop
     %---------------------------
     handles = close_json_connection(handles);
-    if handles.ToFdata.SendStatus
-        fclose(handles.ToFdata.udp);
-    end
+    fclose(handles.ToFdata.udp);
     set(handles.Run,'String','Run');
     set(handles.RunStatus,'String','Idle');
 else

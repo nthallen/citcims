@@ -45,7 +45,7 @@ handles.ToFdata.dat = handles.ToFdata.dat0;
 %   4 -  16   Invalid
 %   5 -  32   Failed
 %----------------------------------------------------------------------
-if handles.ToFdata.SendStatus
+if get(handles.Send_UDP,'Value')
     t = datetime('now','timezone','utc','format','yyyy-MM-dd''T''HH:mm:ss.SSS');
     status = 3;
     v1 = NaN;
