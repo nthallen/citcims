@@ -99,12 +99,12 @@ if ~handles.ToFdata.running
     handles = setup_json_connection(handles, '10.1.1.231', 80);
     handles.ToFdata.udp = udp('10.1.1.255',5100);
     fopen(handles.ToFdata.udp);
+    handles.ToFdata.iterations = 0;
     guidata(hObject, handles);
     
     %---------------------------
     % 'Run' loop
     %---------------------------
-    iterations = 0;
     while true
         %fprintf(1,'111: ibb: %d, iBuf_d: %d\n', handles.ToFdata.iBB, handles.ToFdata.iBuf_d);
         handles = guidata(hObject);
@@ -116,7 +116,7 @@ if ~handles.ToFdata.running
                 guidata(hObject,handles);
             end
         end
-        iterations = iterations + 1;
+        handles.ToFdata.iterations = handles.ToFdata.iterations + 1;
         handles = ToF_get_descriptor(handles);
         guidata(hObject,handles);
         handles.ToFdata.pause_time = 0.05;
@@ -126,7 +126,7 @@ if ~handles.ToFdata.running
         if handles.ToFdata.iBB ~= handles.ToFdata.iBuf_d
             %display(handles.ToFdata.strc.iBuf);
             %fprintf(1,'124: iterations: %d ibb: %d, iBuf_d: %d\n', iterations, handles.ToFdata.iBB, handles.ToFdata.iBuf_d);
-            iterations = 0;
+            %iterations = 0;
             handles = ToF_read_scan(handles);
             %fprintf(1,'126: ibb: %d, iBuf_d: %d\n', handles.ToFdata.iBB, handles.ToFdata.iBuf_d);
         end
@@ -265,6 +265,8 @@ else
     set(handles.Nrecs,'String',num2str(handles.data_conn.n));
     [handles,rec] = process_json_record(handles, dp);
     if strcmp(rec,'ToFeng_1')
+        set(handles.Niter,'String',num2str(handles.ToFdata.iterations));
+        handles.ToFdata.iterations = 0;
         handles = process_ToF_records(handles);
     %else
     %    fprintf(1,'Received rec %s\n', rec);
