@@ -8,14 +8,18 @@ classdef data_fields < handle
     properties
         fig
         figbgcolor
-        min_y
-        max_y
-        min_x
-        max_x
+        opts
+    %       min_y
+    %       max_y
+    %       min_x
+    %       max_x
+    %       v_padding % space at top and bottom of column
+    %       v_leading % space between rows
+    %       h_padding % space between edge and outer columns
+    %       h_leading % space between label and text and unit
+    %       col_leading % horizontal space between columns
         cur_x
         cur_y
-        hspace
-        vspace
         records
         fields
         % fields will be indexed like records, i.e.
@@ -32,23 +36,33 @@ classdef data_fields < handle
         % cur_col.max_txt_width will be the current maximum text width
     end
     methods
-        function obj = data_fields(fig_in)
+        function obj = data_fields(fig_in, varargin)
             obj.fig = fig_in;
             % verify that fig is an object
             % record dimensions
             set(obj.fig,'units','pixels');
             d = get(obj.fig,'Position');
-            obj.min_x = 20;
-            obj.max_x = d(3);
-            obj.min_y = 0;
-            obj.max_y = d(4);
-            obj.cur_x = obj.min_x;
-            obj.cur_y = obj.max_y;
-            obj.hspace = 10;
-            obj.vspace = 5;
+            obj.opts.min_x = 0;
+            obj.opts.max_x = d(3);
+            obj.opts.min_y = 0;
+            obj.opts.max_y = d(4);
+            obj.opts.v_padding = 10;
+            obj.opts.v_leading = 3;
+            obj.opts.h_padding = 20;
+            obj.opts.h_leading = 0;
+            obj.opts.col_leading = 15;
+            for i = 1:2:length(varargin)
+                fld = varargin{i};
+                if isfield(obj.opts, fld)
+                    obj.opts.(fld) = varargin{i+1};
+                else
+                    error('MATLAB:LE:badopt', 'Invalid option: "%s"', fld);
+                end
+            end
+            obj.cur_x = obj.opts.min_x + obj.opts.h_padding;
+            obj.cur_y = obj.opts.max_y;
             obj.records = data_records();
             obj.figbgcolor = get(obj.fig,'Color');
-            obj.start_col();
         end
         
         function start_col(obj)
@@ -56,15 +70,42 @@ classdef data_fields < handle
             obj.cur_col.n_rows = 0;
             obj.cur_col.max_lbl_width = 0;
             obj.cur_col.max_txt_width = 0;
+            obj.cur_y = obj.opts.max_y - obj.opts.v_padding;
+            % obj.cur_x = obj.cur_x + obj.opts.col_leading;
+        end
+        
+        function end_col(obj)
+            % reposition txt fields according to max widths
+            % txt fields are all right-justified
+            %  cur_x is the left of the lbl field
+            %  cur_x + max_lbl_width is the right edge of the lbl col
+            %  cur_x + max_lbl_width + h_padding is left edge of txt col
+            r_edge = obj.cur_x + obj.cur_col.max_lbl_width + ...
+                obj.opts.h_leading + obj.cur_col.max_txt_width;
+            for i=1:length(obj.cur_col.fields)
+                fld = obj.cur_col.fields{i};
+                pos = fld.txt.Position;
+                pos(1) = r_edge - pos(3);
+                fld.txt.Position = pos;
+            end
+            % update cur_x to the right edge of righthand fields
+            % plus col_leading, so left of new column
+            obj.cur_x = r_edge + obj.opts.col_leading;
         end
         
         function df = field(obj, rec_name, var_name, fmt)
             obj.records.add_record(rec_name);
-            if ~isfield(obj.fields, rec_name) || ~isfield(obj.fields.(rec_name).vars,var_name)
+            if ~isfield(obj.fields, rec_name) || ...
+                    ~isfield(obj.fields.(rec_name).vars,var_name)
                 obj.fields.(rec_name).vars.(var_name) = {};
             end
             df_int = data_field(rec_name, var_name, fmt, obj);
             obj.fields.(rec_name).vars.(var_name){end+1} = df_int;
+            if obj.cur_y - df_int.fld_height < obj.opts.min_y + obj.opts.v_padding
+                obj.end_col();
+                obj.start_col();
+                % we assume one row will always fit
+            end
             obj.cur_col.fields{end+1} = df_int;
             obj.cur_col.n_rows = obj.cur_col.n_rows+1;
             if df_int.lbl_width > obj.cur_col.max_lbl_width
@@ -77,9 +118,9 @@ classdef data_fields < handle
             df_int.lbl.Position = ...
                 [ obj.cur_x, obj.cur_y, df_int.lbl_width, df_int.fld_height];
             df_int.txt.Position = ...
-                [ obj.cur_x + df_int.lbl_width + obj.hspace, obj.cur_y, ...
+                [ obj.cur_x + df_int.lbl_width + obj.opts.h_leading, obj.cur_y, ...
                   df_int.txt_width, df_int.fld_height];
-            obj.cur_y = obj.cur_y - obj.vspace;
+            obj.cur_y = obj.cur_y - obj.opts.v_leading;
             if nargout > 0; df = df_int; end
         end
     end
