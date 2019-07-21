@@ -53,6 +53,8 @@ classdef data_fields < handle
             obj.opts.h_leading = 0;
             obj.opts.col_leading = 15;
             obj.opts.txt_padding = 5;
+            obj.opts.txt_font = 'Courier New';
+            obj.opts.txt_fontsize = 10;
             for i = 1:2:length(varargin)
                 fld = varargin{i};
                 if isfield(obj.opts, fld)
