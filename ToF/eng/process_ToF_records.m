@@ -24,10 +24,32 @@ function handles = process_ToF_records(handles)
 %   Persistent variables can be added to the handles data structure.
 %----------------------------------------------------------------------
 % CALCULATIONS GO HERE
-test=0;
 set(handles.NToF,'String',num2str(handles.ToFdata.N));
+handles.ToFdata.N;
+t3=handles.data.('ToFeng_1').vars.('T3_1Hz')(handles.data.('ToFeng_1').n_recd);
+t4=handles.data.('ToFeng_1').vars.('T4_1Hz')(handles.data.('ToFeng_1').n_recd);
+P=handles.data.('ToFeng_1').vars.('InL_P')(handles.data.('ToFeng_1').n_recd);
+dil=handles.data.('ToFeng_1').vars.('InL_P')(handles.data.('ToFeng_1').n_recd);
+Insl=handles.data.('ToFeng_5').vars.('Insl_Step')(handles.data.('ToFeng_5').n_recd);
+if handles.ToFdata.N > 5
+    tmln.time=ft2ts(handles.ToFdata.strc.TimeZero)+handles.ToFdata.bufTime;
+    tmln.mass=proc_spec(handles.ToFdata.dat,handles.ToFdata.map,handles.ToFdata.bl1,handles.ToFdata.bl2,handles.ToFdata.N);
+    [tmln.t3,tmln.t4]=convert_T(t3,t4,handles.ToFdata.TCal);
+    handles = check_growing_vectors(handles,'tmln',tmln);
+ %   plot(handles.ToFdata.ax1,time2jd(handles.data.tmln.vars.time),handles.data.tmln.vars.mass(:,86),'.-');
+ display(handles.data.tmln.vars.mass(handles.data.tmln.n_recd,86));
+ %   drawnow;
+end
+display(handles.data.tmln.n_recd)
+if mod(handles.data.tmln.n_recd,60) == 0
+    if sum(handles.ToFdata.dat60(9000:length(handles.ToFdata.dat60)))>10000
+        handles.ToFdata.mzc=mass_cal(handles.ToFdata.mz,handles.ToFdata.dat60);
+        [handles.ToFdata.map,handles.ToFdata.bl1,handles.ToFdata.bl2]=mass_map_rt(400,handles.ToFdata.mzc);
 
-
+    end
+    handles.ToFdata.dat60=handles.ToFdata.dat0;
+end
+    
 %----------------------------------------------------------------------
 % Reinitialize N and dat
 %----------------------------------------------------------------------
@@ -45,7 +67,7 @@ handles.ToFdata.dat = handles.ToFdata.dat0;
 %   4 -  16   Invalid
 %   5 -  32   Failed
 %----------------------------------------------------------------------
-if get(handles.Send_UDP,'Value')
+if handles.ToFdata.SendStatus
     t = datetime('now','timezone','utc','format','yyyy-MM-dd''T''HH:mm:ss.SSS');
     status = 3;
     v1 = NaN;

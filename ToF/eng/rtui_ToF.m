@@ -22,7 +22,7 @@ function varargout = rtui_ToF(varargin)
 
 % Edit the above text to modify the response to help rtui_ToF
 
-% Last Modified by GUIDE v2.5 20-Jul-2019 20:59:15
+% Last Modified by GUIDE v2.5 08-Oct-2012 17:53:23
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -69,7 +69,9 @@ handles.ToFdata.pause_time = 0.05;
 handles.ToFdata.bufTime = 1;
 handles.ToFdata.iBufs = zeros(20,1);
 handles.ToFdata.bufTimes = zeros(20,1);
+handles.ToFdata.SendStatus = false;
 handles.ToFdata.TCal = T_cal_crv;
+
 guidata(hObject, handles);
 
 % --- Outputs from this function are returned to the command line.
@@ -97,18 +99,24 @@ if ~handles.ToFdata.running
     set(handles.Run,'String','Stop');
     set(handles.RunStatus,'String','Running');
     handles = setup_json_connection(handles, '10.1.1.231', 80);
-    handles.ToFdata.udp = udp('10.1.1.255',5100);
-    fopen(handles.ToFdata.udp);
-    handles.ToFdata.iterations = 0;
+    if handles.ToFdata.SendStatus
+        handles.ToFdata.udp = udp('10.1.1.255',5100);
+        fopen(handles.ToFdata.udp);
+    end
+   %handles.ToFdata.h1=figure;
+   %handles.ToFdata.ax1=gca;
+
     guidata(hObject, handles);
     
     %---------------------------
     % 'Run' loop
     %---------------------------
+       iterations=0;
     while true
-        %fprintf(1,'111: ibb: %d, iBuf_d: %d\n', handles.ToFdata.iBB, handles.ToFdata.iBuf_d);
+     
+         %fprintf(1,'111: ibb: %d, iBuf_d: %d\n', handles.ToFdata.iBB, handles.ToFdata.iBuf_d);
         handles = guidata(hObject);
-        %fprintf(1,'113: ibb: %d, iBuf_d: %d\n', handles.ToFdata.iBB, handles.ToFdata.iBuf_d);
+         %fprintf(1,'113: ibb: %d, iBuf_d: %d\n', handles.ToFdata.iBB, handles.ToFdata.iBuf_d);
         if ~handles.ToFdata.running, break, end
         if ~handles.ToFdata.ToF_initialized
             if calllib('TofDaqDll','TwTofDaqRunning')
@@ -116,34 +124,37 @@ if ~handles.ToFdata.running
                 guidata(hObject,handles);
             end
         end
-        handles.ToFdata.iterations = handles.ToFdata.iterations + 1;
+        iterations = iterations + 1;
         handles = ToF_get_descriptor(handles);
         guidata(hObject,handles);
         handles.ToFdata.pause_time = 0.05;
         % ToF_read_scan() and Read_json() Handlers here are required to
         % save handles to guidata and update handles.ToFdata.pause_time.
-
+        
         if handles.ToFdata.iBB ~= handles.ToFdata.iBuf_d
             %display(handles.ToFdata.strc.iBuf);
             %fprintf(1,'124: iterations: %d ibb: %d, iBuf_d: %d\n', iterations, handles.ToFdata.iBB, handles.ToFdata.iBuf_d);
-            %iterations = 0;
+            iterations=0;
             handles = ToF_read_scan(handles);
             %fprintf(1,'126: ibb: %d, iBuf_d: %d\n', handles.ToFdata.iBB, handles.ToFdata.iBuf_d);
         end
-
-        % if handles.data_conn.t.BytesAvailable
+       
+       % if handles.data_conn.t.BytesAvailable
         %    handles = Read_json(handles);
-        % end
-        % guidata(hObject, handles);
-
+        %end
+      
+        %guidata(hObject, handles);
         pause(handles.ToFdata.pause_time);
+       
     end
     
     %---------------------------
     % Cleanup after Stop
     %---------------------------
     handles = close_json_connection(handles);
-    fclose(handles.ToFdata.udp);
+    if handles.ToFdata.SendStatus
+        fclose(handles.ToFdata.udp);
+    end
     set(handles.Run,'String','Run');
     set(handles.RunStatus,'String','Idle');
 else
@@ -159,6 +170,10 @@ handles.data_conn.t.BytesAvailableFcn = { @BytesAvFn, handles.Run };
 fopen(handles.data_conn.t);
 handles.data_conn.connected = 1;
 
+function BytesAvFn(~,~,hObject)
+handles = guidata(hObject);
+handles = Read_json(handles);
+
 function handles = close_json_connection(handles)
 fclose(handles.data_conn.t);
 delete(handles.data_conn.t);
@@ -169,9 +184,16 @@ handles.ToFdata.NbrSamples = str2double(calllib('TofDaqDll','TwGetDaqParameter',
 handles.ToFdata.dat0 = zeros(handles.ToFdata.NbrSamples,1);
 handles.ToFdata.dat = handles.ToFdata.dat0;
 handles.ToFdata.raw = handles.ToFdata.dat0;
+handles.ToFdata.dat60 = handles.ToFdata.dat0;
 handles.ToFdata.iBB = -1; % Current iBuf
 handles.ToFdata.strc = struct('NbrSamples',int32(0));
 handles.ToFdata.mz = double(1:double(handles.ToFdata.NbrSamples));
+%handles.data.tmln.mass=zeros(10000,400).*NaN;
+%handles.data.tmln.time=zeros(10000,1).*NaN;
+%handles.data.tmln.time=zeros(10000,1).*NaN;
+%handles.data.tmln.n_alloc = 10000;
+%handles.data.tmln.n_recd = 0;
+%handles.ToFdata.tmln.nrec=0;
 
 % TwGetSpecXaxisFromShMem
 %   0: TwDaqRecNotRunning
@@ -187,13 +209,10 @@ handles.ToFdata.mzc=handles.ToFdata.mz;
 [handles.ToFdata.map,handles.ToFdata.bl1,handles.ToFdata.bl2]=mass_map_rt(400,handles.ToFdata.mz);
 handles.ToFdata.ToF_initialized = true;
 
-%---------------------------
-% ToF_get_descriptor
 % TwGetDescriptor
 %   0: TwDaqRecNotRunning
 %   4: TwSuccess
 %   5: TwError
-%---------------------------
 function handles = ToF_get_descriptor(handles)
 [res,handles.ToFdata.strc] = ...
     calllib('TofDaqDll','TwGetDescriptor',handles.ToFdata.strc);
@@ -238,12 +257,9 @@ function handles = ToF_read_scan(handles)
     end
     handles.ToFdata.iBB = handles.ToFdata.iBuf_d;
     handles.ToFdata.dat = handles.ToFdata.dat + handles.ToFdata.raw;
+    handles.ToFdata.dat60 = handles.ToFdata.dat60 + handles.ToFdata.raw;
     handles.ToFdata.pause_time = 0.001;
     guidata(handles.figure1,handles);
-
-function BytesAvFn(~, ~, hObject)
-handles = guidata(hObject);
-handles = Read_json(handles);
 
 % --- Executes when data is available.
 function handles = Read_json(handles)
@@ -265,8 +281,6 @@ else
     set(handles.Nrecs,'String',num2str(handles.data_conn.n));
     [handles,rec] = process_json_record(handles, dp);
     if strcmp(rec,'ToFeng_1')
-        set(handles.Niter,'String',num2str(handles.ToFdata.iterations));
-        handles.ToFdata.iterations = 0;
         handles = process_ToF_records(handles);
     %else
     %    fprintf(1,'Received rec %s\n', rec);
@@ -311,7 +325,7 @@ if ~isfield(handles,'data') || ~isfield(handles.data, rec)
     handles.data.(rec).n_alloc = min_alloc;
     handles.data.(rec).n_recd = 0;
     for i = 1:length(flds)
-        handles.data.(rec).vars.(flds{i}) = zeros(min_alloc,1) * NaN;
+        handles.data.(rec).vars.(flds{i}) = zeros(min_alloc,size(data.(flds{i}),2)) * NaN;
     end
 end
 handles.data.(rec).n_recd = handles.data.(rec).n_recd + 1;
@@ -319,7 +333,7 @@ if handles.data.(rec).n_recd > handles.data.(rec).n_alloc
     for i = 1:length(flds)
         handles.data.(rec).vars.(flds{i}) = [
             handles.data.(rec).vars.(flds{i});
-            zeros(min_alloc,1) * NaN ];
+            zeros(min_alloc,size(data.(flds{i}),2)) * NaN ];
     end
     handles.data.(rec).n_alloc = handles.data.(rec).n_alloc + min_alloc;
 end
