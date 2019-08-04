@@ -1,9 +1,11 @@
 classdef data_records < handle
     properties
         records
+        max_time
     end
     methods
         function obj = data_records()
+            max_time = [];
         end
         
         function add_record(obj,rec_name)
@@ -14,7 +16,11 @@ classdef data_records < handle
             end
         end
         function process_record(obj,rec_name, str)
-            obj.records.(rec_name).process_record(str);
+            dr = obj.records.(rec_name);
+            dr.process_record(str);
+            if isempty(obj.max_time) || dr.max_time > obj.max_time
+                obj.max_time = dr.max_time;
+            end
         end
     end
 end

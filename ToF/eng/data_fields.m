@@ -21,7 +21,7 @@ classdef data_fields < handle
     %       txt_padding
         cur_x
         cur_y
-        records
+        records % data_records object
         fields
         % fields will be indexed like records, i.e.
         % obj.fields.(rec).vars.(var) will be an array of data_field
@@ -35,6 +35,7 @@ classdef data_fields < handle
         % cur_col.n_rows will be a scalar count of elements in fields
         % cur_col.max_lbl_width will be the current maximum label width
         % cur_col.max_txt_width will be the current maximum text width
+        graph_figs % cell array of data_fig objects
     end
     methods
         function obj = data_fields(fig_in, varargin)
@@ -67,6 +68,7 @@ classdef data_fields < handle
             obj.cur_y = obj.opts.max_y;
             obj.records = data_records();
             obj.figbgcolor = get(obj.fig,'Color');
+            obj.graph_figs = {};
         end
         
         function start_col(obj)
@@ -147,6 +149,16 @@ classdef data_fields < handle
                     end
                 end
             end
+            % Now go through graph_figs
+            if nargin >= 3
+                for i=1:length(obj.graph_figs)
+                    obj.graph_figs{i}.update(rec_name);
+                end
+            end
+        end
+        function dfig = new_graph_fig(dfs)
+            dfig = data_fig(dfs.records);
+            dfs.graph_figs{end+1} = dfig;
         end
     end
 end

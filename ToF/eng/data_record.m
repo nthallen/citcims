@@ -7,50 +7,82 @@ classdef data_record < handle
         n_recd
         min_alloc
         n_flds
+        ix
+        max_time
     end
     methods
-        function obj = data_record(rec_name)
-            obj.record_name = rec_name;
-            obj.time_name = ['T' rec_name];
-            obj.n_alloc = 0;
-            obj.n_recd = 0;
-            obj.min_alloc = 10000;
-            obj.n_flds = 0;
+        function dr = data_record(rec_name)
+            dr.record_name = rec_name;
+            dr.time_name = ['T' rec_name];
+            dr.n_alloc = 0;
+            dr.n_recd = 0;
+            dr.min_alloc = 10000;
+            dr.n_flds = 0;
+            dr.max_time = [];
         end
         
-        function process_record(obj, str)
+        function process_record(dr, str)
             flds = fieldnames(str);
-            if obj.n_flds == 0
-                obj.n_alloc = obj.min_alloc;
-                obj.n_flds = length(flds);
-                for i = 1:obj.n_flds
-                    obj.data.(flds{i}) = zeros(obj.min_alloc,1) * NaN;
+            if dr.n_flds == 0
+                dr.n_alloc = dr.min_alloc;
+                dr.n_flds = length(flds);
+                dr.ix = (1:dr.n_alloc)';
+                for i = 1:dr.n_flds
+                    dr.data.(flds{i}) = zeros(dr.min_alloc,1) * NaN;
                 end
-                if ~isfield(obj.data, obj.time_name)
+                if ~isfield(dr.data, dr.time_name)
                     error('Structure for record %s missing time var %s', ...
-                        obj.record_name, obj.time_name);
+                        dr.record_name, dr.time_name);
+                else
+                    dr.max_time = str.(dr.time_name);
                 end
+            else
+                if dr.n_flds ~= length(flds)
+                    error('Change in size of record %s', dr.record_name);
+                end
+                cur_time = str.(dr.time_name);
+                if cur_time <= dr.max_time
+                    error('Time is non-monotonic for record %s', dr.record_name);
+                end
+                dr.max_time = cur_time;
             end
-            if obj.n_flds ~= length(flds)
-                error('Change in size of record %s', obj.record_name);
-            end
-            for i = 1:obj.n_flds
-                if ~isfield(obj.data, flds{i})
+            for i = 1:dr.n_flds
+                if ~isfield(dr.data, flds{i})
                     error('Structure for record %s changed: %s is new', ...
-                        obj.record_name, flds{i});
+                        dr.record_name, flds{i});
                 end
             end
-            obj.n_recd = obj.n_recd+1;
-            if obj.n_recd > obj.n_alloc
+            dr.n_recd = dr.n_recd+1;
+            if dr.n_recd > dr.n_alloc
                 for i = 1:length(flds)
-                    obj.data.(flds{i}) = [
-                        obj.data.(flds{i});
-                        zeros(obj.min_alloc,1) * NaN ];
+                    dr.data.(flds{i}) = [
+                        dr.data.(flds{i});
+                        zeros(dr.min_alloc,1) * NaN ];
                 end
-                obj.n_alloc = obj.n_alloc + obj.min_alloc;
+                dr.n_alloc = dr.n_alloc + dr.min_alloc;
+                dr.ix = (1:dr.n_alloc)';
             end
-            for i = 1:obj.n_flds
-                obj.data.(flds{i})(obj.n_recd) = str.(flds{i});
+            for i = 1:dr.n_flds
+                dr.data.(flds{i})(dr.n_recd) = str.(flds{i});
+            end
+        end
+        
+        function [T,V] = time_vector(dr, duration)
+            if isfield(dr.data, dr.time_name)
+                T = dr.data.(dr.time_name);
+                V = dr.ix <= dr.n_recd & T >= T(dr.n_recd) - duration;
+                T = T(V);
+            else
+                T = [];
+                V = [];
+            end
+        end
+        
+        function D = data_vector(dr, var_name, V)
+            if isfield(dr.data, var_name)
+                D = dr.data.(var_name)(V);
+            else
+                D = [];
             end
         end
     end
