@@ -36,6 +36,7 @@ classdef data_fields < handle
         % cur_col.max_lbl_width will be the current maximum label width
         % cur_col.max_txt_width will be the current maximum text width
         graph_figs % cell array of data_fig objects
+        dfuicontextmenu % uicontextmenu for data_field lables
     end
     methods
         function obj = data_fields(fig_in, varargin)
@@ -69,6 +70,8 @@ classdef data_fields < handle
             obj.records = data_records();
             obj.figbgcolor = get(obj.fig,'Color');
             obj.graph_figs = {};
+            obj.dfuicontextmenu = uicontextmenu(fig_in);
+            uimenu(obj.dfuicontextmenu,'Label','Graph in new figure');
         end
         
         function start_col(obj)
@@ -160,5 +163,13 @@ classdef data_fields < handle
             dfig = data_fig(dfs.records);
             dfs.graph_figs{end+1} = dfig;
         end
+    end
+    methods(Static)
+      function context_callback(lbl,~,func, varargin)
+        % func is one of:
+        %   'new_fig' - create graph in new figure
+        %   'new_axes' - create graph in new axis in figure # fn
+        %   'cur_axes' - create graph in existing axis # an in figure # fn
+      end
     end
 end
