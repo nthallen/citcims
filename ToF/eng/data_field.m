@@ -2,7 +2,7 @@ classdef data_field < handle
     % data_field represents two text objects,
     % a label and the value display, and the corresponding
     % data stream
-    properties
+    properties(GetAccess = public)
         flds % The parent data_fields object
         rec_name
         var_name

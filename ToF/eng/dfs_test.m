@@ -57,12 +57,15 @@ dsim.add_var('S2_Hz',10,N,-5,30,10);
 dsim.add_var('J2_Hz',10,N,-5,30,10);
 
 %
-dfig = dfs.new_graph_fig();
-dfig.new_graph(rec, 'T1_Hz', "new_axes", 'T1\_Hz');
+%dfig = dfs.new_graph_fig();
+%dfig.new_graph(rec, 'T1_Hz', "new_axes", 'T1\_Hz');
+%dfs.new_graph(rec, 'T1_Hz', "new_fig");
 %%
-dfig.new_graph(rec,'P1_Hz', "new_axes", 'PQ');
+%dfig.new_graph(rec,'P1_Hz', "new_axes", 'PQ');
+dfs.new_graph(rec,'P1_Hz', "new_axes", 1);
 %%
-dfig.new_graph(rec,'Q1_Hz', "cur_axes");
+% dfig.new_graph(rec,'Q1_Hz', "cur_axes");
+dfs.new_graph(rec,'Q1_Hz',"cur_axes",1, 1);
 %%
 for i=1:100
     str = dsim.sample();

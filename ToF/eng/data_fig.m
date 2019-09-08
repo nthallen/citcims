@@ -1,21 +1,29 @@
 classdef data_fig < handle
-    properties
+    properties(GetAccess = public)
         fig % figure
+        fignum % The data_fig index in the data_fields object
         axes % cell array of data_axis
         drs % data_records
         recs % identifies axes where specific vars are displayed
         axis_vec % just the axes
+        mymenu % uimenu for this figure
     end
     methods
-        function df = data_fig(drs)
+        function df = data_fig(dfs, fignum)
             df.fig = figure;
-            df.drs = drs;
+            df.fignum = fignum;
+            df.drs = dfs.records;
             df.recs = [];
             df.axes = {};
             df.axis_vec = [];
+            df.mymenu = ...
+              uimenu(dfs.gimenu,'Text',sprintf('Figure %d', fignum));
+            uimenu(df.mymenu,'Text','New axes', ...
+              'Callback', { @data_fields.context_callback, ...
+              "new_axes", fignum });
         end
 
-        function new_graph(df, rec_name, var_name, mode, varargin)
+        function new_graph(df, rec_name, var_name, mode, axisnum)
             % use the figure's mode to decide where to put it
             % for starters, always create a new axis
             % @param mode: "new_fig", "new_axes", "cur_axes"
@@ -26,11 +34,15 @@ classdef data_fig < handle
                 df.recs.(rec_name).vars.(var_name) = {};
             end
             if mode == "new_fig" || mode == "new_axes"
-                the_axis = data_axis(df, varargin{1});
+                the_axis = data_axis(df, var_name);
                 df.axes{end+1} = the_axis;
                 df.axis_vec(end+1) = df.axes{end}.axis;
+                axnum = length(df.axes);
+                uimenu(df.mymenu,'Text',sprintf('Axis %d',axnum), ...
+                  'Callback', { @data_fields.context_callback, ...
+                  "cur_axes", df.fignum, axnum });
             else
-                the_axis = df.axes{end};
+                the_axis = df.axes{axisnum};
             end
             n = the_axis.add_line(rec_name, var_name);
             df.recs.(rec_name).vars.(var_name) = [

@@ -11,7 +11,7 @@ classdef data_axis < handle
             da.dfig = dfig;
             da.recs = dfig.recs;
             da.axis = axes(dfig.fig,'visible','off');
-            da.label = label;
+            da.label = strrep(label,'_','\_');
         end
         function n = add_line(da, rec_name, var_name)
             % returns the line index

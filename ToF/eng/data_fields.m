@@ -37,6 +37,7 @@ classdef data_fields < handle
         % cur_col.max_txt_width will be the current maximum text width
         graph_figs % cell array of data_fig objects
         dfuicontextmenu % uicontextmenu for data_field lables
+        gimenu % The 'Graph in:' submenu
     end
     methods
         function obj = data_fields(fig_in, varargin)
@@ -71,7 +72,9 @@ classdef data_fields < handle
             obj.figbgcolor = get(obj.fig,'Color');
             obj.graph_figs = {};
             obj.dfuicontextmenu = uicontextmenu(fig_in);
-            uimenu(obj.dfuicontextmenu,'Label','Graph in new figure');
+            obj.gimenu = uimenu(obj.dfuicontextmenu,'Label','Graph in:');
+            uimenu(obj.gimenu,'Label','New figure', ...
+              'Callback', { @data_fields.context_callback, "new_fig"});
         end
         
         function start_col(obj)
@@ -160,16 +163,42 @@ classdef data_fields < handle
             end
         end
         function dfig = new_graph_fig(dfs)
-            dfig = data_fig(dfs.records);
+            dfig = data_fig(dfs, length(dfs.graph_figs)+1);
             dfs.graph_figs{end+1} = dfig;
+        end
+        function new_graph(dfs, rec_name, var_name, mode, fignum, axisnum)
+          if mode == "new_fig"
+            dfig = dfs.new_graph_fig();
+            axisnum = 0;
+          else
+            dfig = dfs.graph_figs{fignum};
+            if mode ~= "cur_axes"
+              axisnum = 0;
+            end
+          end
+          dfig.new_graph(rec_name, var_name, mode, axisnum);
         end
     end
     methods(Static)
-      function context_callback(lbl,~,func, varargin)
-        % func is one of:
+      function context_callback(~,~, mode, fignum, axisnum)
+        % lbl is the variable's label. The data_field object
+        %   should be the label's userdata
+        % mode is one of:
         %   'new_fig' - create graph in new figure
         %   'new_axes' - create graph in new axis in figure # fn
         %   'cur_axes' - create graph in existing axis # an in figure # fn
+        if mode == "new_fig"
+          fignum = 0;
+          axisnum = 0;
+        elseif mode == "new_axes"
+          axisnum = 0;
+        end
+        lbl = gco;
+        df = get(lbl,'userdata');
+        rec_name = df.rec_name;
+        var_name = df.var_name;
+        dfs = df.flds;
+        dfs.new_graph(rec_name, var_name, mode, fignum, axisnum);
       end
     end
 end
