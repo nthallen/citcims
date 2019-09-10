@@ -105,36 +105,36 @@ classdef data_fields < handle
             obj.cur_x = r_edge + obj.opts.col_leading;
         end
         
-        function df = field(obj, rec_name, var_name, fmt)
-            obj.records.add_record(rec_name);
-            if ~isfield(obj.fields, rec_name) || ...
-                    ~isfield(obj.fields.(rec_name).vars,var_name)
-                obj.fields.(rec_name).vars.(var_name) = {};
+        function df = field(dfs, rec_name, var_name, fmt)
+            dfs.records.add_record(rec_name);
+            if ~isfield(dfs.fields, rec_name) || ...
+                    ~isfield(dfs.fields.(rec_name).vars,var_name)
+                dfs.fields.(rec_name).vars.(var_name) = {};
             end
-            df_int = data_field(rec_name, var_name, fmt, obj);
-            obj.fields.(rec_name).vars.(var_name){end+1} = df_int;
-            if obj.cur_y - df_int.fld_height < obj.opts.min_y + obj.opts.v_padding
-                obj.end_col();
-                obj.start_col();
+            df_int = data_field(dfs, rec_name, var_name, fmt);
+            dfs.fields.(rec_name).vars.(var_name){end+1} = df_int;
+            if dfs.cur_y - df_int.fld_height < dfs.opts.min_y + dfs.opts.v_padding
+                dfs.end_col();
+                dfs.start_col();
                 % we assume one row will always fit
             end
-            obj.cur_col.fields{end+1} = df_int;
-            obj.cur_col.n_rows = obj.cur_col.n_rows+1;
-            if df_int.lbl_width > obj.cur_col.max_lbl_width
-                obj.cur_col.max_lbl_width = df_int.lbl_width;
+            dfs.cur_col.fields{end+1} = df_int;
+            dfs.cur_col.n_rows = dfs.cur_col.n_rows+1;
+            if df_int.lbl_width > dfs.cur_col.max_lbl_width
+                dfs.cur_col.max_lbl_width = df_int.lbl_width;
             end
-            df_int.txt_width = df_int.txt_width + obj.opts.txt_padding;
-            if df_int.txt_width > obj.cur_col.max_txt_width
-                obj.cur_col.max_txt_width = df_int.txt_width;
+            df_int.txt_width = df_int.txt_width + dfs.opts.txt_padding;
+            if df_int.txt_width > dfs.cur_col.max_txt_width
+                dfs.cur_col.max_txt_width = df_int.txt_width;
             end
-            obj.cur_y = obj.cur_y - df_int.fld_height;
+            dfs.cur_y = dfs.cur_y - df_int.fld_height;
             df_int.lbl.Position = ...
-                [ obj.cur_x, obj.cur_y, df_int.lbl_width, df_int.fld_height];
+                [ dfs.cur_x, dfs.cur_y, df_int.lbl_width, df_int.fld_height];
             df_int.txt.Position = ...
-                [ obj.cur_x + df_int.lbl_width + obj.opts.h_leading, obj.cur_y, ...
+                [ dfs.cur_x + df_int.lbl_width + dfs.opts.h_leading, dfs.cur_y, ...
                   df_int.txt_width, ...
                   df_int.fld_height];
-            obj.cur_y = obj.cur_y - obj.opts.v_leading;
+            dfs.cur_y = dfs.cur_y - dfs.opts.v_leading;
             if nargout > 0; df = df_int; end
         end
         function process_record(obj,rec_name,str)
@@ -177,6 +177,16 @@ classdef data_fields < handle
             end
           end
           dfig.new_graph(rec_name, var_name, mode, axisnum);
+        end
+        function m = add_menu(dfs, title)
+          m = uimenu(dfs.fig,'Text',title);
+          set(dfs.fig,'Interruptible','on');
+        end
+        function add_userdata(dfs, datum)
+          set(dfs.fig,'userdata',datum);
+        end
+        function datum = get_userdata(dfs)
+          datum = get(dfs.fig,'userdata');
         end
     end
     methods(Static)
