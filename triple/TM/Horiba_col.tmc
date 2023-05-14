@@ -1,4 +1,0 @@
-%{
-  #include "horiba.h"
-  horiba_tm_t Horiba;
-%}
