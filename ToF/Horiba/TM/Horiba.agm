@@ -36,7 +36,7 @@ mode (default,driver) {
   SRC = @src@
   IGNORE = @name@.tmc @name@_col.tmc @name@.cmd @name@_conv.tmc
   IGNORE = @name@.genui @name@.tbl
-  OBJ = @name@.tmc @name@_col.tmc @name@.cmd @name@_conv
+  OBJ = @name@.tmc @name@_col.tmc @name@.cmd @name@_conv.tmc
   OBJ = @name@.genui @name@.tbl
   %%
 @name@.tmc @name@_col.tmc @name@.cmd @name@_conv.tmc @name@.genui @name@.tbl : @src@ @MODDIR@/Horiba_gen
