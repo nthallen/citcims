@@ -18,6 +18,7 @@ UP_Pkts.cc
 UP_Pkts.h
 UP.h
 UP.oui
+UP_int.h
 TwisTorr.tmc
 TwisTorr_col.tmc
 TwisTorr.cmd
@@ -142,6 +143,7 @@ UP_Pkts.cc
 UP_Pkts.h
 UP.h
 UP.oui
+UP_int.h
 TwisTorr.tmc
 TwisTorr_col.tmc
 TwisTorr.cmd

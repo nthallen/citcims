@@ -23,10 +23,10 @@ mode (default) {
   OBJ = @name@oui.c @name@oui.o @name@.o @name@_Pkts.o
   IGNORE = @name@.tmc @name@_col.tmc @name@.cmd @name@.cc
   IGNORE = @name@.genui @name@.tbl @name@_Pkts.cc
-  IGNORE = @name@_Pkts.h @name@.h @name@.oui
+  IGNORE = @name@_Pkts.h @name@.h @name@.oui @name@_int.h
   OBJ = @name@.tmc @name@_col.tmc @name@.cmd @name@.cc
   OBJ = @name@.genui @name@.tbl @name@_Pkts.cc
-  OBJ = @name@_Pkts.h @name@.h @name@.oui
+  OBJ = @name@_Pkts.h @name@.h @name@.oui @name@_int.h
   DISTRIB = @name@
   CPPFLAGS = -I @MODDIR@
   %%
