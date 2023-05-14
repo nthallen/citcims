@@ -10,6 +10,13 @@ extbase = TwisTorr_conv.tmc:
 genuibase = TwisTorr.genui:
 - : TwisTorr.cfg:TwisTorr.cfg.in
 
+IGNORE = TwisTorr.tmc TwisTorr_col.tmc TwisTorr.cmd
+IGNORE = TwisTorr_conv.tmc TwisTorr.genui TwisTorr.tbl
+IGNORE = TwisTorr.cfg
+OBJ = TwisTorr.tmc TwisTorr_col.tmc TwisTorr.cmd
+OBJ = TwisTorr_conv.tmc TwisTorr.genui TwisTorr.tbl
+OBJ = TwisTorr.cfg
+
 DISTRIB = @MODDIR@/../TwisTorr
 CPPFLAGS = -I @MODDIR@/..
 %%
